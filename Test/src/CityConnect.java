@@ -102,10 +102,11 @@ public class CityConnect {
 		showToUser(WELCOME_MESSAGE);
 		while (true) {
 			System.out.print("Enter command:");
-			String command = scanner.nextLine();
-			String userCommand = command;
-			String feedback = executeCommand(userCommand);
-			showToUser(feedback);
+			//String command = scanner.nextLine();//wtf 2 same things
+			//String userCommand = command;
+			String userCommand = scanner.nextLine();
+			//String feedback = executeCommand(userCommand);//wtf str8 put in function below better
+			showToUser(executeCommand(userCommand));
 		}
 	}
 
@@ -221,12 +222,12 @@ public class CityConnect {
 			String newEndLocation) {
 		for (int i = 0; i < route.length; i++) {
 
-			String existing_start_location = route[i][STORAGE_POSITION_START_LOCATION];
-			String existing_end_location = route[i][STORAGE_POSITION_END_LOCATION];
+			//String existing_start_location = route[i][STORAGE_POSITION_START_LOCATION];
+			//String existing_end_location = route[i][STORAGE_POSITION_END_LOCATION];//not necessary, waste variable
 
-			if (existing_start_location == null) { //beginning of empty slots
+			if (route[i][STORAGE_POSITION_START_LOCATION] == null) { //beginning of empty slots
 				return NOT_FOUND; 
-			} else if (sameRoute(existing_start_location, existing_end_location,
+			} else if (sameRoute(route[i][STORAGE_POSITION_START_LOCATION], route[i][STORAGE_POSITION_END_LOCATION],
 					newStartLocation, newEndLocation)) { 
 				return i;
 			}
@@ -261,7 +262,7 @@ public class CityConnect {
 
 		int slotPosition = location(newStartLocation, newEndLocation);
 
-		if (slotPosition == slotUnavailable){
+		if (location(newStartLocation, newEndLocation) == slotUnavailable){
 			return MESSAGE_NO_SPACE;
 		}
 
@@ -289,17 +290,17 @@ public class CityConnect {
 		
 		for (int i = 0; i < route.length; i++) {
 
-			String existingStartLocation = route[i][STORAGE_POSITION_START_LOCATION];
-			String existingEndLocation = route[i][STORAGE_POSITION_END_LOCATION];
+			//String existingStartLocation = route[i][STORAGE_POSITION_START_LOCATION];//redundant
+			//String existingEndLocation = route[i][STORAGE_POSITION_END_LOCATION];
 
-			if (existingStartLocation == null) { // empty slot
+			if (route[i][STORAGE_POSITION_START_LOCATION] == null) { // empty slot
 				return i;
-			} else if (sameRoute(existingStartLocation, existingEndLocation,
+			} else if (sameRoute(route[i][STORAGE_POSITION_START_LOCATION], route[i][STORAGE_POSITION_END_LOCATION],
 					newStartLocation, newEndLocation)) {
 				return i;
 			}
 		}
-		return slotUnavailable;//changed
+		return slotUnavailable;//changed name
 	}
 
 	/**
@@ -334,12 +335,12 @@ public class CityConnect {
 	}
 
 	private static String getFirstWord(String userCommand) {
-		String commandTypeString = userCommand.trim().split("\\s+")[0];
-		return commandTypeString;
+		//String commandTypeString = userCommand.trim().split("\\s+")[0];//redundant
+		return userCommand.trim().split("\\s+")[0];
 	}
 
 	private static String[] splitParameters(String commandParametersString) {
-		String[] parameters = commandParametersString.trim().split("\\s+");
-		return parameters;
+		//String[] parameters = commandParametersString.trim().split("\\s+");//redundant
+		return commandParametersString.trim().split("\\s+");
 	}
 }
