@@ -57,7 +57,7 @@ public class CityConnect {
 	};
 
 	// This is used to indicate there is no suitable slot to store route
-	private static final int SLOT_UNAVAILABLE = -1;
+	private static final int slotUnavailable = -1;
 	
 	// This is used to indicate the route was not found in the database
 	private static final int NOT_FOUND = -2;
@@ -261,7 +261,7 @@ public class CityConnect {
 
 		int slotPosition = location(newStartLocation, newEndLocation);
 
-		if (slotPosition == SLOT_UNAVAILABLE){
+		if (slotPosition == slotUnavailable){
 			return MESSAGE_NO_SPACE;
 		}
 
@@ -281,7 +281,7 @@ public class CityConnect {
 
 	/**
 	 * @return Returns a suitable slot for the route represented by 
-	 *   newStartLocation and newEndLocation. Returns SLOT_UNAVAILABLE if
+	 *   newStartLocation and newEndLocation. Returns slotUnavailable if
 	 *   no suitable slot is found.
 	 */
 	private static int location(String newStartLocation,
@@ -299,7 +299,7 @@ public class CityConnect {
 				return i;
 			}
 		}
-		return SLOT_UNAVAILABLE;
+		return slotUnavailable;//changed
 	}
 
 	/**
