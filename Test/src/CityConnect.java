@@ -57,12 +57,11 @@ public class CityConnect {
 	};
 
 	// This is used to indicate there is no suitable slot to store route
-	private static final int slotUnavailable = -1;
+	private static final int SLOT_UNAVAILABLE = -1;
 	
 	// This is used to indicate the route was not found in the database
 	private static final int NOT_FOUND = -2;
 
-        
 	// These are the correct number of parameters for each command
 	private static final int PARAM_SIZE_FOR_ADD_ROUTE = 3;
 	private static final int PARAM_SIZE_FOR_GET_DISTANCE = 2;
@@ -100,13 +99,16 @@ public class CityConnect {
 	 */
 	public static void main(String[] args) {
 		showToUser(WELCOME_MESSAGE);
+		runTillUserExits();
+	}
+
+	private static void runTillUserExits() {
 		while (true) {
 			System.out.print("Enter command:");
-			//String command = scanner.nextLine();//wtf 2 same things
-			//String userCommand = command;
-			String userCommand = scanner.nextLine();
-			//String feedback = executeCommand(userCommand);//wtf str8 put in function below better
-			showToUser(executeCommand(userCommand));
+			String command = scanner.nextLine();
+			String userCommand = command;
+			String feedback = executeCommand(userCommand);
+			showToUser(feedback);
 		}
 	}
 
@@ -222,12 +224,12 @@ public class CityConnect {
 			String newEndLocation) {
 		for (int i = 0; i < route.length; i++) {
 
-			//String existing_start_location = route[i][STORAGE_POSITION_START_LOCATION];
-			//String existing_end_location = route[i][STORAGE_POSITION_END_LOCATION];//not necessary, waste variable
+			String existing_start_location = route[i][STORAGE_POSITION_START_LOCATION];
+			String existing_end_location = route[i][STORAGE_POSITION_END_LOCATION];
 
-			if (route[i][STORAGE_POSITION_START_LOCATION] == null) { //beginning of empty slots
+			if (existing_start_location == null) { //beginning of empty slots
 				return NOT_FOUND; 
-			} else if (sameRoute(route[i][STORAGE_POSITION_START_LOCATION], route[i][STORAGE_POSITION_END_LOCATION],
+			} else if (sameRoute(existing_start_location, existing_end_location,
 					newStartLocation, newEndLocation)) { 
 				return i;
 			}
@@ -262,7 +264,7 @@ public class CityConnect {
 
 		int slotPosition = location(newStartLocation, newEndLocation);
 
-		if (location(newStartLocation, newEndLocation) == slotUnavailable){
+		if (slotPosition == SLOT_UNAVAILABLE){
 			return MESSAGE_NO_SPACE;
 		}
 
@@ -282,7 +284,7 @@ public class CityConnect {
 
 	/**
 	 * @return Returns a suitable slot for the route represented by 
-	 *   newStartLocation and newEndLocation. Returns slotUnavailable if
+	 *   newStartLocation and newEndLocation. Returns SLOT_UNAVAILABLE if
 	 *   no suitable slot is found.
 	 */
 	private static int location(String newStartLocation,
@@ -290,17 +292,17 @@ public class CityConnect {
 		
 		for (int i = 0; i < route.length; i++) {
 
-			//String existingStartLocation = route[i][STORAGE_POSITION_START_LOCATION];//redundant
-			//String existingEndLocation = route[i][STORAGE_POSITION_END_LOCATION];
+			String existingStartLocation = route[i][STORAGE_POSITION_START_LOCATION];
+			String existingEndLocation = route[i][STORAGE_POSITION_END_LOCATION];
 
-			if (route[i][STORAGE_POSITION_START_LOCATION] == null) { // empty slot
+			if (existingStartLocation == null) { // empty slot
 				return i;
-			} else if (sameRoute(route[i][STORAGE_POSITION_START_LOCATION], route[i][STORAGE_POSITION_END_LOCATION],
+			} else if (sameRoute(existingStartLocation, existingEndLocation,
 					newStartLocation, newEndLocation)) {
 				return i;
 			}
 		}
-		return slotUnavailable;//changed name
+		return SLOT_UNAVAILABLE;
 	}
 
 	/**
@@ -335,12 +337,12 @@ public class CityConnect {
 	}
 
 	private static String getFirstWord(String userCommand) {
-		//String commandTypeString = userCommand.trim().split("\\s+")[0];//redundant
-		return userCommand.trim().split("\\s+")[0];
+		String commandTypeString = userCommand.trim().split("\\s+")[0];
+		return commandTypeString;
 	}
 
 	private static String[] splitParameters(String commandParametersString) {
-		//String[] parameters = commandParametersString.trim().split("\\s+");//redundant
-		return commandParametersString.trim().split("\\s+");
+		String[] parameters = commandParametersString.trim().split("\\s+");
+		return parameters;
 	}
 }
