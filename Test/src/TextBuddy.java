@@ -44,7 +44,8 @@ public class TextBuddy {
     private static final String MESSAGE_SORTED = " is sorted";
     private static final String MESSAGE_NOTHING_TO_SORT = "Nothing to sort";
     private static final String NOTHING_FOUND = "Nothing to search";
-
+    private static final String CANNOT_FIND = "Content cannot be found";
+    
     //To display all task or show empty if no task
     private static void display() {
         int noOfLines = 0;
@@ -151,10 +152,10 @@ public class TextBuddy {
                     assertEquals("finally you found me",tempStorage.get(a).toLowerCase());
                 }
             }
-        }
-        if(containOrNot==0){
-        	System.out.println(NOTHING_FOUND);
-        }
+            if(containOrNot==0){
+            	System.out.println(CANNOT_FIND);
+            }
+        }        
     }
 
     private static void updateFileWithDeletedContent(ArrayList<String> tempStorage, int del) {
@@ -240,12 +241,20 @@ public class TextBuddy {
         } else if (userInput.startsWith("sort")) {
             sort();
         } else if (userInput.startsWith("search")) {
-            search(userInput.substring(7));
+            checkIfValidSearchThenExecute(userInput);
         } else if (userInput.equals("exit")) {
             System.exit(0);
         } else {
             System.out.println(MESSAGE_INVALID_COMMAND);
         }
     }
+
+	private static void checkIfValidSearchThenExecute(String userInput) {
+		if(userInput.length()==6){
+			System.out.println(MESSAGE_ERROR);
+		}else{
+			search(userInput.substring(7));
+		}
+	}
 
 }
