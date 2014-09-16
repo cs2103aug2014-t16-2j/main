@@ -1,5 +1,5 @@
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;//This is used for testing purposes
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -46,7 +46,7 @@ public class TextBuddy {
     private static final String NOTHING_FOUND = "Nothing to search";
 
     //To display all task or show empty if no task
-    public static void display() {
+    private static void display() {
         int noOfLines = 0;
         if (file.length() == 0) {
             System.out.println(file.getName() + MESSAGE_EMPTY);
@@ -67,7 +67,7 @@ public class TextBuddy {
     }
 
     //To add a task
-    public static void add(String note) {
+    private static void add(String note) {
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(file.getName(), true));
             if (note != null) {
@@ -86,7 +86,7 @@ public class TextBuddy {
     }
 
     //To delete a task
-    public static void delete(int del) {
+    private static void delete(int del) {
         ArrayList<String> tempStorage = new ArrayList<String>();
         try {
             BufferedReader in = new BufferedReader(new FileReader(file.getName()));
@@ -98,7 +98,7 @@ public class TextBuddy {
         }//if no such file is found or nothing in file
     }
 
-    public static void sort() {
+    private static void sort() {
         ArrayList<String> tempStorage = new ArrayList<String>();
         try {
             BufferedReader in = new BufferedReader(new FileReader(file.getName()));
@@ -113,11 +113,12 @@ public class TextBuddy {
             clear();
             updateFile(tempStorage);
             System.out.println(file.getName() + MESSAGE_SORTED);
-            ArrayList<String> expectedArray= new ArrayList<String>();
+            //This assert below is used for testing purposes
+            /*ArrayList<String> expectedArray= new ArrayList<String>();
             expectedArray.add("a");
             expectedArray.add("b");
             expectedArray.add("c");
-            assertEquals(expectedArray,tempStorage);
+            assertEquals(expectedArray,tempStorage);*/
         }
     }
 
@@ -130,7 +131,7 @@ public class TextBuddy {
         }
     }
 
-    public static void search(String input) {
+    private static void search(String input) {
         ArrayList<String> tempStorage = new ArrayList<String>();
         try {
             BufferedReader in = new BufferedReader(new FileReader(file.getName()));
@@ -143,7 +144,7 @@ public class TextBuddy {
         } else {
             Collections.sort(tempStorage);
             for (int a = 0; a < tempStorage.size(); a++) {
-                if (tempStorage.get(a).contains(input)) {
+                if (tempStorage.get(a).toLowerCase().contains(input.toLowerCase())) {
                     System.out.println(tempStorage.get(a));
                 }
             }
@@ -219,7 +220,7 @@ public class TextBuddy {
         }
     }
 
-    public static void executeUserInput(String userInput) throws NumberFormatException {
+    private static void executeUserInput(String userInput) throws NumberFormatException {
         if (userInput.startsWith("display")) {
             display();
         } else if (userInput.startsWith("add")) {
