@@ -132,6 +132,7 @@ public class TextBuddy {
     }
 
     private static void search(String input) {
+    	int containOrNot = 0;
         ArrayList<String> tempStorage = new ArrayList<String>();
         try {
             BufferedReader in = new BufferedReader(new FileReader(file.getName()));
@@ -145,9 +146,14 @@ public class TextBuddy {
             Collections.sort(tempStorage);
             for (int a = 0; a < tempStorage.size(); a++) {
                 if (tempStorage.get(a).toLowerCase().contains(input.toLowerCase())) {
-                    System.out.println(tempStorage.get(a));
+                	containOrNot=1;
+                	System.out.println(tempStorage.get(a));
+                    assertEquals("finally you found me",tempStorage.get(a).toLowerCase());
                 }
             }
+        }
+        if(containOrNot==0){
+        	System.out.println(NOTHING_FOUND);
         }
     }
 
