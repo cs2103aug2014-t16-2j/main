@@ -1,4 +1,5 @@
 
+import static org.junit.Assert.assertEquals;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Scanner;
+
 /*
  * This is a TextBuddy whereby user will be able to add, delete, fully clear, sort or search the text file created.
  For add: add _______ 
@@ -111,6 +113,11 @@ public class TextBuddy {
             clear();
             updateFile(tempStorage);
             System.out.println(file.getName() + MESSAGE_SORTED);
+            ArrayList<String> expectedArray= new ArrayList<String>();
+            expectedArray.add("a");
+            expectedArray.add("b");
+            expectedArray.add("c");
+            assertEquals(expectedArray,tempStorage);
         }
     }
 
@@ -173,7 +180,7 @@ public class TextBuddy {
     }
 
     //To clear the file
-    public static void clear() {
+    private static void clear() {
         try {
             PrintWriter writer = new PrintWriter(file.getName());
             writer.print("");
@@ -186,7 +193,7 @@ public class TextBuddy {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         String userInput = new String();
-        file = new File(args[0]);
+        file = new File("test.txt");
         System.out.print(MESSAGE_WELCOME);
         checkFileExist();
         for (;;) {//this loop will carry on till exit command is given
@@ -212,7 +219,7 @@ public class TextBuddy {
         }
     }
 
-    private static void executeUserInput(String userInput) throws NumberFormatException {
+    public static void executeUserInput(String userInput) throws NumberFormatException {
         if (userInput.startsWith("display")) {
             display();
         } else if (userInput.startsWith("add")) {
