@@ -149,7 +149,8 @@ public class TextBuddy {
                 if (tempStorage.get(a).toLowerCase().contains(input.toLowerCase())) {
                 	containOrNot=1;
                 	System.out.println(tempStorage.get(a));
-                    assertEquals("finally you found me",tempStorage.get(a).toLowerCase());
+                	//This assert is just for testing purposes
+                    //assertEquals("finally you found me",tempStorage.get(a).toLowerCase());
                 }
             }
             if(containOrNot==0){
@@ -201,7 +202,7 @@ public class TextBuddy {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         String userInput = new String();
-        file = new File("test.txt");
+        file = new File(args[0]);
         System.out.print(MESSAGE_WELCOME);
         checkFileExist();
         for (;;) {//this loop will carry on till exit command is given
