@@ -1,5 +1,5 @@
 
-import static org.junit.Assert.assertEquals;//This is used for testing purposes
+import java.util.List;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -28,233 +28,256 @@ import java.util.Scanner;
  */
 public class TextBuddy {
 
-    public static File file = new File("");
-    private static final String MESSAGE_ADDED = "added to ";
-    private static final String MESSAGE_DELETED = "deleted from ";
-    private static final String MESSAGE_COMMAND_INPUT = "command: ";
-    private static final String MESSAGE_CLEAR_LIST = "all content deleted from ";
-    private static final String MESSAGE_ERROR = "Error occured. try again.";
-    private static final String MESSAGE_INVALID_COMMAND = "invalid command.";
-    private static final String MESSAGE_WELCOME = "Welcome to TextBuddy. ";
-    private static final String MESSAGE_FILE_NOT_FOUND = "File not found";
-    private static final String MESSAGE_EMPTY = " is empty";
-    private static final String MESSAGE_NOTHING_DELETE = "Nothing to delete";
-    private static final String MESSAGE_FILE_EXIST = "File already exists. Please try with a different file name.";
-    private static final String MESSAGE_READY_TO_USE = " is ready for use";
-    private static final String MESSAGE_SORTED = " is sorted";
-    private static final String MESSAGE_NOTHING_TO_SORT = "Nothing to sort";
-    private static final String NOTHING_FOUND = "Nothing to search";
-    private static final String CANNOT_FIND = "Content cannot be found";
-    
-    //To display all task or show empty if no task
-    private static void display() {
-        int noOfLines = 0;
-        if (file.length() == 0) {
-            System.out.println(file.getName() + MESSAGE_EMPTY);
-        } else {
-            try {//if file found
-                BufferedReader in = new BufferedReader(new FileReader(file.getName()));
-                String note1;
-                //read text file
-                while ((note1 = in.readLine()) != null) {//read till no information
-                    noOfLines++;
-                    System.out.println(noOfLines + ": " + note1);
-                }
-                in.close();
-            } catch (Exception event) {
-                System.out.println(MESSAGE_ERROR);
-            }//if no such file is found
-        }
-    }
+	public File file = new File("");
+	final String MESSAGE_ADDED = "added to ";
+	final String MESSAGE_DELETED = "deleted from ";
+	final String MESSAGE_COMMAND_INPUT = "command: ";
+	final String MESSAGE_CLEAR_LIST = "all content deleted from ";
+	final String MESSAGE_ERROR = "Error occured. try again.";
+	final String MESSAGE_INVALID_COMMAND = "invalid command.";
+	final String MESSAGE_WELCOME = "Welcome to TextBuddy. ";
+	final String MESSAGE_FILE_NOT_FOUND = "File not found";
+	final String MESSAGE_EMPTY = " is empty";
+	final String MESSAGE_NOTHING_DELETE = "Nothing to delete";
+	final String MESSAGE_FILE_EXIST = "File already exists. Please try with a different file name.";
+	final String MESSAGE_READY_TO_USE = " is ready for use";
+	final String MESSAGE_SORTED = " is sorted";
+	final String MESSAGE_NOTHING_TO_SORT = "Nothing to sort";
+	final String NOTHING_FOUND = "Nothing to search";
+	final String CANNOT_FIND = "Content cannot be found";
 
-    //To add a task
-    private static void add(String note) {
-        try {
-            BufferedWriter out = new BufferedWriter(new FileWriter(file.getName(), true));
-            if (note != null) {
-                if (file.length() != 0) {
-                    out.newLine();
-                }
-                out.write(note);//edit file(write into text file)                        
-                System.out.println("\"" + note + "\" " + MESSAGE_ADDED + file.getName());
-            }
-            out.close();//close file
+	Scanner sc;
 
-        } catch (Exception event) {
-            System.out.println(MESSAGE_ERROR);
-        }
+	//To display all task or show empty if no task
+	void display() {
+		int noOfLines = 0;
+		if (file.length() == 0) {
+			System.out.println(file.getName() + MESSAGE_EMPTY);
+		} else {
+			try {//if file found
+				BufferedReader in = new BufferedReader(new FileReader(file.getName()));
+				String note1;
+				//read text file
+				while ((note1 = in.readLine()) != null) {//read till no information
+					noOfLines++;
+					System.out.println(noOfLines + ": " + note1);
+				}
+				in.close();
+			} catch (Exception event) {
+				System.out.println(MESSAGE_ERROR);
+			}//if no such file is found
+		}
+	}
 
-    }
+	//To display all task or show empty if no task
+	List<String> getData() {
+		List<String> list = new ArrayList<String>();
+		if (file.length() == 0) {
+			System.out.println(file.getName() + MESSAGE_EMPTY);
+		} else {
+			try {//if file found
+				BufferedReader in = new BufferedReader(new FileReader(file.getName()));
+				String note1;
+				//read text file
+				while ((note1 = in.readLine()) != null) {//read till no information
+					list.add(note1);
+				}
+				in.close();
+			} catch (Exception event) {
+				System.out.println(MESSAGE_ERROR);
+				return null;
+			}//if no such file is found
+		}
+		return list;
+	}
 
-    //To delete a task
-    private static void delete(int del) {
-        ArrayList<String> tempStorage = new ArrayList<String>();
-        try {
-            BufferedReader in = new BufferedReader(new FileReader(file.getName()));
-            getContentInTextFile(in, tempStorage);
-            System.out.println(MESSAGE_DELETED + file.getName() + " \"" + tempStorage.get(del - 1) + "\"");
-            updateFileWithDeletedContent(tempStorage, del);
-        } catch (Exception event) {
-            System.out.println(MESSAGE_NOTHING_DELETE);
-        }//if no such file is found or nothing in file
-    }
+	//To add a task
+	void add(String note) {
+		try {
+			BufferedWriter out = new BufferedWriter(new FileWriter(file.getName(), true));
+			if (note != null) {
+				if (file.length() != 0) {
+					out.newLine();
+				}
+				out.write(note);//edit file(write into text file)                        
+				System.out.println("\"" + note + "\" " + MESSAGE_ADDED + file.getName());
+			}
+			out.close();//close file
 
-    private static void sort() {
-        ArrayList<String> tempStorage = new ArrayList<String>();
-        try {
-            BufferedReader in = new BufferedReader(new FileReader(file.getName()));
-            getContentInTextFile(in, tempStorage);
-        } catch (Exception event) {
-            System.out.println(MESSAGE_ERROR);
-        }
-        if (tempStorage.isEmpty()) {
-            System.out.println(MESSAGE_NOTHING_TO_SORT);
-        } else {
-            Collections.sort(tempStorage, new SortIgnoreCase());//this sort is to ignore case
-            clear();
-            updateFile(tempStorage);
-            System.out.println(file.getName() + MESSAGE_SORTED);
-            //This assert below is used for testing purposes
-            /*ArrayList<String> expectedArray= new ArrayList<String>();
-            expectedArray.add("a");
-            expectedArray.add("b");
-            expectedArray.add("c");
-            assertEquals(expectedArray,tempStorage);*/
-        }
-    }
+		} catch (Exception event) {
+			System.out.println(MESSAGE_ERROR);
+		}
 
-    public static class SortIgnoreCase implements Comparator<Object> {
+	}
 
-        public int compare(Object o1, Object o2) {
-            String s1 = (String) o1;
-            String s2 = (String) o2;
-            return s1.toLowerCase().compareTo(s2.toLowerCase());
-        }
-    }
+	//To delete a task
+	void delete(int del) {
+		ArrayList<String> tempStorage = new ArrayList<String>();
+		try {
+			BufferedReader in = new BufferedReader(new FileReader(file.getName()));
+			getContentInTextFile(in, tempStorage);
+			System.out.println(MESSAGE_DELETED + file.getName() + " \"" + tempStorage.get(del - 1) + "\"");
+			updateFileWithDeletedContent(tempStorage, del);
+		} catch (Exception event) {
+			System.out.println(MESSAGE_NOTHING_DELETE);
+		}//if no such file is found or nothing in file
+	}
 
-    private static void search(String input) {
-    	int containOrNot = 0;
-        ArrayList<String> tempStorage = new ArrayList<String>();
-        try {
-            BufferedReader in = new BufferedReader(new FileReader(file.getName()));
-            getContentInTextFile(in, tempStorage);
-        } catch (Exception event) {
-            System.out.println(MESSAGE_ERROR);
-        }
-        if (tempStorage.isEmpty()) {
-            System.out.println(NOTHING_FOUND);
-        } else {
-            Collections.sort(tempStorage);
-            for (int a = 0; a < tempStorage.size(); a++) {
-                if (tempStorage.get(a).toLowerCase().contains(input.toLowerCase())) {
-                	containOrNot=1;
-                	System.out.println(tempStorage.get(a));
-                	//This assert is just for testing purposes
-                    //assertEquals("finally you found me",tempStorage.get(a).toLowerCase());
-                }
-            }
-            if(containOrNot==0){
-            	System.out.println(CANNOT_FIND);
-            }
-        }        
-    }
+	void sort() {
+		ArrayList<String> tempStorage = new ArrayList<String>();
+		try {
+			BufferedReader in = new BufferedReader(new FileReader(file.getName()));
+			getContentInTextFile(in, tempStorage);
+		} catch (Exception event) {
+			System.out.println(MESSAGE_ERROR);
+		}
+		if (tempStorage.isEmpty()) {
+			System.out.println(MESSAGE_NOTHING_TO_SORT);
+		} else {
+			Collections.sort(tempStorage, new SortIgnoreCase());//this sort is to ignore case
+			clear();
+			updateFile(tempStorage);
+			System.out.println(file.getName() + MESSAGE_SORTED);
+		}
+	}
 
-    private static void updateFileWithDeletedContent(ArrayList<String> tempStorage, int del) {
-        tempStorage.remove(del - 1);
-        clear();
-        updateFile(tempStorage);
-    }
+	public class SortIgnoreCase implements Comparator<Object> {
 
-    private static void updateFile(ArrayList<String> tempStorage) {
-        try {
-            BufferedWriter out = new BufferedWriter(new FileWriter(file.getName(), true));
-            for (int a = 0; a < tempStorage.size(); a++) {
-                out.write(tempStorage.get(a));
-                if (a < tempStorage.size() - 1) {
-                    out.newLine();
-                }
-            }
-            out.close();
-        } catch (Exception event) {
-            System.out.println(MESSAGE_ERROR);
-        }
-    }
+		public int compare(Object o1, Object o2) {
+			String s1 = (String) o1;
+			String s2 = (String) o2;
+			return s1.toLowerCase().compareTo(s2.toLowerCase());
+		}
+	}
 
-    private static void getContentInTextFile(BufferedReader in, ArrayList<String> tempStorage) throws IOException {
-        String temp;
-        while ((temp = in.readLine()) != null) {
-            tempStorage.add(temp);
-        }
-        in.close();
-    }
+	String search(String input) {
+		int containOrNot = 0;
+		String forTesting= "";
+		ArrayList<String> tempStorage = new ArrayList<String>();
+		try {
+			BufferedReader in = new BufferedReader(new FileReader(file.getName()));
+			getContentInTextFile(in, tempStorage);
+		} catch (Exception event) {
+			System.out.println(MESSAGE_ERROR);
+			return MESSAGE_ERROR;//This is for testing
+		}
+		if (tempStorage.isEmpty()) {
+			System.out.println(NOTHING_FOUND);
+			return NOTHING_FOUND;//This is for testing
+		} else {
+			for (int a = 0; a < tempStorage.size(); a++) {
+				if (tempStorage.get(a).toLowerCase().contains(input.toLowerCase())) {
+					containOrNot=1;
+					forTesting=forTesting+tempStorage.get(a);
+					System.out.println(tempStorage.get(a));
+				}
+			}
+			if(containOrNot==0){
+				System.out.println(CANNOT_FIND);           	
+				return CANNOT_FIND;//This is for testing
+			}else if(containOrNot==1){
+				return forTesting;
+			}
+		}        
+		return "";//This is for testing
+	}
 
-    //To clear the file
-    private static void clear() {
-        try {
-            PrintWriter writer = new PrintWriter(file.getName());
-            writer.print("");
-            writer.close();
-        } catch (Exception event) {
-            System.out.println(MESSAGE_FILE_NOT_FOUND);
-        }
-    }
+	void updateFileWithDeletedContent(ArrayList<String> tempStorage, int del) {
+		tempStorage.remove(del - 1);
+		clear();
+		updateFile(tempStorage);
+	}
 
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        String userInput = new String();
-        file = new File(args[0]);
-        System.out.print(MESSAGE_WELCOME);
-        checkFileExist();
-        for (;;) {//this loop will carry on till exit command is given
-            System.out.print(MESSAGE_COMMAND_INPUT);
-            userInput = sc.nextLine();
-            executeUserInput(userInput);
-        }
-    }
+	void updateFile(ArrayList<String> tempStorage) {
+		try {
+			BufferedWriter out = new BufferedWriter(new FileWriter(file.getName(), true));
+			for (int a = 0; a < tempStorage.size(); a++) {
+				out.write(tempStorage.get(a));
+				if (a < tempStorage.size() - 1) {
+					out.newLine();
+				}
+			}
+			out.close();
+		} catch (Exception event) {
+			System.out.println(MESSAGE_ERROR);
+		}
+	}
 
-    //Will exit if file exist
-    private static void checkFileExist() {
-        try {
-            if (file.createNewFile()) {
-                System.out.println(file.getName() + MESSAGE_READY_TO_USE);
-            } else {
-                System.out.println(MESSAGE_FILE_EXIST);
-                System.exit(0);
-            }
+	void getContentInTextFile(BufferedReader in, ArrayList<String> tempStorage) throws IOException {
+		String temp;
+		while ((temp = in.readLine()) != null) {
+			tempStorage.add(temp);
+		}
+		in.close();
+	}
 
-        } catch (IOException e) {
-            System.out.println(MESSAGE_ERROR);
-            System.exit(0);
-        }
-    }
+	//To clear the file
+	void clear() {
+		try {
+			PrintWriter writer = new PrintWriter(file.getName());
+			writer.print("");
+			writer.close();
+		} catch (Exception event) {
+			System.out.println(MESSAGE_FILE_NOT_FOUND);
+		}
+	}
 
-    private static void executeUserInput(String userInput) throws NumberFormatException {
-        if (userInput.startsWith("display")) {
-            display();
-        } else if (userInput.startsWith("add")) {
-            add(userInput.substring(4));
-        } else if (userInput.startsWith("delete")) {
-            int del = Integer.parseInt(userInput.substring(7));
-            delete(del);
-        } else if (userInput.startsWith("clear")) {
-            clear();
-            System.out.println(MESSAGE_CLEAR_LIST + file.getName());
-        } else if (userInput.startsWith("sort")) {
-            sort();
-        } else if (userInput.startsWith("search")) {
-            checkIfValidSearchThenExecute(userInput);
-        } else if (userInput.equals("exit")) {
-            System.exit(0);
-        } else {
-            System.out.println(MESSAGE_INVALID_COMMAND);
-        }
-    }
+	public TextBuddy(String[] args){
+		sc = new Scanner(System.in);        
+		String fileName = args[0];
+		file = new File(fileName);
+		System.out.println(MESSAGE_WELCOME + file.getName() + MESSAGE_READY_TO_USE);           	
+	}
 
-	private static void checkIfValidSearchThenExecute(String userInput) {
+	public static void main(String[] args) {
+		TextBuddy tb = new TextBuddy(args);
+		tb.startUp();
+	}
+
+	void startUp() {
+		String userInput;
+		for (;;) {//this loop will carry on till exit command is given
+			System.out.print(MESSAGE_COMMAND_INPUT);
+			userInput = sc.nextLine();
+			executeUserInput(userInput);
+		}
+	}
+
+	void executeUserInput(String userInput) throws NumberFormatException {
+		if (userInput.startsWith("display")) {
+			display();
+		} else if (userInput.startsWith("add")) {
+			add(userInput.substring(4));
+		} else if (userInput.startsWith("delete")) {
+			checkIfValidDeleteThenExecute(userInput);
+		} else if (userInput.startsWith("clear")) {
+			clear();
+			System.out.println(MESSAGE_CLEAR_LIST + file.getName());
+		} else if (userInput.startsWith("sort")) {
+			sort();
+		} else if (userInput.startsWith("search")) {
+			checkIfValidSearchThenExecute(userInput);
+		} else if (userInput.equals("exit")) {
+			System.exit(0);
+		} else {
+			System.out.println(MESSAGE_INVALID_COMMAND);
+		}
+	}
+
+	void checkIfValidSearchThenExecute(String userInput) {
 		if(userInput.length()==6){
 			System.out.println(MESSAGE_ERROR);
 		}else{
 			search(userInput.substring(7));
+		}
+	}
+
+	void checkIfValidDeleteThenExecute(String userInput) {
+		if(userInput.length()==6){
+			System.out.println(MESSAGE_ERROR);
+		}else{
+			int del = Integer.parseInt(userInput.substring(7));
+			delete(del);
 		}
 	}
 
