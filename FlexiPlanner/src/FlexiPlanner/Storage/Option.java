@@ -11,21 +11,21 @@ public class Option {
 	
 	private boolean selectAll;
 	private String category;
-	private LocalDateTime startDateTime = LocalDateTime.of(1,1,1,0,0,0); // default
-	private LocalDateTime endDateTime = LocalDateTime.of(1,1,1,0,0,0); // default
+	private LocalDateTime startDateTime;
+	private LocalDateTime endDateTime;
 	
 	/** Constructor Methods **/
 
 	public Option() {
-		new Option(false, null, startDateTime, endDateTime);
+		new Option(false, null, null, null);
 	}
 	
 	public Option(boolean _selectAll) {
-		new Option(_selectAll, null, startDateTime, endDateTime);
+		new Option(_selectAll, null, null, null);
 	}
 	
 	public Option(String _category) {
-		new Option(false, _category, startDateTime, endDateTime);
+		new Option(false, _category, null, null);
 	}
 	
 	public Option(boolean _selectAll, String _category, LocalDateTime _startDateTime, LocalDateTime _endDateTime) {
