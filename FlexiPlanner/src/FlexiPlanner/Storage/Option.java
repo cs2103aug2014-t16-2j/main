@@ -17,15 +17,19 @@ public class Option {
 	/** Constructor Methods **/
 
 	public Option() {
-		new Option(false, null, null, null);
+		this(false, null, null, null);
 	}
 	
 	public Option(boolean _selectAll) {
-		new Option(_selectAll, null, null, null);
+		this(_selectAll, null, null, null);
 	}
 	
 	public Option(String _category) {
-		new Option(false, _category, null, null);
+		this(false, _category, null, null);
+	}
+	
+	public Option(LocalDateTime _startDateTime, LocalDateTime _endDateTime) {
+		this(false, null, _startDateTime, _endDateTime);
 	}
 	
 	public Option(boolean _selectAll, String _category, LocalDateTime _startDateTime, LocalDateTime _endDateTime) {
@@ -69,5 +73,26 @@ public class Option {
 
 	public void setEndDateTime(LocalDateTime _endDateTime) {
 		this.endDateTime = _endDateTime;
+	}
+	
+	@Override
+	public String toString(){
+		String startDate = null;
+		String endDate = null;
+		if (this.getStartDateTime() != null) {
+			startDate = this.getStartDateTime().toString();
+		}
+		if (this.getEndDateTime() != null) {
+			endDate = this.getEndDateTime().toString();
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("************** Load Options **************\n");
+		sb.append("Select All  =   "+ this.getSelectAll() + "\n");
+		sb.append("Category    =   "+ this.getCategory() + "\n");
+		sb.append("Start Date  =   "+ startDate + "\n");
+		sb.append("End Date    =   "+ endDate);
+		sb.append("\n******************************************");
+		
+		return sb.toString();
 	}
 }
