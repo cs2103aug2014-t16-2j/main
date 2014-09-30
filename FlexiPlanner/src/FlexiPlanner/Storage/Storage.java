@@ -1,6 +1,5 @@
 package FlexiPlanner.Storage;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -16,16 +15,22 @@ import org.json.simple.parser.ParseException;
 public class Storage implements StorageInterface {
 	
 	private String filePath;
+	private FileManager manager;
+	private JsonCodec coder;
+	private JsonFormatter formatter;
 	
 	/** Constructor Method **/
 	
-	public Storage() throws IOException, FileNotFoundException {
+	public Storage() throws IOException {
 		this("data/tasks.json");
 	}
 	
-	public Storage(String _filePath) throws IOException, FileNotFoundException {
+	public Storage(String _filePath) throws IOException {
+		manager = new FileManager();
+		coder = new JsonCodec();
+		formatter = new JsonFormatter();
 		this.setFilePath(_filePath);
-		FileManager.create(filePath);
+		manager.create(filePath);
 	}
 	
 	/** Accessor Method **/
@@ -47,19 +52,19 @@ public class Storage implements StorageInterface {
 			JSONObject jObj, jObjToSave;
 			JSONArray jArr1, jArr2, jArr;
 			
-			if (isAppendable && !FileManager.isEmptyFile(filePath)) {
-				jObj = FileManager.readJson(filePath);
-				jArr1 = JsonCodec.seperateJsonArrFromObj(jObj);
-				jArr2 = JsonCodec.encodeJsonArr(taskList);
-				jArr = JsonFormatter.concatJsonArrs(jArr1, jArr2);
-				jObjToSave = JsonCodec.putToJsonObj(jArr);
-				FileManager.writeJson(filePath, jObjToSave, false);
+			if (isAppendable && !manager.isEmptyFile(filePath)) {
+				jObj = manager.readJson(filePath);
+				jArr1 = coder.seperateJsonArrFromObj(jObj);
+				jArr2 = coder.encodeJsonArr(taskList);
+				jArr = formatter.concatJsonArrs(jArr1, jArr2);
+				jObjToSave = coder.putToJsonObj(jArr);
+				manager.writeJson(filePath, jObjToSave, false);
 				isSaveSuccess = true;
 			}
 			else {
-				jArr = JsonCodec.encodeJsonArr(taskList);
-				jObjToSave = JsonCodec.putToJsonObj(jArr);
-				FileManager.writeJson(filePath, jObjToSave, false);
+				jArr = coder.encodeJsonArr(taskList);
+				jObjToSave = coder.putToJsonObj(jArr);
+				manager.writeJson(filePath, jObjToSave, false);
 				isSaveSuccess = true;
 			}
 		} catch (IOException e) {
@@ -74,10 +79,10 @@ public class Storage implements StorageInterface {
 	public ArrayList<TaskData> loadData(Option loadOption) {
 		ArrayList<TaskData> tasksToReturn = new ArrayList<TaskData>();
 		try {
-			JSONObject jObj = FileManager.readJson(filePath);
-			JSONArray jArr = JsonCodec.seperateJsonArrFromObj(jObj);
+			JSONObject jObj = manager.readJson(filePath);
+			JSONArray jArr = coder.seperateJsonArrFromObj(jObj);
 			
-			tasksToReturn = JsonCodec.decodeJsonArr(CustomSearch.search(loadOption, jArr));
+			tasksToReturn = coder.decodeJsonArr(CustomSearch.search(loadOption, jArr));
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ParseException pe) {

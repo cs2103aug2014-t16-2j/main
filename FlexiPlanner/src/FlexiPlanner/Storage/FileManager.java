@@ -23,32 +23,32 @@ import org.json.simple.parser.ParseException;
  */
 
 public class FileManager {
-	
-	public static void create(String filePath) throws IOException {
+	public void create(String filePath) throws IOException {
 		File file = new File(filePath);
 		if (!file.exists()) {
 			file.createNewFile();
 		}
 	}
 	
-	public static void writeJson(String filePath, JSONObject jsonObj, boolean isAppendable) throws IOException, FileNotFoundException {
-		write(filePath, JsonFormatter.toPrettyFormat(jsonObj), isAppendable);
+	public void writeJson(String filePath, JSONObject jsonObj, boolean isAppendable) throws IOException, FileNotFoundException {
+		JsonFormatter formatter = new JsonFormatter();
+		write(filePath, formatter.toPrettyFormat(jsonObj), isAppendable);
 	}
 	
-	public static void write(String filePath, String content, boolean isAppendable) throws IOException, FileNotFoundException {
+	public void write(String filePath, String content, boolean isAppendable) throws IOException, FileNotFoundException {
 		BufferedWriter bWriter = new BufferedWriter(new FileWriter(filePath, isAppendable));
 		bWriter.write(content);
 		bWriter.flush();
 		bWriter.close();
 	}
 	
-	public static JSONObject readJson(String filePath) throws FileNotFoundException, IOException, ParseException{
+	public JSONObject readJson(String filePath) throws FileNotFoundException, IOException, ParseException{
 		JSONParser parser = new JSONParser();
 		JSONObject jsonObj = (JSONObject) parser.parse(new BufferedReader(new FileReader(filePath)));
 		return jsonObj;
 	}
 	
-	public static ArrayList<String> read(String filePath) throws FileNotFoundException, IOException {
+	public ArrayList<String> read(String filePath) throws FileNotFoundException, IOException {
 		ArrayList<String> listToReturn = new ArrayList<String>();
 		String line;
 		BufferedReader reader = new BufferedReader(new FileReader(filePath));
@@ -62,7 +62,7 @@ public class FileManager {
 		return listToReturn;
 	}
 	
-	public static void copy(String from, String to) throws IOException, FileNotFoundException {
+	public void copy(String from, String to) throws IOException, FileNotFoundException {
 		InputStream is = new FileInputStream(new File(from));
 		OutputStream os = new FileOutputStream(new File(to));
 		
@@ -77,17 +77,17 @@ public class FileManager {
 		os.close();
 	}
 	
-	public static boolean delete(String filePath) throws FileNotFoundException {
+	public boolean delete(String filePath) throws FileNotFoundException {
 		File fileToDelete = new File(filePath);
 		return fileToDelete.delete();
 	}
 	
-	public static String[] listFilesIn(String folderPath) throws FileNotFoundException {
+	public String[] listFilesIn(String folderPath) throws FileNotFoundException {
 		File dir = new File(folderPath);
 		return dir.list();
 	}
 	
-	public static boolean isEmptyFile(String filePath) throws IOException {
+	public boolean isEmptyFile(String filePath) throws IOException {
 		boolean isEmpty = true;
 		BufferedReader reader = new BufferedReader(new FileReader(filePath));
 		isEmpty = reader.readLine() == null;

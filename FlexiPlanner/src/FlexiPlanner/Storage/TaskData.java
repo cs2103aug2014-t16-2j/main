@@ -116,8 +116,9 @@ public class TaskData {
 	}
 	
 	public JSONObject getJsonObject() {
+		JsonCodec coder = new JsonCodec();
 		JSONObject obj = new JSONObject();
-		obj = JsonCodec.encodeJsonObj(this);
+		obj = coder.encodeJsonObj(this);
 		return obj;
 	}
 	

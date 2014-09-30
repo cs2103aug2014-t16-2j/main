@@ -17,7 +17,7 @@ import org.json.simple.parser.ParseException;
 public class JsonCodec {
 	
 	@SuppressWarnings("unchecked")
-	public static JSONObject encodeJsonObj(TaskData task) {
+	public JSONObject encodeJsonObj(TaskData task) {
 		JSONObject jsonObjToReturn = new JSONObject();
 		String startDateTime = null;
 		String endDateTime = null;
@@ -38,7 +38,7 @@ public class JsonCodec {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static JSONArray encodeJsonArr(ArrayList<TaskData> tasks) {
+	public JSONArray encodeJsonArr(ArrayList<TaskData> tasks) {
 		JSONArray jsonArrToReturn = new JSONArray();
 		for (int i = 0; i < tasks.size(); i++) {
 			jsonArrToReturn.add(tasks.get(i).getJsonObject());
@@ -46,7 +46,7 @@ public class JsonCodec {
 		return jsonArrToReturn;
 	}
 	
-	public static ArrayList<TaskData> decodeJsonArr(JSONArray jsonArr) {
+	public ArrayList<TaskData> decodeJsonArr(JSONArray jsonArr) {
 		ArrayList<TaskData> taskListToReturn = new ArrayList<TaskData> ();
 		for (int i = 0; i < jsonArr.size(); i++) {
 			taskListToReturn.add(decodeJsonObj((JSONObject) jsonArr.get(i)));
@@ -54,7 +54,7 @@ public class JsonCodec {
 		return taskListToReturn;
 	}
 	
-	public static TaskData decodeJsonObj(JSONObject obj) {
+	public TaskData decodeJsonObj(JSONObject obj) {
 		TaskData taskToReturn = new TaskData();
 		taskToReturn.setTaskId((String)obj.get("taskId"));
 		taskToReturn.setContent((String)obj.get("content"));
@@ -76,25 +76,25 @@ public class JsonCodec {
 		return taskToReturn;
 	}
 	
-	public static TaskData decodeJsonStr(String str) throws ParseException {
+	public TaskData decodeJsonStr(String str) throws ParseException {
 		JSONObject object = (JSONObject) JSONValue.parseWithException(str);
 		return decodeJsonObj(object);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static JSONObject putToJsonObj(JSONArray jarr) {
+	public JSONObject putToJsonObj(JSONArray jarr) {
 		JSONObject jo = new JSONObject();
 		jo.put("Tasks", jarr);
 		return jo;
 	}
 	
-	public static JSONArray seperateJsonArrFromStr(String strContainingObj) throws ParseException {
+	public JSONArray seperateJsonArrFromStr(String strContainingObj) throws ParseException {
 		JSONParser parser = new JSONParser();
 		JSONObject objContainingArr = (JSONObject) parser.parse(strContainingObj);
 		return seperateJsonArrFromObj(objContainingArr);
 	}
 	
-	public static JSONArray seperateJsonArrFromObj(JSONObject jsonObj) {
+	public JSONArray seperateJsonArrFromObj(JSONObject jsonObj) {
 		JSONArray jsonArrToReturn = (JSONArray) jsonObj.get("Tasks");
 		return jsonArrToReturn;
 	}
