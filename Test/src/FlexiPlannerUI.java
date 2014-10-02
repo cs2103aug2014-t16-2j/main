@@ -96,11 +96,11 @@ public class FlexiPlannerUI{
 		showContent.setEditable(false);
 		showContent.setBounds(324, 5, 360, 280);
 
-		final JLabel commandFeedback = new JLabel("Success");
+		final JLabel commandFeedback = new JLabel("test");
 		commandFeedback.setBackground(new Color(240, 240, 240));
 		commandFeedback.setForeground(Color.RED);
 		commandFeedback.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		commandFeedback.setBounds(334, 295, 310, 20);
+		commandFeedback.setBounds(334, 295, 350, 20);
 
 		schedulerPanel.add(displayedMonth);
 		schedulerPanel.add(displayedYear);
@@ -147,6 +147,13 @@ public class FlexiPlannerUI{
 					commandFeedback.setText(LogicTest.executeInputCommand(userCommand)[0]);
 					inputCommand.setText("");
 					refreshCalendar (actualMonth, actualYear);                
+				}
+			}
+			public void keyReleased(KeyEvent e){
+				int key = e.getKeyCode();if (key == KeyEvent.VK_ENTER){
+					;
+				}else{
+					commandFeedback.setText(inputCommand.getText());
 				}
 			}
 		}
@@ -232,7 +239,7 @@ public class FlexiPlannerUI{
 					String date=Integer.parseInt(value.toString())+" "+months[currentDisplayedMonth]+" "+currentDisplayedYear;
 					BufferedReader in = new BufferedReader(new FileReader(date+".txt"));
 					String tempNote;
-
+					
 					if ((tempNote=in.readLine()) != null) {
 						//sets the cell colour if there is things to be done on that day
 						setForeground(table.getSelectionForeground());

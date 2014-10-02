@@ -1,7 +1,7 @@
 
 public class LogicTest {
 	public static String[] executeInputCommand(String userCommand){		
-		String[] array={userCommand,"Successful"};
+		String[] array={userCommand+" Successful"};
 			if(userCommand.equals("exit")){
 				System.exit(0);
 			}
