@@ -5,18 +5,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Scanner;
+//import java.util.Scanner;
 
 class Parser {
 
-	private Scanner sc = new Scanner(System.in);
+	//private Scanner sc = new Scanner(System.in);
 	private final List<String> commandWords = Arrays.asList("add", "schedule", "delete", "remove", "modify", "edit", "clear", "reschedule", "change", "undo", "redo");
 	private final List<String> uselessWords = Arrays.asList("on", "from", "to", "@", "at");
 	private final List<String> monthWords = Arrays.asList("jan", "january", "feb", "febuary", "mar", "march", "apr", "april", "may", "jun", "june", "jul", "july", "aug", "august", "sep", "september", "oct", "october", "nov", "november", "dec", "december");
 	private final List<String> ordinalNumWords = Arrays.asList("st", "nd", "rd" ,"th");
 	private final List<String> timeWords = Arrays.asList("am","pm");
 	
-	public static void main(String[] args){
+	/*public static void main(String[] args){
 		Parser p = new Parser();
 		String input=p.sc.nextLine();
 		MyStringList words = new MyStringList();
@@ -26,7 +26,7 @@ class Parser {
 		System.out.println(a.getTask().getStartDateTime());
 		System.out.println(a.getTask().getEndDateTime());
 		System.out.println(a.getTask().getContent());
-	}
+	}*/
 	
 	public Action getAction(String input) {
 		MyStringList words = new MyStringList();
