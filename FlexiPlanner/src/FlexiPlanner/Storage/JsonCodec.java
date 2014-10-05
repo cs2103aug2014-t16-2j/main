@@ -96,6 +96,6 @@ public class JsonCodec {
 	
 	public JSONArray seperateJsonArrFromObj(JSONObject jsonObj) {
 		JSONArray jsonArrToReturn = (JSONArray) jsonObj.get("Tasks");
-		return jsonArrToReturn;
+		return jsonArrToReturn == null ? new JSONArray() : jsonArrToReturn;
 	}
 }

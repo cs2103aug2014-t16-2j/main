@@ -43,6 +43,9 @@ public class FileManager {
 	}
 	
 	public JSONObject readJson(String filePath) throws FileNotFoundException, IOException, ParseException{
+		if (isEmptyFile(filePath)) {
+			return new JSONObject();
+		}
 		JSONParser parser = new JSONParser();
 		JSONObject jsonObj = (JSONObject) parser.parse(new BufferedReader(new FileReader(filePath)));
 		return jsonObj;

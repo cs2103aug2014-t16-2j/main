@@ -14,12 +14,14 @@ import com.google.gson.GsonBuilder;
 public class JsonFormatter {
 	
 	@SuppressWarnings("unchecked")
-	public JSONArray concatJsonArrs(JSONArray...arrs) {
+	public JSONArray concatJsonArrs(JSONArray arr1, JSONArray arr2) {
 		JSONArray mergedArray = new JSONArray();
-		for (JSONArray arr : arrs) {
-			for (int i = 0; i < arrs.length; i++) {
-				mergedArray.add(arr.get(i));
-			}
+		for (int i = 0; i < arr1.size(); i++) {
+			mergedArray.add(arr1.get(i));
+		}
+		
+		for (int i = 0; i < arr2.size(); i++) {
+			mergedArray.add(arr2.get(i));
 		}
 		return mergedArray;
 	}
