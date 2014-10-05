@@ -55,7 +55,8 @@ public class Logic {
 		mapContentToTask = new HashMap<String, TaskData>();
 		actionList = new Stack<Action>();
 		redoList = new Stack<Action>();
-		store = new Storage("text"); // At the present, I load and save for file text
+		store = new Storage("text"); // At the present, I load and save for file
+										// text
 		parser = new Parser();
 		loadData();
 	}
@@ -64,7 +65,8 @@ public class Logic {
 		Action commandAndTask = parser.getAction(_command);
 		command = commandAndTask.getCommand();
 		if (!command.equalsIgnoreCase("undo")
-				&& !command.equalsIgnoreCase("redo") && command.equalsIgnoreCase("edit"))
+				&& !command.equalsIgnoreCase("redo")
+				&& command.equalsIgnoreCase("edit"))
 			actionList.push(commandAndTask);
 
 		// System.out.print(command);
@@ -76,7 +78,7 @@ public class Logic {
 		// select all task from the day before onwards
 
 		for (TaskData t : taskList) {
-				mapContentToTask.put(t.getContent(), t);
+			mapContentToTask.put(t.getContent(), t);
 		}
 	}
 
@@ -102,6 +104,9 @@ public class Logic {
 			break;
 		case "redo":
 			redo();
+			break;
+		case "search":
+			search(task);
 			break;
 		case "exit":
 			exit();
@@ -135,7 +140,7 @@ public class Logic {
 			break;
 		case "edit":
 		}
-		
+
 	}
 
 	private void undoDelete(Action done) {
@@ -172,17 +177,68 @@ public class Logic {
 		String newCategory = task.getCategory();
 		String newPriority = task.getPriority();
 		boolean isDone_new = task.isDone();
-		
+
 		TaskData savedTask = mapContentToTask.get(newContent);
-		
-		if (newStartTime != null) savedTask.setStartDateTime(newStartTime);
-		if (newEndTime != null) savedTask.setEndDateTime(newEndTime);
-		if (newCategory != null) savedTask.setCategory(newCategory);
-		if (newPriority != null) savedTask.setPriority(newPriority);
+
+		if (newStartTime != null)
+			savedTask.setStartDateTime(newStartTime);
+		if (newEndTime != null)
+			savedTask.setEndDateTime(newEndTime);
+		if (newCategory != null)
+			savedTask.setCategory(newCategory);
+		if (newPriority != null)
+			savedTask.setPriority(newPriority);
 		savedTask.setDone(isDone_new);
-		
+
 		saveData();
 	}
+
+	private void search(Task task) {
+		ArrayList<TaskData> searchList = new ArrayList<TaskData>();
+		
+		String content = task.getContent();
+		String[] words = content.split(" ");
+		LocalDateTime startTime = task.getStartDateTime();
+		LocalDateTime endTime = task.getEndDateTime();
+		String category = task.getCategory();
+		String priority = task.getPriority();
+		
+		for (TaskData t : taskList) {
+			String _content = t.getContent();
+			LocalDateTime _startTime = t.getStartDateTime();
+			LocalDateTime _endTime = t.getEndDateTime();
+			String _category = t.getCategory();
+			String _priority = t.getPriority();
+			
+			if (category != null && !_category.equalsIgnoreCase(category)) continue;
+			if (priority != null && !_priority.equalsIgnoreCase(priority)) continue;
+			if (endTime != null && !_endTime.equals(endTime)) continue;
+			if (startTime != null && !_startTime.equals(startTime)) continue;
+			
+			boolean isContained = true;
+			
+			for (String s : words) {
+				if (!_content.contains(s)) {
+					isContained = false;
+					break;
+				}
+			}
+			if (isContained) searchList.add(t);
+		}
+		System.out.print(listToString(searchList));
+	}
+
+	private String listToString(ArrayList<TaskData> list) {
+		String lines = "Search result:\n";
+		if (!list.isEmpty()) {
+			for (TaskData t : list) {
+				lines += t.toString();
+				lines += "\n";
+			}
+		}
+		return lines;
+	}
+	
 
 	public void exit() {
 		// store when exit
@@ -204,7 +260,8 @@ public class Logic {
 		String priority = task.getPriority();
 		boolean isDone = task.isDone();
 
-		return new TaskData(content, category, priority, startTime, endTime, isDone);
+		return new TaskData(content, category, priority, startTime, endTime,
+				isDone);
 
 	}
 }
