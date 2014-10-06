@@ -11,7 +11,7 @@ import java.util.List;
 public class Parser {
 
 	//private Scanner sc = new Scanner(System.in);
-	private final List<String> commandWords = Arrays.asList("exit", "add", "schedule", "delete", "remove", "modify", "edit", "clear", "reschedule", "change", "undo", "redo");
+	private final List<String> commandWords = Arrays.asList("search", "exit", "add", "schedule", "delete", "remove", "modify", "edit", "clear", "reschedule", "change", "undo", "redo");
 	private final List<String> uselessWords = Arrays.asList("on", "from", "to", "@", "at");
 	private final List<String> monthWords = Arrays.asList("jan", "january", "feb", "febuary", "mar", "march", "apr", "april", "may", "jun", "june", "jul", "july", "aug", "august", "sep", "september", "oct", "october", "nov", "november", "dec", "december");
 	private final List<String> ordinalNumWords = Arrays.asList("st", "nd", "rd" ,"th");
