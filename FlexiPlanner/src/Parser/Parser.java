@@ -212,6 +212,8 @@ public class Parser {
 			s.addAll(Arrays.asList(words.get(index).split("/")));
 		} else if (words.get(index).contains("\\")) {
 			s.addAll(Arrays.asList(words.get(index).split("\\")));
+		} else if (words.get(index).contains("-")) {
+			s.addAll(Arrays.asList(words.get(index).split("-")));
 		}
 		ld = findDateWithDay(s, 0, gc);
 		if (ld == null) {
