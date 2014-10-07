@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.GregorianCalendar;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -224,34 +225,25 @@ public class FlexiPlannerUI{
 		public Component getTableCellRendererComponent (JTable table, Object value, boolean selected, boolean focused, int row, int column){
 			super.getTableCellRendererComponent(table, value, selected, focused, row, column);
 			if (column == 0 || column == 6){ //Week-end
-				setBackground(new Color(255, 220, 220));
+				setBackground(Color.MAGENTA);
 
 			}
 			else{ //Weekday
-				setBackground(new Color(255, 255, 255));
+				setBackground(Color.WHITE);
 			}
 
-			if (value != null){
+			if(value != null){
+				String date=Integer.parseInt(value.toString())+" "+months[currentDisplayedMonth]+" "+currentDisplayedYear;				
 				if (Integer.parseInt(value.toString()) == actualDay && currentDisplayedMonth == actualMonth && currentDisplayedYear == actualYear){ //Today
-					setBackground(Color.LIGHT_GRAY);//set colour for current day
-				}
-				try {
-					String date=Integer.parseInt(value.toString())+" "+months[currentDisplayedMonth]+" "+currentDisplayedYear;
-					BufferedReader in = new BufferedReader(new FileReader(date+".txt"));
-					String tempNote;
-					
-					if ((tempNote=in.readLine()) != null) {
-						//sets the cell colour if there is things to be done on that day
-						setForeground(table.getSelectionForeground());
-						super.setBackground(Color.orange);//other days
-
-					}else {
-						setForeground(table.getForeground());//if nothing, display as normal
-						setBackground(table.getBackground());
+					if (LogicTest.haveTaskOrNot(date)) {
+						setBackground(Color.RED);//set colour for current day with task
+					}else{
+						setBackground(Color.LIGHT_GRAY);//set colour current day
 					}
-					in.close();//close file
-				} catch (Exception event) {
+				}else if(LogicTest.haveTaskOrNot(date)){
+					setBackground(Color.ORANGE);//set colour for days with task
 				}
+
 			}
 
 			setBorder(null);
