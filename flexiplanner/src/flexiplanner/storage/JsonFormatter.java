@@ -10,10 +10,9 @@ import com.google.gson.GsonBuilder;
  * @author A0117989H
  *
  */
-
+@SuppressWarnings("unchecked")
 public class JsonFormatter {
 	
-	@SuppressWarnings("unchecked")
 	public JSONArray concatJsonArrs(JSONArray arr1, JSONArray arr2) {
 		JSONArray mergedArray = new JSONArray();
 		for (int i = 0; i < arr1.size(); i++) {
@@ -26,7 +25,6 @@ public class JsonFormatter {
 		return mergedArray;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public JSONObject concatJsonObjs(JSONObject obj1, JSONObject obj2) {
 		JSONObject mergedObj = new JSONObject();
 		mergedObj.put("Tasks", (JSONArray) obj1.get("Tasks"));

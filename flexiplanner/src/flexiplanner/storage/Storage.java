@@ -25,12 +25,12 @@ public class Storage implements StorageInterface {
 		this("data/tasks.json");
 	}
 	
-	public Storage(String _filePath) throws IOException {
+	public Storage(String filePath) throws IOException {
 		manager = new FileManager();
 		coder = new JsonCodec();
 		formatter = new JsonFormatter();
-		this.setFilePath(_filePath);
-		manager.create(filePath);
+		this.setFilePath(filePath);
+		manager.create(this.filePath);
 	}
 	
 	/** Accessor Method **/
@@ -41,8 +41,8 @@ public class Storage implements StorageInterface {
 	
 	/** Mutator Method **/
 
-	public void setFilePath(String _filePath) {
-		this.filePath = _filePath;
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
 	}
 
 	@Override

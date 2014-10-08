@@ -13,10 +13,9 @@ import org.json.simple.parser.ParseException;
  * @author A0117989H
  *
  */
-
+@SuppressWarnings("unchecked")
 public class JsonCodec {
 	
-	@SuppressWarnings("unchecked")
 	public JSONObject encodeJsonObj(TaskData task) {
 		JSONObject jsonObjToReturn = new JSONObject();
 		String startDateTime = null;
@@ -36,8 +35,7 @@ public class JsonCodec {
 		jsonObjToReturn.put("isDone", Boolean.toString(task.isDone()));
 		return jsonObjToReturn;
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	public JSONArray encodeJsonArr(ArrayList<TaskData> tasks) {
 		JSONArray jsonArrToReturn = new JSONArray();
 		for (int i = 0; i < tasks.size(); i++) {
@@ -80,8 +78,7 @@ public class JsonCodec {
 		JSONObject object = (JSONObject) JSONValue.parseWithException(str);
 		return decodeJsonObj(object);
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	public JSONObject putToJsonObj(JSONArray jarr) {
 		JSONObject jo = new JSONObject();
 		jo.put("Tasks", jarr);

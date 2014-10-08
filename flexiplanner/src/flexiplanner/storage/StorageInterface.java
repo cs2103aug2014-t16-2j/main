@@ -8,6 +8,7 @@ import java.util.ArrayList;
  */
 
 public interface StorageInterface {
+	
 	public boolean saveData(ArrayList<TaskData> taskList, boolean isAppendable);
 	
 	public ArrayList<TaskData> loadData(Option loadOption);
