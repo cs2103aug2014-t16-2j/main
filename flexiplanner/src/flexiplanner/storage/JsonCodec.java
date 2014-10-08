@@ -54,10 +54,12 @@ public class JsonCodec {
 	
 	public TaskData decodeJsonObj(JSONObject obj) {
 		TaskData taskToReturn = new TaskData();
+		
 		taskToReturn.setTaskId((String)obj.get("taskId"));
 		taskToReturn.setContent((String)obj.get("content"));
 		taskToReturn.setCategory((String)obj.get("category"));
 		taskToReturn.setPriority((String)obj.get("priority"));
+		
 		if (obj.get("startDateTime") == null) {
 			taskToReturn.setStartDateTime(null);
 		}
@@ -70,7 +72,9 @@ public class JsonCodec {
 		else {
 			taskToReturn.setEndDateTime(LocalDateTime.parse((String)obj.get("endDateTime")));
 		}
+		
 		taskToReturn.setDone(Boolean.parseBoolean((String)obj.get("isDone")));
+		
 		return taskToReturn;
 	}
 	
@@ -79,19 +83,19 @@ public class JsonCodec {
 		return decodeJsonObj(object);
 	}
 
-	public JSONObject putToJsonObj(JSONArray jarr) {
+	public JSONObject encloseWithinJsonObj(JSONArray jarr) {
 		JSONObject jo = new JSONObject();
 		jo.put("Tasks", jarr);
 		return jo;
 	}
 	
-	public JSONArray seperateJsonArrFromStr(String strContainingObj) throws ParseException {
+	public JSONArray retrieveJsonArrFromStr(String strContainingObj) throws ParseException {
 		JSONParser parser = new JSONParser();
 		JSONObject objContainingArr = (JSONObject) parser.parse(strContainingObj);
-		return seperateJsonArrFromObj(objContainingArr);
+		return retrieveJsonArrFromObj(objContainingArr);
 	}
 	
-	public JSONArray seperateJsonArrFromObj(JSONObject jsonObj) {
+	public JSONArray retrieveJsonArrFromObj(JSONObject jsonObj) {
 		JSONArray jsonArrToReturn = (JSONArray) jsonObj.get("Tasks");
 		return jsonArrToReturn == null ? new JSONArray() : jsonArrToReturn;
 	}
