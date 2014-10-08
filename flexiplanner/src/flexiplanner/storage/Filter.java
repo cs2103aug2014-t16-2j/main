@@ -9,70 +9,78 @@ import org.json.simple.JSONObject;
  * @author A0117989H
  *
  */
-
+@SuppressWarnings("unchecked")
 public class Filter {
-	@SuppressWarnings("unchecked")
-	public static JSONArray search(Option searchOption, JSONArray jsonArr) {
-		JSONArray arrToReturn = new JSONArray();
-		String searchKeyCat = searchOption.getCategory();
-		LocalDateTime searchKeyStart = searchOption.getStartDateTime();
-		LocalDateTime searchKeyEnd = searchOption.getEndDateTime();
-		
-		if (jsonArr.isEmpty() || searchOption.getSelectAll()) {
+	
+	private JSONArray jsonArr;
+	private Option filterOption;
+	
+	public Filter(JSONArray jsonArr, Option filterOption) {
+		this.jsonArr = new JSONArray();
+		this.filterOption = filterOption;
+		clone(jsonArr);
+	}
+	
+	public JSONArray refine() {
+		if (filterOption.getSelectAll()) {
 			return jsonArr;
 		}
-		else if (searchKeyCat != null) {
-			for (int i = 0; i < jsonArr.size(); i++) {
-				JSONObject obj = (JSONObject) jsonArr.get(i);
-				if (obj.get("category").equals(searchKeyCat)) { 
-					arrToReturn.add(obj);
-				}
+		if (filterOption.getCategory() != null) {
+			byCategory(filterOption.getCategory());
+		}
+		if (filterOption.getStartDateTime() != null && filterOption.getEndDateTime() == null) {
+			byStartDate(filterOption.getStartDateTime().toString());
+		}
+		if (filterOption.getStartDateTime() == null && filterOption.getEndDateTime() != null) {
+			byEndDate(filterOption.getEndDateTime().toString());
+		}
+		if (filterOption.getStartDateTime() != null && filterOption.getEndDateTime() != null) {
+			byStartDate(filterOption.getStartDateTime().toString());
+			byEndDate(filterOption.getEndDateTime().toString());
+		}
+		return jsonArr;
+	}
+	
+	private void byCategory(String category) {
+		int startIndex = jsonArr.size() - 1;
+		for (int i = startIndex; i >= 0; i--) {
+			JSONObject obj = (JSONObject) jsonArr.get(i);
+			if ((obj.get("category") == null) || (!obj.get("category").equals(category))) { 
+				jsonArr.remove(obj);
 			}
-			if (searchKeyStart != null && !arrToReturn.isEmpty()) {
-				for (int i = 0; i < arrToReturn.size(); i++) {
-					JSONObject obj = (JSONObject) arrToReturn.get(i);
-					if (obj.get("startDateTime") != null) {
-						LocalDateTime startDate = LocalDateTime.parse((String) obj.get("startDateTime"));
-						if (startDate.isBefore(searchKeyStart)) {
-							arrToReturn.remove(i);
-						}
-					}
-				}
+		}
+	}
+	
+	private void byStartDate(String startDate) {
+		byDate(startDate, "startDateTime");
+	}
+	
+	private void byEndDate(String endDate) {
+		byDate(endDate, "endDateTime");
+	}
+	
+	private void byDate(String key, String date) {
+		int startIndex = jsonArr.size() - 1;
+		for (int i = startIndex; i >= 0; i--) {
+			JSONObject obj = (JSONObject) jsonArr.get(i);
+			if (obj.get(date) == null) {
+				jsonArr.remove(obj);
 			}
-			if (searchKeyEnd != null && !arrToReturn.isEmpty()) {
-				for (int i = 0; i < arrToReturn.size(); i++) {
-					JSONObject obj = (JSONObject) arrToReturn.get(i);
-					if (obj.get("endDateTime") != null) {
-						LocalDateTime endDate = LocalDateTime.parse((String) obj.get("endDateTime"));
-						if (endDate.isAfter(searchKeyEnd)) {
-							arrToReturn.remove(i);
-						}
-					}
+			else {
+				LocalDateTime DateTime = LocalDateTime.parse((String) obj.get(date));
+				if (date.equals("startDateTime") && DateTime.isBefore(LocalDateTime.parse(key))) {
+					jsonArr.remove(i);
+				}
+				else if (date.equals("endDateTime") && DateTime.isAfter(LocalDateTime.parse(key))) {
+					jsonArr.remove(i);
 				}
 			}
 		}
-		else if (searchKeyStart != null) {
-			for (int i = 0; i < jsonArr.size(); i++) {
-				JSONObject obj = (JSONObject) jsonArr.get(i);
-				if (obj.get("startDateTime") != null) { 
-					LocalDateTime startDate = LocalDateTime.parse((String) obj.get("startDateTime"));
-					if (startDate.isEqual(searchKeyStart) || startDate.isAfter(searchKeyStart)) {
-						arrToReturn.add(obj);
-					}
-				}
-			}
-			if (searchKeyEnd != null && !arrToReturn.isEmpty()) {
-				for (int i = 0; i < arrToReturn.size(); i++) {
-					JSONObject obj = (JSONObject) arrToReturn.get(i);
-					if (obj.get("endDateTime") != null) {
-						LocalDateTime endDate = LocalDateTime.parse((String) obj.get("endDateTime"));
-						if (endDate.isAfter(searchKeyEnd)) {
-							arrToReturn.remove(i);
-						}
-					}
-				}
-			}
+	}
+	
+	private void clone(JSONArray jsonArr) {
+		for (int i = 0; i < jsonArr.size(); i++) {
+			this.jsonArr.add(jsonArr.get(i));
 		}
-		return arrToReturn;
 	}
 }
