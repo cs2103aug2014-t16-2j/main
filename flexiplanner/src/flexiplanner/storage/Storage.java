@@ -76,7 +76,7 @@ public class Storage implements StorageInterface {
 	}
 
 	@Override
-	public ArrayList<TaskData> loadData(Option loadOption) {
+	public ArrayList<TaskData> loadData(Option loadOption) throws IOException, ParseException{
 		ArrayList<TaskData> tasksToReturn = new ArrayList<TaskData>();
 		try {
 			JSONObject jObj = manager.readJson(filePath);
@@ -85,9 +85,9 @@ public class Storage implements StorageInterface {
 			
 			tasksToReturn = coder.decodeJsonArr(filter.refine());
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw e;
 		} catch (ParseException pe) {
-			pe.printStackTrace();;
+			throw pe;
 		}
 		return tasksToReturn;
 	}
