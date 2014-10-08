@@ -295,9 +295,9 @@ public class Logic {
 		
 		ArrayList<TaskData> task = store.loadData(new Option(startTime, endTime));
 		
-		System.out.println(date + " " + startTime + " " + endTime + " " +!task.isEmpty());
-		System.out.println(displaySearch(task));
-		return !task.isEmpty();
+		//System.out.println(date + " " + startTime + " " + endTime + " " +!task.isEmpty());
+		//System.out.println(displaySearch(task));
+		return false; //!task.isEmpty();
 
 	}
 

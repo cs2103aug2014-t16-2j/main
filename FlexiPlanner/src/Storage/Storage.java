@@ -86,7 +86,7 @@ public class Storage implements StorageInterface {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ParseException pe) {
-			pe.printStackTrace();;
+			pe.printStackTrace();
 		}
 		return tasksToReturn;
 	}

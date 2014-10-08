@@ -172,10 +172,10 @@ public class FlexiPlannerUI {
 		nextMonth.addActionListener(new Next_Action());
 		selectYear.addActionListener(new Years_Action());
 		inputCommand.requestFocusInWindow();
-		executeKeyAction(commandFeedback);
+		executeKeyAction(commandFeedback, showContent);
 	}
 
-	private void executeKeyAction(final JLabel commandFeedback) {
+	private void executeKeyAction(final JLabel commandFeedback, final JTextArea showContent) {
 		inputCommand.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				int key = e.getKeyCode();
@@ -185,6 +185,7 @@ public class FlexiPlannerUI {
 					commandFeedback.setText(logic
 							.executeInputCommand(userCommand)[0]);
 					inputCommand.setText("");
+					showContent.setText(logic.getData());
 					refreshCalendar(actualMonth, actualYear);
 				}
 			}
