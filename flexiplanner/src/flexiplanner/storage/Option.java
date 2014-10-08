@@ -79,12 +79,14 @@ public class Option {
 	public String toString(){
 		String startDate = null;
 		String endDate = null;
+		
 		if (this.getStartDateTime() != null) {
 			startDate = this.getStartDateTime().toString();
 		}
 		if (this.getEndDateTime() != null) {
 			endDate = this.getEndDateTime().toString();
 		}
+		
 		StringBuilder sb = new StringBuilder();
 		sb.append("************** Load Options **************\n");
 		sb.append("Select All  =   "+ this.getSelectAll() + "\n");

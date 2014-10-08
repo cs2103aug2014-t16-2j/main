@@ -111,6 +111,7 @@ public class TaskData {
 		if (id == 100) {
 			id = 10;
 		}
+		
 		taskId = LocalDateTime.now().toString() + (++id);
 		taskId = taskId.replaceAll("[-:.T]", "");
 	}
@@ -118,7 +119,9 @@ public class TaskData {
 	public JSONObject getJsonObject() {
 		JsonCodec coder = new JsonCodec();
 		JSONObject obj = new JSONObject();
+		
 		obj = coder.encodeJsonObj(this);
+		
 		return obj;
 	}
 	

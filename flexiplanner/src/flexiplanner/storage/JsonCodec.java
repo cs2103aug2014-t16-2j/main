@@ -18,14 +18,17 @@ public class JsonCodec {
 	
 	public JSONObject encodeJsonObj(TaskData task) {
 		JSONObject jsonObjToReturn = new JSONObject();
+		
 		String startDateTime = null;
 		String endDateTime = null;
+		
 		if (task.getStartDateTime() != null) {
 			startDateTime = task.getStartDateTime().toString();
 		}
 		if (task.getEndDateTime() != null) {
 			endDateTime = task.getEndDateTime().toString();
 		}
+		
 		jsonObjToReturn.put("taskId", task.getTaskId());
 		jsonObjToReturn.put("content", task.getContent());
 		jsonObjToReturn.put("category", task.getCategory());
@@ -33,22 +36,27 @@ public class JsonCodec {
 		jsonObjToReturn.put("startDateTime", startDateTime);
 		jsonObjToReturn.put("endDateTime", endDateTime);
 		jsonObjToReturn.put("isDone", Boolean.toString(task.isDone()));
+		
 		return jsonObjToReturn;
 	}
 
 	public JSONArray encodeJsonArr(ArrayList<TaskData> tasks) {
 		JSONArray jsonArrToReturn = new JSONArray();
+		
 		for (int i = 0; i < tasks.size(); i++) {
 			jsonArrToReturn.add(tasks.get(i).getJsonObject());
 		}
+		
 		return jsonArrToReturn;
 	}
 	
 	public ArrayList<TaskData> decodeJsonArr(JSONArray jsonArr) {
 		ArrayList<TaskData> taskListToReturn = new ArrayList<TaskData> ();
+		
 		for (int i = 0; i < jsonArr.size(); i++) {
 			taskListToReturn.add(decodeJsonObj((JSONObject) jsonArr.get(i)));
 		}
+		
 		return taskListToReturn;
 	}
 	
@@ -80,23 +88,27 @@ public class JsonCodec {
 	
 	public TaskData decodeJsonStr(String str) throws ParseException {
 		JSONObject object = (JSONObject) JSONValue.parseWithException(str);
+		
 		return decodeJsonObj(object);
 	}
 
 	public JSONObject encloseWithinJsonObj(JSONArray jarr) {
 		JSONObject jo = new JSONObject();
 		jo.put("Tasks", jarr);
+		
 		return jo;
 	}
 	
 	public JSONArray retrieveJsonArrFromStr(String strContainingObj) throws ParseException {
 		JSONParser parser = new JSONParser();
 		JSONObject objContainingArr = (JSONObject) parser.parse(strContainingObj);
+		
 		return retrieveJsonArrFromObj(objContainingArr);
 	}
 	
 	public JSONArray retrieveJsonArrFromObj(JSONObject jsonObj) {
 		JSONArray jsonArrToReturn = (JSONArray) jsonObj.get("Tasks");
+		
 		return jsonArrToReturn == null ? new JSONArray() : jsonArrToReturn;
 	}
 }

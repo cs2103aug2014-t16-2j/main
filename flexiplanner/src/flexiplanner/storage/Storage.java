@@ -81,17 +81,15 @@ public class Storage implements StorageInterface {
 		try {
 			JSONObject jObj = manager.readJson(filePath);
 			JSONArray jArr = coder.retrieveJsonArrFromObj(jObj);
-			Filter filter = new Filter(jArr, loadOption);
 			
-			tasksToReturn = coder.decodeJsonArr(filter.refine());
+			tasksToReturn = coder.decodeJsonArr(new Filter(jArr, loadOption).refine());
+			
 		} catch (IOException e) {
 			throw e;
 		} catch (ParseException pe) {
 			throw pe;
 		}
+		
 		return tasksToReturn;
 	}
-	
-	
-	
 }

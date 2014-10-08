@@ -16,8 +16,8 @@ public class Filter {
 	private Option filterOption;
 	
 	public Filter(JSONArray jsonArr, Option filterOption) {
-		this.jsonArr = new JSONArray();
 		this.filterOption = filterOption;
+		this.jsonArr = new JSONArray();
 		clone(jsonArr);
 	}
 	
