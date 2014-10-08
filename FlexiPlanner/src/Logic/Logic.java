@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Stack;
 
 import FlexiPlanner.Storage.*;
@@ -14,38 +13,17 @@ import Parser.*;
 
 public class Logic {
 
-	String command;
-	Task task;
-	ArrayList<TaskData> taskList;
-	ArrayList<TaskData> currentTask;
-	Map<String, TaskData> mapContentToTask;
-	Stack<Action> actionList; // for undo and redo
-	Stack<Action> redoList;
-	Storage store;
-	Parser parser;
-	static Scanner scanner;
+	private String command;
+	private Task task;
+	private ArrayList<TaskData> taskList;
+	private ArrayList<TaskData> currentTask;
+	private Map<String, TaskData> mapContentToTask;
+	private Stack<Action> actionList; // for undo and redo
+	private Stack<Action> redoList;
+	private Storage store;
+	private Parser parser;
 
-	public static void main(String args[]) {
-		scanner = new Scanner(System.in);
-		try {
-			Logic controller = new Logic();
-			while (true) {
-				String command = readInputCommand();
-				controller.execute(command);
-
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-	}
-
-	private static String readInputCommand() {
-		String s = scanner.nextLine();
-		return s;
-	}
+	// ----------Constructor----------//
 
 	public Logic() throws FileNotFoundException, IOException {
 		command = null;
@@ -61,19 +39,27 @@ public class Logic {
 		loadData();
 	}
 
-	private void determineCommandandTask(String _command) {
+	// ----------Method-------------//
+
+	// this method is to extract command and task from input command
+	// using parser
+	private void extractCommandandTask(String _command) {
 		Action commandAndTask = parser.getAction(_command);
 		command = commandAndTask.getCommand();
+		task = commandAndTask.getTask();
+
+		// push command into undo stack, except undo and redo
+		// currently cannot handle edit
 		if (!command.equalsIgnoreCase("undo")
 				&& !command.equalsIgnoreCase("redo")
-				&& command.equalsIgnoreCase("edit"))
+				&& !command.equalsIgnoreCase("modify")
+				&& !command.equalsIgnoreCase("search"))
 			actionList.push(commandAndTask);
 
-		// System.out.print(command);
-		task = commandAndTask.getTask();
 	}
 
-	public void loadData() {
+	// load all data saved in the file
+	private void loadData() {
 		taskList = new ArrayList<TaskData>(store.loadData(new Option(true)));
 		// select all task from the day before onwards
 
@@ -82,13 +68,13 @@ public class Logic {
 		}
 	}
 
+	// this method is to execute a command
 	public void execute(String _command) {
-		determineCommandandTask(_command);
-
+		extractCommandandTask(_command);
 		executeCommand(command, task);
 	}
 
-	public void executeCommand(String command, Task task) {
+	private void executeCommand(String command, Task task) {
 		switch (command) {
 		case "add":
 			addTask(task);
@@ -96,8 +82,8 @@ public class Logic {
 		case "delete":
 			deleteTask(task);
 			break;
-		case "edit":
-			editTask(task);
+		case "modify":
+			modifyTask(task);
 			break;
 		case "undo":
 			undo();
@@ -115,6 +101,27 @@ public class Logic {
 		}
 	}
 
+	// add a task
+	private void addTask(Task task) {
+		TaskData t = toTaskDaTa(task);
+		mapContentToTask.put(t.getContent(), t);
+		taskList.add(t);
+		currentTask.add(t);
+		store.saveData(currentTask, true);
+		currentTask.clear();
+	}
+
+	// delete a task described by content -> doesn't handle task with same
+	// content
+	private void deleteTask(Task task) {
+		TaskData t = toTaskDaTa(task);
+		TaskData toDelete = mapContentToTask.get(t.getContent());
+		taskList.remove(toDelete);
+		mapContentToTask.remove(toDelete.getContent());
+		saveData();
+	}
+
+	// redo an action
 	private void redo() {
 		if (redoList.isEmpty())
 			return;
@@ -125,6 +132,7 @@ public class Logic {
 		executeCommand(command, task);
 	}
 
+	// undo. Currently undo supports undo add and delete
 	private void undo() {
 		if (actionList.isEmpty())
 			return;
@@ -138,39 +146,23 @@ public class Logic {
 		case "delete":
 			undoDelete(done);
 			break;
-		case "edit":
+		case "modify":
+			break;
 		}
 
 	}
 
 	private void undoDelete(Action done) {
 		addTask(done.getTask());
-
 	}
 
 	private void undoAdd(Action done) {
 		deleteTask(done.getTask());
-
 	}
 
-	public void addTask(Task task) {
-		TaskData t = toTaskDaTa(task);
-		mapContentToTask.put(t.getContent(), t);
-		taskList.add(t);
-		currentTask.add(t);
-		store.saveData(currentTask, true);
-		currentTask.clear();
-	}
+	// modify a task
 
-	public void deleteTask(Task task) {
-		TaskData t = toTaskDaTa(task);
-		TaskData toDelete = mapContentToTask.get(t.getContent());
-		taskList.remove(toDelete);
-		mapContentToTask.remove(toDelete.getContent());
-		saveData();
-	}
-
-	public void editTask(Task task) {
+	public void modifyTask(Task task) {
 		String newContent = task.getContent();
 		LocalDateTime newStartTime = task.getStartDateTime();
 		LocalDateTime newEndTime = task.getEndDateTime();
@@ -193,42 +185,46 @@ public class Logic {
 		saveData();
 	}
 
+	// search for a task by key words or time
+
 	private void search(Task task) {
-		ArrayList<TaskData> searchList = new ArrayList<TaskData>();
-		
+		ArrayList<TaskData> searchResult = new ArrayList<TaskData>();
+
 		String content = task.getContent();
 		String[] words = content.split(" ");
 		LocalDateTime startTime = task.getStartDateTime();
 		LocalDateTime endTime = task.getEndDateTime();
 		String category = task.getCategory();
 		String priority = task.getPriority();
-		
-		for (TaskData t : taskList) {
+
+		ArrayList<TaskData> toSearch = store.loadData(new Option(startTime,
+				endTime));
+
+		for (TaskData t : toSearch) {
 			String _content = t.getContent();
-			LocalDateTime _startTime = t.getStartDateTime();
-			LocalDateTime _endTime = t.getEndDateTime();
 			String _category = t.getCategory();
 			String _priority = t.getPriority();
-			
-			if (category != null && !_category.equalsIgnoreCase(category)) continue;
-			if (priority != null && !_priority.equalsIgnoreCase(priority)) continue;
-			if (endTime != null && !_endTime.equals(endTime)) continue;
-			if (startTime != null && !_startTime.equals(startTime)) continue;
-			
+
+			if (category != null && !_category.equalsIgnoreCase(category))
+				continue;
+			if (priority != null && !_priority.equalsIgnoreCase(priority))
+				continue;
+
 			boolean isContained = true;
-			
+
 			for (String s : words) {
 				if (!_content.contains(s)) {
 					isContained = false;
 					break;
 				}
 			}
-			if (isContained) searchList.add(t);
+			if (isContained)
+				searchResult.add(t);
 		}
-		System.out.print(listToString(searchList));
+		System.out.print(displaySearch(searchResult));
 	}
 
-	private String listToString(ArrayList<TaskData> list) {
+	private String displaySearch(ArrayList<TaskData> list) {
 		String lines = "Search result:\n";
 		if (!list.isEmpty()) {
 			for (TaskData t : list) {
@@ -238,16 +234,71 @@ public class Logic {
 		}
 		return lines;
 	}
-	
 
-	public void exit() {
+	// exit
+
+	private void exit() {
 		// store when exit
 		saveData();
 		System.exit(0);
 	}
 
+	//
 	private void saveData() {
 		store.saveData(taskList, false);
+	}
+
+	// return data to show to UI
+	protected String dataToShow() {
+		LocalDateTime now = LocalDateTime.now();
+		int dateToday = now.getDayOfMonth();
+		int monthToday = now.getMonthValue();
+		int yearToday = now.getYear();
+		LocalDateTime today = LocalDateTime.of(yearToday, monthToday,
+				dateToday, 0, 0, 0);
+		LocalDateTime tomorrow = today.plusSeconds(172799);
+		ArrayList<TaskData> taskToShow = store.loadData(new Option(today,
+				tomorrow));
+
+		return showToUser(taskToShow);
+	}
+
+	private String showToUser(ArrayList<TaskData> taskToShow) {
+		String text = "";
+		for (TaskData t : taskToShow) {
+			if (t.getPriority() != null)
+				text += t.getPriority() + " ";
+			if (t.getCategory() != null)
+				text += t.getCategory() + " ";
+			text += t.getContent();
+			if (t.getStartDateTime() != null)
+				text += "\n---From: " + t.getStartDateTime();
+			if (t.getEndDateTime() != null)
+				text += "\n---To: " + t.getEndDateTime();
+			text += "\n";
+		}
+		return text;
+	}
+
+	// check if a date has task
+	protected boolean hasTask(String date) {
+		
+		Task testTask = parser.getAction(date).getTask();
+		LocalDateTime time = testTask.getStartDateTime();
+		int dayOfMonth = time.getDayOfMonth();
+		int month = time.getMonthValue();
+		int year = time.getYear();
+		LocalDateTime startTime = LocalDateTime.of(year, month, dayOfMonth, 0,
+				0, 0);
+		LocalDateTime endTime = LocalDateTime.of(year, month, dayOfMonth, 23,
+				59, 59);
+		
+		ArrayList<TaskData> task = store.loadData(new Option(startTime, endTime));
+		
+		System.out.println(date + " " + startTime + " " + endTime + " " +!task.isEmpty());
+		System.out.println(displaySearch(task));
+		return !task.isEmpty();
+
 	}
 
 	// Translate a Task to TaskData for storage
@@ -264,4 +315,5 @@ public class Logic {
 				isDone);
 
 	}
+
 }

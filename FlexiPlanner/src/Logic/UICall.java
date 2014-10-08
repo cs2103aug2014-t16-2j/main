@@ -1,5 +1,6 @@
 package Logic;
 
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -12,12 +13,19 @@ public class UICall {
 		logic = new Logic();
 	}
 	
-	public void executeInputCommand(String command) {
+	public String[] executeInputCommand(String command) {
+		
 		logic.execute(command);
+		String[] a = {command +" Successful"};
+		return a;
 	}
 	
 	public String getData() {
-		return null;
+		return logic.dataToShow();
+	}
+	
+	public boolean hasTask(String date){
+		return logic.hasTask(date);
 	}
 	
 

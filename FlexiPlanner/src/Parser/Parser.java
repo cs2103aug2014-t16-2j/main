@@ -11,7 +11,10 @@ import java.util.List;
 public class Parser {
 
 	//private Scanner sc = new Scanner(System.in);
-	private final List<String> commandWords = Arrays.asList("search", "exit", "add", "schedule", "delete", "remove", "modify", "edit", "clear", "reschedule", "change", "undo", "redo");
+	private final List<String> addCommandWords = Arrays.asList("add", "schedule", "create");
+	private final List<String> modifyCommandWords = Arrays.asList("modify", "edit", "reschedule", "change");
+	private final List<String> deleteCommandWords = Arrays.asList("delete", "remove", "clear", "search");
+	private final List<String> otherCommandWords = Arrays.asList("exit", "undo", "redo");
 	private final List<String> uselessWords = Arrays.asList("on", "from", "to", "@", "at");
 	private final List<String> monthWords = Arrays.asList("jan", "january", "feb", "febuary", "mar", "march", "apr", "april", "may", "jun", "june", "jul", "july", "aug", "august", "sep", "september", "oct", "october", "nov", "november", "dec", "december");
 	private final List<String> ordinalNumWords = Arrays.asList("st", "nd", "rd" ,"th");
@@ -30,26 +33,51 @@ public class Parser {
 	}*/
 	
 	public Action getAction(String input) {
+		
 		MyStringList words = new MyStringList();
 		words.addAll(Arrays.asList(input.split(" ")));
 		return new Action(getCommand(words), getTask(words));
+		
 	}
 	
 	private String getCommand(MyStringList words) {
-		for (String c : commandWords) {
+		
+		for (String c : addCommandWords) {
+			if (words.containsIgnoreCase(c)) {
+				words.removeIgnoreCase(c);
+				return "add";
+			}
+		}
+		for (String c : modifyCommandWords) {
+			if (words.containsIgnoreCase(c)) {
+				words.removeIgnoreCase(c);
+				return "modify";
+			}
+		}
+		for (String c : deleteCommandWords) {
+			if (words.containsIgnoreCase(c)) {
+				words.removeIgnoreCase(c);
+				return "delete";
+			}
+		}
+		for (String c : otherCommandWords) {
 			if (words.containsIgnoreCase(c)) {
 				words.removeIgnoreCase(c);
 				return c;
 			}
 		}
 		return "add";
+		
 	}
+	
 	private Task getTask(MyStringList words) {
+		
 		Task t = new Task();
 		findDateTime(words, t);
 		findContent(words, t);
 		return t;
 	}
+	
 	private void findDateTime(MyStringList words, Task t) {
 		
 		GregorianCalendar gc = new GregorianCalendar();
@@ -185,6 +213,8 @@ public class Parser {
 			s.addAll(Arrays.asList(words.get(index).split("/")));
 		} else if (words.get(index).contains("\\")) {
 			s.addAll(Arrays.asList(words.get(index).split("\\")));
+		} else if (words.get(index).contains("-")) {
+			s.addAll(Arrays.asList(words.get(index).split("-")));
 		}
 		ld = findDateWithDay(s, 0, gc);
 		if (ld == null) {
@@ -307,6 +337,7 @@ public class Parser {
 	}
 	
 	private int removeUselessWord(MyStringList words, int index) {
+		
 		if (index - 1 >= 0) {
 			for (String uw : uselessWords) {
 				if(words.get(index - 1).equalsIgnoreCase(uw)) {
