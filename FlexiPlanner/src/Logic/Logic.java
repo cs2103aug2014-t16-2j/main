@@ -272,9 +272,9 @@ public class Logic {
 				text += t.getCategory() + " ";
 			text += t.getContent();
 			if (t.getStartDateTime() != null)
-				text += "\n---From: " + t.getStartDateTime();
+				text += "\n    From: " + t.getStartDateTime();
 			if (t.getEndDateTime() != null)
-				text += "\n---To: " + t.getEndDateTime();
+				text += "\n    To: " + t.getEndDateTime();
 			text += "\n";
 		}
 		return text;
