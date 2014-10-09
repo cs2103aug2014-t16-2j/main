@@ -130,7 +130,15 @@ public class FlexiPlannerUI {
 		showContent.setBackground(Color.LIGHT_GRAY);
 		showContent.setText(logic.getData());
 		showContent.setEditable(false);
-		showContent.setBounds(324, 5, 360, 280);
+		showContent.setBounds(324, 5, 360, 141);
+
+		final JTextArea showSearchContent = new JTextArea();
+		showSearchContent.setFont(new Font("Times New Roman", Font.BOLD, 15));
+		showSearchContent.setForeground(Color.BLACK);
+		showSearchContent.setBackground(Color.LIGHT_GRAY);
+		showSearchContent.setText("");
+		showSearchContent.setEditable(false);
+		showSearchContent.setBounds(334, 157, 336, 130);
 
 		final JLabel commandFeedback = new JLabel("");
 		commandFeedback.setBackground(new Color(240, 240, 240));
@@ -146,6 +154,7 @@ public class FlexiPlannerUI {
 		schedulerPanel.add(calendarScroll);
 		schedulerPanel.add(inputCommand);
 		schedulerPanel.add(showContent);
+		schedulerPanel.add(showSearchContent);
 		schedulerPanel.add(commandFeedback);
 		schedulerPanel.setBounds(2, 1, 400, 335);
 
@@ -172,10 +181,10 @@ public class FlexiPlannerUI {
 		nextMonth.addActionListener(new Next_Action());
 		selectYear.addActionListener(new Years_Action());
 		inputCommand.requestFocusInWindow();
-		executeKeyAction(commandFeedback, showContent);
+		executeKeyAction(commandFeedback,showContent,showSearchContent);
 	}
 
-	private void executeKeyAction(final JLabel commandFeedback, final JTextArea showContent) {
+	private void executeKeyAction(final JLabel commandFeedback,final JTextArea showContent,final JTextArea showSearchContent) {
 		inputCommand.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				int key = e.getKeyCode();
@@ -186,6 +195,7 @@ public class FlexiPlannerUI {
 							.executeInputCommand(userCommand)[0]);
 					inputCommand.setText("");
 					showContent.setText(logic.getData());
+					showSearchContent.setText(logic.getData());
 					refreshCalendar(actualMonth, actualYear);
 				}
 			}
