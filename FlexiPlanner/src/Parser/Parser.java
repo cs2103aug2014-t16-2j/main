@@ -13,7 +13,8 @@ public class Parser {
 	//private Scanner sc = new Scanner(System.in);
 	private final List<String> addCommandWords = Arrays.asList("add", "schedule", "create");
 	private final List<String> modifyCommandWords = Arrays.asList("modify", "edit", "reschedule", "change");
-	private final List<String> deleteCommandWords = Arrays.asList("delete", "remove", "clear", "search");
+	private final List<String> deleteCommandWords = Arrays.asList("delete", "remove", "clear");
+	private final List<String> searchCommandWords = Arrays.asList("display", "show", "find", "search");
 	private final List<String> otherCommandWords = Arrays.asList("exit", "undo", "redo");
 	private final List<String> uselessWords = Arrays.asList("on", "from", "to", "@", "at");
 	private final List<String> monthWords = Arrays.asList("jan", "january", "feb", "febuary", "mar", "march", "apr", "april", "may", "jun", "june", "jul", "july", "aug", "august", "sep", "september", "oct", "october", "nov", "november", "dec", "december");
@@ -60,6 +61,12 @@ public class Parser {
 				return "delete";
 			}
 		}
+		for (String c : searchCommandWords) {
+			if (words.containsIgnoreCase(c)) {
+				words.removeIgnoreCase(c);
+				return "search";
+			}
+		}
 		for (String c : otherCommandWords) {
 			if (words.containsIgnoreCase(c)) {
 				words.removeIgnoreCase(c);
@@ -76,6 +83,7 @@ public class Parser {
 		findDateTime(words, t);
 		findContent(words, t);
 		return t;
+		
 	}
 	
 	private void findDateTime(MyStringList words, Task t) {
@@ -88,7 +96,10 @@ public class Parser {
 			if (w.isEmpty()) {
 				words.remove(index);
 			} else if (w.length() <= 4) {
-				ld = findDateWithDay(words, index, gc);
+				ld = findDate(words, index, gc);
+				if (ld == null) {
+					ld = findDateWithDay(words, index, gc);
+				}
 				if (ld == null) {
 					ld = findDateWithMonth(words, index, gc);
 				}
@@ -235,13 +246,26 @@ public class Parser {
 		String time = words.get(index);
 		MyStringList s = new MyStringList();
 		int hrToAdd = 0;
+		boolean noAmPm = true;
 		for (String tw : timeWords) {
 			if (time.toLowerCase().endsWith(tw)) {
+				noAmPm = false;
 				if (tw.equals("pm")) {
 					hrToAdd = 12;
 				}
 				time = time.substring(0, time.toLowerCase().lastIndexOf(tw));
 				break;
+			}
+		}
+		if (noAmPm && index + 1 < words.size()) {
+			for (String tw : timeWords) {
+				if (words.get(index + 1).equalsIgnoreCase(tw)) {
+					if (tw.equals("pm")) {
+						hrToAdd = 12;
+					}
+					words.remove(index + 1);
+					break;
+				}
 			}
 		}
 		if (time.contains(":")) {
