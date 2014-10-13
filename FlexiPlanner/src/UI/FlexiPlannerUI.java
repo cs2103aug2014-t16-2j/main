@@ -185,11 +185,7 @@ public class FlexiPlannerUI {
 					commandFeedback.setText(logic
 							.executeInputCommand(userCommand)[0]);
 					inputCommand.setText("");					
-					if(userCommand.toLowerCase().startsWith("search")){
-						showContent.setText("Show Search contents");
-					}else{
-						showContent.setText(logic.getData());
-					}
+					showContent.setText(logic.getData());
 					refreshCalendar(actualMonth, actualYear);
 				}
 			}
