@@ -38,7 +38,10 @@ public class FlexiPlannerUI {
 	private JButton prevMonth, nextMonth;
 	private JTable calendar1;
 	private DefaultTableModel calendar2;
+	private JTextArea showContent;
 	private JScrollPane calendarScroll;
+	private JScrollPane showContentScroll;
+	private JLabel commandFeedback;
 	private JPanel schedulerPanel;
 	private JComboBox selectYear;
 	private JFrame schedulerFrame;
@@ -73,7 +76,7 @@ public class FlexiPlannerUI {
 																		// when
 																		// closed
 		schedulerFrame.setSize(700, 410);// set frame size
-		schedulerFrame.setResizable(false);
+		schedulerFrame.setResizable(false);		
 		schedulerFrame.setVisible(true);
 
 		calendar2 = new DefaultTableModel() {
@@ -82,14 +85,15 @@ public class FlexiPlannerUI {
 			}
 		};// get dafault table model for calendar
 		calendar1 = new JTable(calendar2);// create new table
-		calendarScroll = new JScrollPane(calendar1);
+		calendarScroll = new JScrollPane(calendar1,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+											JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		schedulerPanel = new JPanel(null);// this is needed in order to show
 											// table
-
+		
 		schedulerFrame.getContentPane().add(schedulerPanel);// add panel to
 															// frame(add table
-															// to frame)
-
+														    // to frame)
+		
 		// get calendar format
 		GregorianCalendar cal = new GregorianCalendar();
 		actualDay = cal.get(GregorianCalendar.DAY_OF_MONTH);
@@ -124,15 +128,18 @@ public class FlexiPlannerUI {
 		inputCommand.setColumns(10);
 		inputCommand.setFont(new Font("Times New Roman", Font.BOLD, 20));
 
-		final JTextArea showContent = new JTextArea();
+		showContent = new JTextArea();
 		showContent.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		showContent.setForeground(Color.BLACK);
 		showContent.setBackground(Color.LIGHT_GRAY);
 		showContent.setText(logic.getData());
 		showContent.setEditable(false);
-		showContent.setBounds(324, 5, 360, 280);
-
-		final JLabel commandFeedback = new JLabel("");
+		
+		showContentScroll = new JScrollPane (showContent, 
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		showContentScroll.setBounds(324, 5, 360, 280);
+		
+		commandFeedback = new JLabel("");
 		commandFeedback.setBackground(new Color(240, 240, 240));
 		commandFeedback.setForeground(Color.RED);
 		commandFeedback.setFont(new Font("Times New Roman", Font.BOLD, 15));
@@ -145,7 +152,7 @@ public class FlexiPlannerUI {
 		schedulerPanel.add(nextMonth);
 		schedulerPanel.add(calendarScroll);
 		schedulerPanel.add(inputCommand);
-		schedulerPanel.add(showContent);
+		schedulerPanel.add(showContentScroll);
 		schedulerPanel.add(commandFeedback);
 		schedulerPanel.setBounds(2, 1, 400, 335);
 
