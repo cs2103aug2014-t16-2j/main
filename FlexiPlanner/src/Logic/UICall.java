@@ -20,8 +20,13 @@ public class UICall {
 		return a;
 	}
 	
-	public String getData() {
+	public String getData(String s) {
+		if (s.isEmpty()) {
 		return logic.dataToShow();
+		} else if (s.equalsIgnoreCase("search")) {
+			return logic.searchRes;
+		}
+		return null;
 	}
 	
 	public boolean hasTask(String date){

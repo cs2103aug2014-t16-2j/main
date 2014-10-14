@@ -20,7 +20,7 @@ public class Logic {
 	private Map<String, TaskData> mapContentToTask;
 	private Stack<Action> actionList; // for undo and redo
 	private Stack<Action> redoList;
-	private Storage store;
+	private Storage storer;
 	private Parser parser;
 
 	// ----------Constructor----------//
@@ -33,7 +33,7 @@ public class Logic {
 		mapContentToTask = new HashMap<String, TaskData>();
 		actionList = new Stack<Action>();
 		redoList = new Stack<Action>();
-		store = new Storage("text"); // At the present, I load and save for file
+		storer = new Storage("text.json"); // At the present, I load and save for file
 										// text
 		parser = new Parser();
 		loadData();
@@ -60,7 +60,7 @@ public class Logic {
 
 	// load all data saved in the file
 	private void loadData() {
-		taskList = new ArrayList<TaskData>(store.loadData(new Option(true)));
+		taskList = new ArrayList<TaskData>(storer.loadData(new Option(true)));
 		// select all task from the day before onwards
 
 		for (TaskData t : taskList) {
@@ -107,7 +107,7 @@ public class Logic {
 		mapContentToTask.put(t.getContent(), t);
 		taskList.add(t);
 		currentTask.add(t);
-		store.saveData(currentTask, true);
+		storer.saveData(currentTask, true);
 		currentTask.clear();
 	}
 
@@ -162,7 +162,7 @@ public class Logic {
 
 	// modify a task
 
-	public void modifyTask(Task task) {
+	private void modifyTask(Task task) {
 		String newContent = task.getContent();
 		LocalDateTime newStartTime = task.getStartDateTime();
 		LocalDateTime newEndTime = task.getEndDateTime();
@@ -186,6 +186,8 @@ public class Logic {
 	}
 
 	// search for a task by key words or time
+	
+	protected String searchRes;
 
 	private void search(Task task) {
 		ArrayList<TaskData> searchResult = new ArrayList<TaskData>();
@@ -197,7 +199,7 @@ public class Logic {
 		String category = task.getCategory();
 		String priority = task.getPriority();
 
-		ArrayList<TaskData> toSearch = store.loadData(new Option(startTime,
+		ArrayList<TaskData> toSearch = storer.loadData(new Option(startTime,
 				endTime));
 
 		for (TaskData t : toSearch) {
@@ -221,7 +223,7 @@ public class Logic {
 			if (isContained)
 				searchResult.add(t);
 		}
-		System.out.print(displaySearch(searchResult));
+		searchRes = displaySearch(searchResult);
 	}
 
 	private String displaySearch(ArrayList<TaskData> list) {
@@ -245,7 +247,7 @@ public class Logic {
 
 	//
 	private void saveData() {
-		store.saveData(taskList, false);
+		storer.saveData(taskList, false);
 	}
 
 	// return data to show to UI
@@ -257,7 +259,7 @@ public class Logic {
 		LocalDateTime today = LocalDateTime.of(yearToday, monthToday,
 				dateToday, 0, 0, 0);
 		LocalDateTime tomorrow = today.plusSeconds(172799);
-		ArrayList<TaskData> taskToShow = store.loadData(new Option(today,
+		ArrayList<TaskData> taskToShow = storer.loadData(new Option(today,
 				tomorrow));
 
 		return showToUser(taskToShow);
@@ -293,11 +295,12 @@ public class Logic {
 		LocalDateTime endTime = LocalDateTime.of(year, month, dayOfMonth, 23,
 				59, 59);
 		
-		ArrayList<TaskData> task = store.loadData(new Option(startTime, endTime));
+		ArrayList<TaskData> task = storer.loadData(new Option(startTime, endTime));
 		
-		System.out.println(date + " " + startTime + " " + endTime + " " +!task.isEmpty());
-		System.out.println(displaySearch(task));
-		return !task.isEmpty();
+		//System.out.println(date + " " + startTime + " " + endTime + " " +!task.isEmpty());
+		//System.out.println(displaySearch(task));
+		//return !task.isEmpty();
+		return false;
 
 	}
 

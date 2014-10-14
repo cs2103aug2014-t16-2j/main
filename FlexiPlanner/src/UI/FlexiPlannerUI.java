@@ -128,7 +128,7 @@ public class FlexiPlannerUI {
 		showContent.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		showContent.setForeground(Color.BLACK);
 		showContent.setBackground(Color.LIGHT_GRAY);
-		showContent.setText(logic.getData());
+		showContent.setText(logic.getData(""));
 		showContent.setEditable(false);
 		showContent.setBounds(324, 5, 360, 280);
 
