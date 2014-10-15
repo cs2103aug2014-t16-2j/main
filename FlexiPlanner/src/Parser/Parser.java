@@ -6,32 +6,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
-//import java.util.Scanner;
 
 public class Parser {
 
-	//private Scanner sc = new Scanner(System.in);
-	private final List<String> addCommandWords = Arrays.asList("add", "schedule", "create");
+	private final List<String> addCommandWords = Arrays.asList("add", "schedule", "create", "remember");
 	private final List<String> modifyCommandWords = Arrays.asList("modify", "edit", "reschedule", "change");
 	private final List<String> deleteCommandWords = Arrays.asList("delete", "remove", "clear");
 	private final List<String> searchCommandWords = Arrays.asList("display", "show", "find", "search");
 	private final List<String> otherCommandWords = Arrays.asList("exit", "undo", "redo");
-	private final List<String> uselessWords = Arrays.asList("on", "from", "to", "@", "at");
+	private final List<String> dayWords = Arrays.asList("today", "tomorrow", "yesterday", "morning", "afternoon", "night", "tonight");
+	private final List<String> dayOfWeekWords = Arrays.asList("monday","mon", "tuesday", "tue", "wednesday", "wed", "thursday", "thu", "friday", "fri", "saturday", "sat", "sunday", "sun");
+	private final List<String> datePeriodWords = Arrays.asList("day", "month", "year");
+	private final List<String> dateTimeKeyWords = Arrays.asList("after", "next", "by", "before", "last");
 	private final List<String> monthWords = Arrays.asList("jan", "january", "feb", "febuary", "mar", "march", "apr", "april", "may", "jun", "june", "jul", "july", "aug", "august", "sep", "september", "oct", "october", "nov", "november", "dec", "december");
 	private final List<String> ordinalNumWords = Arrays.asList("st", "nd", "rd" ,"th");
-	private final List<String> timeWords = Arrays.asList("am","pm");
-	
-	/*public static void main(String[] args){
-		Parser p = new Parser();
-		String input=p.sc.nextLine();
-		MyStringList words = new MyStringList();
-		words.addAll(Arrays.asList(input.split(" ")));
-		Action a = new Action(p.getCommand(words), p.getTask(words));
-		System.out.println(a.getCommand());
-		System.out.println(a.getTask().getStartDateTime());
-		System.out.println(a.getTask().getEndDateTime());
-		System.out.println(a.getTask().getContent());
-	}*/
+	private final List<String> timeWords = Arrays.asList("am", "pm");
+	private final List<String> moreUselessWords = Arrays.asList("on", "from", "to", "@", "at");
+	private final List<String> uselessWords = Arrays.asList("this");
 	
 	public Action getAction(String input) {
 		
@@ -90,43 +81,44 @@ public class Parser {
 		
 		GregorianCalendar gc = new GregorianCalendar();
 		for (int index = 0; index < words.size(); index++) {
-			String w = words.get(index);
-			LocalDate ld = null;
-			LocalTime lt = null;
-			if (w.isEmpty()) {
-				words.remove(index);
-			} else if (w.length() <= 4) {
-				ld = findDate(words, index, gc);
-				if (ld == null) {
-					ld = findDateWithDay(words, index, gc);
-				}
-				if (ld == null) {
-					ld = findDateWithMonth(words, index, gc);
-				}
-				if (ld == null) {
-					ld = findDateWithYear(words, index, gc);
-				}
-				if (ld == null) {
-					lt = findTime(words, index);
-				}
-			} else {
-				ld = findDate(words, index, gc);
-				if (ld == null) {
-					ld = findDateWithMonth(words, index, gc);
-				}
-				if (ld == null) {
-					lt = findTime(words, index);
-				}
-			}
-			if (ld != null) {
-				t.setDate(ld);
-				index -= 1 + removeUselessWord(words, index);
-			}
-			if (lt != null) {
-				t.setTime(lt);
-				index -= 1 + removeUselessWord(words, index);
+			index = findDateTime(words, t, gc, index);
+		}
+		
+	}
+
+	private int findDateTime(MyStringList words, Task t, GregorianCalendar gc, int index) {
+		
+		LocalDate ld = null;
+		LocalTime lt = null;
+		if (words.get(index).isEmpty()) {
+			words.remove(index);
+		}
+		if (words.get(index).length() <= 4) {
+			ld = findDateWithDay(words, index, gc);
+			if (ld == null) {
+				ld = findDateWithYear(words, index, gc);
 			}
 		}
+		if (ld == null) {
+			ld = findDateWithMonth(words, index, gc);
+		}
+		if (ld == null) {
+			ld = findDate(words, index, gc);
+		}
+		if (ld == null) {
+			ld = findDateWithWord(words, index, gc);//get date with dayofweek or "next" or "last" or "by"
+		}
+		if (ld == null) {
+			lt = findTime(words, index);
+		}
+		if (ld != null || lt != null) {
+			LocalDateTime ldt = getDateTime(ld, lt);
+			ldt = adjustDateTime(words, index, ldt);//adjust date with "after" or "before"
+			setDateTimeToTask(ldt);
+			index -= removeUselessWord(words, index);
+			index -= 1 + removeMoreUselessWord(words, index);
+		}
+		return index;
 		
 	}
 	
@@ -374,6 +366,20 @@ public class Parser {
 		
 	}
 	
+	private int removeMoreUselessWord(MyStringList words, int index) {
+		
+		if (index - 1 >= 0) {
+			for (String uw : moreUselessWords) {
+				if(words.get(index - 1).equalsIgnoreCase(uw)) {
+					words.remove(index - 1);
+					return 1;
+				}
+			}
+		}
+		return 0;
+		
+	}
+	
 	private void findContent(MyStringList words, Task t) {
 		
 		StringBuilder sb = new StringBuilder();
@@ -381,6 +387,20 @@ public class Parser {
 			sb.append(w + " ");
 		}
 		t.setContent(sb.toString());
+		
+	}
+	
+	private LocalDate addDay(String s, LocalDate ld) {
+
+		switch(s){
+			case "day" :
+				return ld.withDayOfMonth(ld.getDayOfMonth() + 1);
+			case "month" :
+				return ld.withMonth(ld.getMonth().getValue() + 1);
+			case "year" :
+				return ld.withYear(ld.getYear() + 1);
+			default: return null;
+		}
 		
 	}
 	
@@ -452,6 +472,3 @@ class MyStringList extends ArrayList<String>{
 	}
 	
 }
-
-
-
