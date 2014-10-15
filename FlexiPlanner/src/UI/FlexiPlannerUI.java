@@ -134,7 +134,7 @@ public class FlexiPlannerUI {
 		showContent.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		showContent.setForeground(Color.BLACK);
 		showContent.setBackground(Color.LIGHT_GRAY);
-		showContent.setText(logic.getData());
+		showContent.setText(logic.getData(""));
 		showContent.setEditable(false);
 		
 		showContentScroll = new JScrollPane (showContent, 
@@ -193,7 +193,7 @@ public class FlexiPlannerUI {
 					commandFeedback.setText(logic
 							.executeInputCommand(userCommand)[0]);
 					inputCommand.setText("");					
-					showContent.setText(logic.getData());
+					showContent.setText(logic.getData(userCommand));
 					refreshCalendar(actualMonth, actualYear);
 				}
 			}
