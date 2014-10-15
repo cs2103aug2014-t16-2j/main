@@ -75,8 +75,10 @@ public class FlexiPlannerUI {
 																		// exits
 																		// when
 																		// closed
+		
 		schedulerFrame.setSize(700, 410);// set frame size
-		schedulerFrame.setResizable(false);		
+		schedulerFrame.setResizable(false);
+		schedulerFrame.setLocationRelativeTo(null);
 		schedulerFrame.setVisible(true);
 
 		calendar2 = new DefaultTableModel() {
@@ -155,7 +157,6 @@ public class FlexiPlannerUI {
 		schedulerPanel.add(showContentScroll);
 		schedulerPanel.add(commandFeedback);
 		schedulerPanel.setBounds(2, 1, 400, 335);
-
 		String[] headers = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" }; // All
 																				// headers
 		for (int i = 0; i < 7; i++) {
