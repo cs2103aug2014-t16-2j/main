@@ -240,7 +240,6 @@ public class FlexiPlannerUI {
 			public void keyPressed(KeyEvent e) {
 				int key = e.getKeyCode();
 				if (key == KeyEvent.VK_ENTER) {
-					Toolkit.getDefaultToolkit().beep();
 					String userCommand = inputCommand.getText();
 					commandFeedback.setText(logic
 							.executeInputCommand(userCommand)[0]);

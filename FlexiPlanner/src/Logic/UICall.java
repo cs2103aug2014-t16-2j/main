@@ -22,6 +22,7 @@ public class UICall {
 
 	public String getData(String s) {		
 		if (s.toLowerCase().startsWith("search")) {
+			System.out.println("haha");
 			return logic.searchRes;
 		}
 		return logic.dataToShow();

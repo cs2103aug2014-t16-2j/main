@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.Scanner;
 import java.util.Stack;
 
 import Storage.*;
@@ -17,11 +17,13 @@ public class Logic {
 	private Task task;
 	private ArrayList<TaskData> taskList;
 	private ArrayList<TaskData> currentTask;
-	private Map<String, TaskData> mapContentToTask;
+	private HashMap<String, HashMap<DateInfo, TaskData>> taskIdentifier;
 	private Stack<Action> actionList; // for undo and redo
 	private Stack<Action> redoList;
 	private Storage storer;
 	private Parser parser;
+
+	static Scanner sc = new Scanner(System.in);
 
 	// ----------Constructor----------//
 
@@ -30,13 +32,32 @@ public class Logic {
 		task = null;
 		taskList = new ArrayList<TaskData>();
 		currentTask = new ArrayList<TaskData>();
-		mapContentToTask = new HashMap<String, TaskData>();
+		taskIdentifier = new HashMap<String, HashMap<DateInfo, TaskData>>();
 		actionList = new Stack<Action>();
 		redoList = new Stack<Action>();
-		storer = new Storage("text.json"); // At the present, I load and save for file
-										// text
+		storer = new Storage("text.json"); // At the present, I load and save
+											// for file
+											// text
 		parser = new Parser();
 		loadData();
+	}
+
+	// -------------Main-------------//
+	public static void main(String[] args) {
+		try {
+			Logic logic = new Logic();
+			while (true) {
+				String command = sc.nextLine();
+				logic.execute(command);
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	// ----------Method-------------//
@@ -64,7 +85,18 @@ public class Logic {
 		// select all task from the day before onwards
 
 		for (TaskData t : taskList) {
-			mapContentToTask.put(t.getContent(), t);
+			String content = t.getContent();
+			if (taskIdentifier.containsKey(content)) {
+				HashMap<DateInfo, TaskData> map = taskIdentifier.get(content);
+				map.put(new DateInfo(t.getStartDateTime(), t.getEndDateTime()),
+						t);
+			} else {
+				taskIdentifier.put(content, new HashMap<DateInfo, TaskData>());
+				HashMap<DateInfo, TaskData> map = taskIdentifier.get(content);
+				map.put(new DateInfo(t.getStartDateTime(), t.getEndDateTime()),
+						t);
+			}
+
 		}
 	}
 
@@ -104,7 +136,15 @@ public class Logic {
 	// add a task
 	private void addTask(Task task) {
 		TaskData t = toTaskDaTa(task);
-		mapContentToTask.put(t.getContent(), t);
+		String content = t.getContent();
+		if (taskIdentifier.containsKey(content)) {
+			HashMap<DateInfo, TaskData> map = taskIdentifier.get(content);
+			map.put(new DateInfo(t.getStartDateTime(), t.getEndDateTime()), t);
+		} else {
+			taskIdentifier.put(content, new HashMap<DateInfo, TaskData>());
+			HashMap<DateInfo, TaskData> map = taskIdentifier.get(content);
+			map.put(new DateInfo(t.getStartDateTime(), t.getEndDateTime()), t);
+		}
 		taskList.add(t);
 		currentTask.add(t);
 		storer.saveData(currentTask, true);
@@ -115,9 +155,40 @@ public class Logic {
 	// content
 	private void deleteTask(Task task) {
 		TaskData t = toTaskDaTa(task);
-		TaskData toDelete = mapContentToTask.get(t.getContent());
-		taskList.remove(toDelete);
-		mapContentToTask.remove(toDelete.getContent());
+		if (taskIdentifier.containsKey(t.getContent())) {
+			HashMap<DateInfo, TaskData> toDeleteList = taskIdentifier.get(t
+					.getContent());
+			TaskData toDelete = null;
+			assert toDeleteList.size() >= 1;
+			if (toDeleteList.size() == 1) {
+				for (TaskData _task : toDeleteList.values()) {
+					toDelete = _task;
+				}
+				taskIdentifier.remove(toDelete.getContent());
+			} else {
+				System.out.print("Provide start and end time\n"); // ask for
+																	// date and
+																	// time to
+																	// specify
+
+				String s = sc.nextLine();
+				Task _task = parser.getAction(s).getTask();
+				LocalDateTime st = _task.getStartDateTime();
+				LocalDateTime et = _task.getEndDateTime();
+				DateInfo d = new DateInfo(st, et);
+				if (toDeleteList.containsKey(d)) {
+					toDelete = toDeleteList.get(d);
+					toDeleteList.remove(d, toDelete);
+				}
+				else {
+					System.out.print("Error-----------");
+					return;
+				}
+
+			}
+			taskList.remove(toDelete);
+		}
+
 		saveData();
 	}
 
@@ -163,14 +234,20 @@ public class Logic {
 	// modify a task
 
 	private void modifyTask(Task task) {
-		String newContent = task.getContent();
+		String content = task.getContent();
+
 		LocalDateTime newStartTime = task.getStartDateTime();
 		LocalDateTime newEndTime = task.getEndDateTime();
 		String newCategory = task.getCategory();
 		String newPriority = task.getPriority();
 		boolean isDone_new = task.isDone();
 
-		TaskData savedTask = mapContentToTask.get(newContent);
+		HashMap<DateInfo, TaskData> _taskToEdit = taskIdentifier.get(content);
+		TaskData savedTask = null;
+		for (TaskData t : _taskToEdit.values()) {
+			savedTask = t;
+			break;
+		}
 
 		if (newStartTime != null)
 			savedTask.setStartDateTime(newStartTime);
@@ -188,7 +265,10 @@ public class Logic {
 	// search for a task by key words or time
 
 	protected String searchRes;
+
 	private void search(Task task) {
+		
+		 
 		ArrayList<TaskData> searchResult = new ArrayList<TaskData>();
 
 		String content = task.getContent();
@@ -198,8 +278,13 @@ public class Logic {
 		String category = task.getCategory();
 		String priority = task.getPriority();
 
-		ArrayList<TaskData> toSearch = storer.loadData(new Option(startTime,
+		ArrayList<TaskData> toSearch;
+		if (startTime != null && endTime != null) {
+		toSearch = storer.loadData(new Option(startTime,
 				endTime));
+		} else  {
+			toSearch = storer.loadData(new Option(true));
+		}
 
 		for (TaskData t : toSearch) {
 			String _content = t.getContent();
@@ -221,8 +306,9 @@ public class Logic {
 			}
 			if (isContained)
 				searchResult.add(t);
-		}		
-		searchRes=displaySearch(searchResult);
+		}
+		searchRes = displaySearch(searchResult);
+		System.out.print(displaySearch(searchResult));
 	}
 
 	private String displaySearch(ArrayList<TaskData> list) {
@@ -234,6 +320,19 @@ public class Logic {
 			}
 		}
 		return lines;
+	}
+
+	// mark as done
+	private void markAsDone(Task _task) {
+		String content = _task.getContent();
+		HashMap<DateInfo, TaskData> _taskToEdit = taskIdentifier.get(content);
+		TaskData task = null;
+		for (TaskData t : _taskToEdit.values()) {
+			task = t;
+			break;
+		}
+		task.setDone(true);
+		saveData();
 	}
 
 	// exit
@@ -283,7 +382,7 @@ public class Logic {
 
 	// check if a date has task
 	protected boolean hasTask(String date) {
-		
+
 		Task testTask = parser.getAction(date).getTask();
 		LocalDateTime time = testTask.getStartDateTime();
 		int dayOfMonth = time.getDayOfMonth();
@@ -293,12 +392,15 @@ public class Logic {
 				0, 0);
 		LocalDateTime endTime = LocalDateTime.of(year, month, dayOfMonth, 23,
 				59, 59);
-		
-		ArrayList<TaskData> task = storer.loadData(new Option(startTime, endTime));
-		
-		//System.out.println(date + " " + startTime + " " + endTime + " " +!task.isEmpty());
-		//System.out.println(displaySearch(task));
-		return false; 
+
+		ArrayList<TaskData> task = storer.loadData(new Option(startTime,
+				endTime));
+
+		// System.out.println(date + " " + startTime + " " + endTime + " "
+		// +!task.isEmpty());
+		// System.out.println(displaySearch(task));
+		// return !task.isEmpty();
+		return false;
 
 	}
 
@@ -315,6 +417,41 @@ public class Logic {
 		return new TaskData(content, category, priority, startTime, endTime,
 				isDone);
 
+	}
+
+	private class DateInfo {
+		LocalDateTime start, end;
+
+		DateInfo(LocalDateTime _start, LocalDateTime _end) {
+			if (_start == null) {
+				this.start = LocalDateTime.MIN;
+			} else {
+				this.start = _start;
+			}
+			if (_end == null) {
+				this.end = LocalDateTime.MAX;
+			} else {
+				this.end = _end;
+			}
+
+		}
+
+		@Override
+		public boolean equals(Object t) {
+			if (t instanceof DateInfo) {
+				DateInfo time = (DateInfo) t;
+				return this.start.equals(time.start)
+						&& this.end.equals(time.end);
+			} else
+				return false;
+		}
+
+		@Override
+		public int hashCode() {
+			String s = start + "" + end;
+			return s.hashCode();
+
+		}
 	}
 
 }
