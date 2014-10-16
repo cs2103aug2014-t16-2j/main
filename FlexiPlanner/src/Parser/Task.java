@@ -36,47 +36,15 @@ public class Task{
 	
 	}
 	
-	public void setDate(LocalDate ld) {
+	public void setStartDateTime(LocalDateTime ldt) {
 		
-		if (startDateTime != null){
-			if (startDateTime.getYear() == 0) {
-				startDateTime = startDateTime.withDayOfMonth(ld.getDayOfMonth());
-				startDateTime = startDateTime.withMonth(ld.getMonth().getValue());
-				startDateTime = startDateTime.withYear(ld.getYear());
-			} else if (endDateTime != null){
-				if (endDateTime.getYear() == 0) {
-					endDateTime = endDateTime.withDayOfMonth(ld.getDayOfMonth());
-					endDateTime = endDateTime.withMonth(ld.getMonth().getValue());
-					endDateTime = endDateTime.withYear(ld.getYear());
-				}
-			} else {
-				endDateTime = LocalDateTime.of(ld, LocalTime.of(0, 0, 0));
-			}
-		} else {
-			startDateTime = LocalDateTime.of(ld, LocalTime.of(0, 0, 0));
-		}
+		startDateTime = ldt;
 		
 	}
 	
-	public void setTime(LocalTime lt) {
+	public void setEndDateTime(LocalDateTime ldt) {
 		
-		if (startDateTime != null){
-			if (startDateTime.getHour() == 0 && startDateTime.getMinute() == 0 && startDateTime.getSecond() == 0) {
-				startDateTime = startDateTime.withHour(lt.getHour());
-				startDateTime = startDateTime.withMinute(lt.getMinute());
-				startDateTime = startDateTime.withSecond(lt.getSecond());
-			} else if (endDateTime != null){
-				if (endDateTime.getHour() == 0 && endDateTime.getMinute() == 0 && endDateTime.getSecond() == 0) {
-					endDateTime = endDateTime.withHour(lt.getHour());
-					endDateTime = endDateTime.withMinute(lt.getMinute());
-					endDateTime = endDateTime.withSecond(lt.getSecond());
-				}
-			} else {
-				endDateTime = LocalDateTime.of(LocalDate.of(0, 1, 1), lt);
-			}
-		} else {
-			startDateTime = LocalDateTime.of(LocalDate.of(0, 1, 1), lt);
-		}
+		endDateTime = ldt;
 		
 	}
 	
