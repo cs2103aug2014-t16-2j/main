@@ -2,8 +2,8 @@ package Parser;
 
 public class Action {
 
-	String command;
-	Task task;
+	private String command;
+	private Task task;
 
 	public Action(String cmd, Task t) {
 
