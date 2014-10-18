@@ -28,6 +28,8 @@ import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import org.json.simple.parser.ParseException;
+
 import Logic.*;
 
 /**
@@ -70,10 +72,13 @@ public class FlexiPlannerUI {
 			System.out.println("Error");
 		} catch (IOException e) {
 			System.out.println("Error");
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
-	public void loadInterfaceandData() {
+	public void loadInterfaceandData() throws IOException, ParseException {
 		JFrame.setDefaultLookAndFeelDecorated(false);// the frame is changed to
 		// different style here
 		schedulerFrame = new JFrame("FlexiPlanner");// create new frame named
@@ -241,19 +246,43 @@ public class FlexiPlannerUI {
 				switch (key){
 				case KeyEvent.VK_ENTER: 
 					String userCommand = inputCommand.getText();
-					commandFeedback.setText(logic
-							.executeInputCommand(userCommand)[0]);
+					try {
+						commandFeedback.setText(logic
+								.executeInputCommand(userCommand)[0]);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (ParseException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					inputCommand.setText("");
 					showOverDueTask.setText("Get Over due Task from logic");
 					showTodayTask.setText("Get today task from logic");
-					showUserExecutedCommand.setText(logic.getData(userCommand));
+					try {
+						showUserExecutedCommand.setText(logic.getData(userCommand));
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (ParseException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					refreshCalendar(actualMonth, actualYear);
 					break;
 				case KeyEvent.VK_F1:
 					showUserExecutedCommand.setText("Guide\nFirst just relax\nSecond quit doing this shit");
 					break;
 				case KeyEvent.VK_F2:
-					showUserExecutedCommand.setText(logic.getData(""));
+					try {
+						showUserExecutedCommand.setText(logic.getData(""));
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (ParseException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					break;
 				case KeyEvent.VK_F3:
 					showOverDueTask.setText("Get Over due Task from logic");

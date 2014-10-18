@@ -31,13 +31,13 @@ public class TaskData {
 		setTaskId(t.getTaskId());
 	}
 	
-	public TaskData(String _content, String _category, String _priority, 
-			LocalDateTime _startDateTime, LocalDateTime _endDateTime) {
-		this.setContent(_content);
-		this.setCategory(_category);
-		this.setPriority(_priority);
-		this.setStartDateTime(_startDateTime);
-		this.setEndDateTime(_endDateTime);
+	public TaskData(String content, String category, String priority, 
+			LocalDateTime startDateTime, LocalDateTime endDateTime) {
+		this.setContent(content);
+		this.setCategory(category);
+		this.setPriority(priority);
+		this.setStartDateTime(startDateTime);
+		this.setEndDateTime(endDateTime);
 		if (this.getTaskId() == null) {
 			this.generateTaskId();
 		}
@@ -71,28 +71,28 @@ public class TaskData {
 	
 	/** Mutator Methods **/
 
-	public void setContent(String _content) {
-		this.content = _content;
+	public void setContent(String content) {
+		this.content = content;
 	}
 
-	public void setCategory(String _category) {
-		this.category = _category;
+	public void setCategory(String category) {
+		this.category = category;
 	}
 
-	public void setPriority(String _priority) {
-		this.priority = _priority;
+	public void setPriority(String priority) {
+		this.priority = priority;
 	}
 
-	public void setStartDateTime(LocalDateTime _startDateTime) {
-		this.startDateTime = _startDateTime;
+	public void setStartDateTime(LocalDateTime startDateTime) {
+		this.startDateTime = startDateTime;
 	}
 
-	public void setEndDateTime(LocalDateTime _endDateTime) {
-		this.endDateTime = _endDateTime;
+	public void setEndDateTime(LocalDateTime endDateTime) {
+		this.endDateTime = endDateTime;
 	}
 	
-	public void setTaskId(String _taskId) {
-		this.taskId = _taskId;
+	public void setTaskId(String taskId) {
+		this.taskId = taskId;
 	}
 	
 	/** Other Methods **/
@@ -101,14 +101,17 @@ public class TaskData {
 		if (id == 100) {
 			id = 10;
 		}
+		
 		taskId = LocalDateTime.now().toString() + (++id);
 		taskId = taskId.replaceAll("[-:.T]", "");
 	}
 	
-	public JSONObject getJsonObject() {
+	public JSONObject convertToJsonObject() {
 		JsonCodec coder = new JsonCodec();
 		JSONObject obj = new JSONObject();
+		
 		obj = coder.encodeJsonObj(this);
+		
 		return obj;
 	}
 	

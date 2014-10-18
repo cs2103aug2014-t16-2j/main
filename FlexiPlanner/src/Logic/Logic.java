@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Stack;
 
+import org.json.simple.parser.ParseException;
+
 import Storage.*;
 import Parser.*;
 
@@ -27,7 +29,7 @@ public class Logic {
 
 	// ----------Constructor----------//
 
-	public Logic() throws FileNotFoundException, IOException {
+	public Logic() throws FileNotFoundException, IOException, ParseException {
 		command = null;
 		task = null;
 		taskList = new ArrayList<TaskData>();
@@ -43,7 +45,7 @@ public class Logic {
 	}
 
 	// -------------Main-------------//
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ParseException {
 		try {
 			Logic logic = new Logic();
 			while (true) {
@@ -80,7 +82,7 @@ public class Logic {
 	}
 
 	// load all data saved in the file
-	private void loadData() {
+	private void loadData() throws IOException, ParseException {
 		taskList = new ArrayList<TaskData>(storer.loadData(new Option(true)));
 		// select all task from the day before onwards
 
@@ -101,12 +103,12 @@ public class Logic {
 	}
 
 	// this method is to execute a command
-	public void execute(String _command) {
+	public void execute(String _command) throws IOException, ParseException {
 		extractCommandandTask(_command);
 		executeCommand(command, task);
 	}
 
-	private void executeCommand(String command, Task task) {
+	private void executeCommand(String command, Task task) throws IOException, ParseException {
 		switch (command) {
 		case "add":
 			addTask(task);
@@ -193,7 +195,7 @@ public class Logic {
 	}
 
 	// redo an action
-	private void redo() {
+	private void redo() throws IOException, ParseException {
 		if (redoList.isEmpty())
 			return;
 		Action done = redoList.pop();
@@ -266,7 +268,7 @@ public class Logic {
 
 	protected String searchRes;
 
-	private void search(Task task) {
+	private void search(Task task) throws IOException, ParseException {
 		
 		 
 		ArrayList<TaskData> searchResult = new ArrayList<TaskData>();
@@ -349,7 +351,7 @@ public class Logic {
 	}
 
 	// return data to show to UI
-	protected String dataToShow() {
+	protected String dataToShow() throws IOException, ParseException {
 		LocalDateTime now = LocalDateTime.now();
 		int dateToday = now.getDayOfMonth();
 		int monthToday = now.getMonthValue();
@@ -381,7 +383,7 @@ public class Logic {
 	}
 
 	// check if a date has task
-	protected boolean hasTask(String date) {
+	protected boolean hasTask(String date) throws IOException, ParseException {
 
 		Task testTask = parser.getAction(date).getTask();
 		LocalDateTime time = testTask.getStartDateTime();

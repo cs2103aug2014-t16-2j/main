@@ -20,23 +20,23 @@ public class Option {
 		this(false, null, null, null);
 	}
 	
-	public Option(boolean _selectAll) {
-		this(_selectAll, null, null, null);
+	public Option(boolean selectAll) {
+		this(selectAll, null, null, null);
 	}
 	
-	public Option(String _category) {
-		this(false, _category, null, null);
+	public Option(String category) {
+		this(false, category, null, null);
 	}
 	
-	public Option(LocalDateTime _startDateTime, LocalDateTime _endDateTime) {
-		this(false, null, _startDateTime, _endDateTime);
+	public Option(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+		this(false, null, startDateTime, endDateTime);
 	}
 	
-	public Option(boolean _selectAll, String _category, LocalDateTime _startDateTime, LocalDateTime _endDateTime) {
-		setSelectAll(_selectAll);
-		setCategory(_category);
-		setStartDateTime(_startDateTime);
-		setEndDateTime(_endDateTime);
+	public Option(boolean selectAll, String category, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+		setSelectAll(selectAll);
+		setCategory(category);
+		setStartDateTime(startDateTime);
+		setEndDateTime(endDateTime);
 	}
 	
 	/** Accessor Methods **/
@@ -63,28 +63,30 @@ public class Option {
 		this.category = category;
 	}
 
-	public void setSelectAll(boolean _selectAll) {
-		this.selectAll = _selectAll;
+	public void setSelectAll(boolean selectAll) {
+		this.selectAll = selectAll;
 	}
 
-	public void setStartDateTime(LocalDateTime _startDateTime) {
-		this.startDateTime = _startDateTime;
+	public void setStartDateTime(LocalDateTime startDateTime) {
+		this.startDateTime = startDateTime;
 	}
 
-	public void setEndDateTime(LocalDateTime _endDateTime) {
-		this.endDateTime = _endDateTime;
+	public void setEndDateTime(LocalDateTime endDateTime) {
+		this.endDateTime = endDateTime;
 	}
 	
 	@Override
 	public String toString(){
 		String startDate = null;
 		String endDate = null;
+		
 		if (this.getStartDateTime() != null) {
 			startDate = this.getStartDateTime().toString();
 		}
 		if (this.getEndDateTime() != null) {
 			endDate = this.getEndDateTime().toString();
 		}
+		
 		StringBuilder sb = new StringBuilder();
 		sb.append("************** Load Options **************\n");
 		sb.append("Select All  =   "+ this.getSelectAll() + "\n");

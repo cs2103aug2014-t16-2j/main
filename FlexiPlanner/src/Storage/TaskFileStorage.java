@@ -25,12 +25,12 @@ public class TaskFileStorage implements Storage {
 		this("data/tasks.json");
 	}
 	
-	public TaskFileStorage(String _filePath) throws IOException {
+	public TaskFileStorage(String filePath) throws IOException {
+		this.setFilePath(filePath);
 		manager = new FileManager();
 		coder = new JsonCodec();
 		formatter = new JsonFormatter();
-		this.setFilePath(_filePath);
-		manager.create(filePath);
+		manager.create(this.filePath);
 	}
 	
 	/** Accessor Method **/
@@ -41,8 +41,8 @@ public class TaskFileStorage implements Storage {
 	
 	/** Mutator Method **/
 
-	public void setFilePath(String _filePath) {
-		this.filePath = _filePath;
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
 	}
 
 	@Override
@@ -54,16 +54,16 @@ public class TaskFileStorage implements Storage {
 			
 			if (isAppendable && !manager.isEmptyFile(filePath)) {
 				jObj = manager.readJson(filePath);
-				jArr1 = coder.seperateJsonArrFromObj(jObj);
+				jArr1 = coder.retrieveJsonArrFromObj(jObj);
 				jArr2 = coder.encodeJsonArr(taskList);
 				jArr = formatter.concatJsonArrs(jArr1, jArr2);
-				jObjToSave = coder.putToJsonObj(jArr);
+				jObjToSave = coder.encloseWithinJsonObj(jArr);
 				manager.writeJson(filePath, jObjToSave, false);
 				isSaveSuccess = true;
 			}
 			else {
 				jArr = coder.encodeJsonArr(taskList);
-				jObjToSave = coder.putToJsonObj(jArr);
+				jObjToSave = coder.encloseWithinJsonObj(jArr);
 				manager.writeJson(filePath, jObjToSave, false);
 				isSaveSuccess = true;
 			}
@@ -76,21 +76,20 @@ public class TaskFileStorage implements Storage {
 	}
 
 	@Override
-	public ArrayList<TaskData> loadData(Option loadOption) {
+	public ArrayList<TaskData> loadData(Option loadOption) throws IOException, ParseException{
 		ArrayList<TaskData> tasksToReturn = new ArrayList<TaskData>();
 		try {
 			JSONObject jObj = manager.readJson(filePath);
-			JSONArray jArr = coder.seperateJsonArrFromObj(jObj);
+			JSONArray jArr = coder.retrieveJsonArrFromObj(jObj);
 			
-			tasksToReturn = coder.decodeJsonArr(CustomSearch.search(loadOption, jArr));
+			tasksToReturn = coder.decodeJsonArr(new TaskFilter(jArr, loadOption).refine());
+			
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw e;
 		} catch (ParseException pe) {
-			pe.printStackTrace();
+			throw pe;
 		}
+		
 		return tasksToReturn;
 	}
-	
-	
-	
 }
