@@ -35,7 +35,7 @@ public class Logic {
 		taskIdentifier = new HashMap<String, HashMap<DateInfo, TaskData>>();
 		actionList = new Stack<Action>();
 		redoList = new Stack<Action>();
-		storer = new Storage("text.json"); // At the present, I load and save
+		storer = new TaskFileStorage("text.json"); // At the present, I load and save
 											// for file
 											// text
 		parser = new Parser();
