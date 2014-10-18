@@ -240,7 +240,7 @@ public class Logic {
 		LocalDateTime newEndTime = task.getEndDateTime();
 		String newCategory = task.getCategory();
 		String newPriority = task.getPriority();
-		boolean isDone_new = task.isDone();
+		//boolean isDone_new = task.isDone(); // removed
 
 		HashMap<DateInfo, TaskData> _taskToEdit = taskIdentifier.get(content);
 		TaskData savedTask = null;
@@ -257,7 +257,7 @@ public class Logic {
 			savedTask.setCategory(newCategory);
 		if (newPriority != null)
 			savedTask.setPriority(newPriority);
-		savedTask.setDone(isDone_new);
+		//savedTask.setDone(isDone_new); // removed
 
 		saveData();
 	}
@@ -331,7 +331,7 @@ public class Logic {
 			task = t;
 			break;
 		}
-		task.setDone(true);
+		// task.setDone(true); // removed
 		saveData();
 	}
 
@@ -412,10 +412,11 @@ public class Logic {
 		LocalDateTime endTime = task.getEndDateTime();
 		String category = task.getCategory();
 		String priority = task.getPriority();
-		boolean isDone = task.isDone();
+		//boolean isDone = task.isDone(); // removed
+		
+		return new TaskData(content, category, priority, startTime, endTime);
 
-		return new TaskData(content, category, priority, startTime, endTime,
-				isDone);
+		// return new TaskData(content, category, priority, startTime, endTime, isDone); // removed isDone
 
 	}
 
