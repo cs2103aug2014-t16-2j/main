@@ -415,16 +415,27 @@ public class FlexiPlannerUI {
 				if (Integer.parseInt(value.toString()) == actualDay
 						&& currentDisplayedMonth == actualMonth
 						&& currentDisplayedYear == actualYear) { // Today
-					/*if (logic.hasTask(date)) {
-						setBackground(Color.RED);// set colour for current day
-						// with task
-					} else {
-						setBackground(Color.LIGHT_GRAY);// set colour current
-						// day
-					}*/setBackground(Color.LIGHT_GRAY);
-				}/* else if (logic.hasTask(date)) {
-					setBackground(Color.ORANGE);// set colour for days with task
-				}*/
+					try {
+						if (logic.hasTask(date)) {
+							setBackground(Color.RED);// set colour for current day
+							// with task
+						} else {
+							setBackground(Color.LIGHT_GRAY);// set colour current
+							// day
+						}
+					} catch (IOException | ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}setBackground(Color.LIGHT_GRAY);
+				} else
+					try {
+						if (logic.hasTask(date)) {
+							setBackground(Color.ORANGE);// set colour for days with task
+						}
+					} catch (IOException | ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 
 			}
 			setBorder(null);

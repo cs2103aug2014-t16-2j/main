@@ -32,6 +32,10 @@ public class UICall {
 	public boolean hasTask(String date) throws IOException, ParseException{
 		return logic.hasTask(date);
 	}
+	
+	public String getOverdue() {
+		return logic.getOverdue();
+	}
 
 
 }
