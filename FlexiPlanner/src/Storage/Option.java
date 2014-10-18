@@ -3,6 +3,10 @@ package Storage;
 import java.time.LocalDateTime;
 
 /**
+ * This class creates a filter-option object.
+ * It purpose is to provide required data to load from a file.
+ * Data refers to a task object.
+ * 
  * @author A0117989H
  *
  */

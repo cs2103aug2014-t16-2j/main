@@ -10,13 +10,16 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
+ * This class handles encoding and decoding operations
+ * among JSONObjects, JSONArrays, tasks and JSONStrings.
+ * 
  * @author A0117989H
  *
  */
 @SuppressWarnings("unchecked")
 public class JsonCodec {
 	
-	public JSONObject encodeJsonObj(TaskData task) {
+	public JSONObject taskToJsonObj(TaskData task) {
 		JSONObject jsonObjToReturn = new JSONObject();
 		
 		String startDateTime = null;
@@ -39,7 +42,7 @@ public class JsonCodec {
 		return jsonObjToReturn;
 	}
 
-	public JSONArray encodeJsonArr(ArrayList<TaskData> tasks) {
+	public JSONArray tasksToJsonArr(ArrayList<TaskData> tasks) {
 		JSONArray jsonArrToReturn = new JSONArray();
 		
 		for (int i = 0; i < tasks.size(); i++) {
@@ -49,17 +52,17 @@ public class JsonCodec {
 		return jsonArrToReturn;
 	}
 	
-	public ArrayList<TaskData> decodeJsonArr(JSONArray jsonArr) {
+	public ArrayList<TaskData> jsonArrToTasks(JSONArray jsonArr) {
 		ArrayList<TaskData> taskListToReturn = new ArrayList<TaskData> ();
 		
 		for (int i = 0; i < jsonArr.size(); i++) {
-			taskListToReturn.add(decodeJsonObj((JSONObject) jsonArr.get(i)));
+			taskListToReturn.add(jsonObjToTask((JSONObject) jsonArr.get(i)));
 		}
 		
 		return taskListToReturn;
 	}
 	
-	public TaskData decodeJsonObj(JSONObject obj) {
+	public TaskData jsonObjToTask(JSONObject obj) {
 		TaskData taskToReturn = new TaskData();
 		
 		taskToReturn.setTaskId((String)obj.get("taskId"));
@@ -83,27 +86,27 @@ public class JsonCodec {
 		return taskToReturn;
 	}
 	
-	public TaskData decodeJsonStr(String str) throws ParseException {
+	public TaskData jsonStrToTask(String str) throws ParseException {
 		JSONObject object = (JSONObject) JSONValue.parseWithException(str);
 		
-		return decodeJsonObj(object);
+		return jsonObjToTask(object);
 	}
 
-	public JSONObject encloseWithinJsonObj(JSONArray jarr) {
+	public JSONObject encloseJsonArrInJsonObj(JSONArray jarr) {
 		JSONObject jo = new JSONObject();
 		jo.put("Tasks", jarr);
 		
 		return jo;
 	}
 	
-	public JSONArray retrieveJsonArrFromStr(String strContainingObj) throws ParseException {
+	public JSONArray retrieveJsonArrFromJsonStr(String strContainingObj) throws ParseException {
 		JSONParser parser = new JSONParser();
 		JSONObject objContainingArr = (JSONObject) parser.parse(strContainingObj);
 		
-		return retrieveJsonArrFromObj(objContainingArr);
+		return retrieveJsonArrFromJsonObj(objContainingArr);
 	}
 	
-	public JSONArray retrieveJsonArrFromObj(JSONObject jsonObj) {
+	public JSONArray retrieveJsonArrFromJsonObj(JSONObject jsonObj) {
 		JSONArray jsonArrToReturn = (JSONArray) jsonObj.get("Tasks");
 		
 		return jsonArrToReturn == null ? new JSONArray() : jsonArrToReturn;

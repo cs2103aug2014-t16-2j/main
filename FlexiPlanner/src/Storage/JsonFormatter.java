@@ -7,13 +7,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
+ * This class handles formatting operations
+ * of JSONObjects and JSONArrays.
+ * 
  * @author A0117989H
  *
  */
 @SuppressWarnings("unchecked")
 public class JsonFormatter {
 	
-	public JSONArray concatJsonArrs(JSONArray arr1, JSONArray arr2) {
+	public JSONArray mergeJsonArrs(JSONArray arr1, JSONArray arr2) {
 		JSONArray mergedArray = new JSONArray();
 		
 		for (int i = 0; i < arr1.size(); i++) {
@@ -27,7 +30,7 @@ public class JsonFormatter {
 		return mergedArray;
 	}
 	
-	public JSONObject concatJsonObjs(JSONObject obj1, JSONObject obj2) {
+	public JSONObject mergeJsonObjs(JSONObject obj1, JSONObject obj2) {
 		JSONObject mergedObj = new JSONObject();
 		
 		mergedObj.put("Tasks", (JSONArray) obj1.get("Tasks"));
@@ -36,6 +39,13 @@ public class JsonFormatter {
 		return mergedObj;
 	}
 	
+	/**
+	 * This method transforms JSONObject display
+	 * into a more readable string format.
+	 * 
+	 * @param JSONObject : JSONObject
+	 * @return formatted string : String
+	 */
 	public String toPrettyFormat(Object obj) {
 		if (obj instanceof JSONObject) {
 			obj = (JSONObject) obj;

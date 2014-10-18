@@ -6,6 +6,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
+ * This class filters the tasks according to :
+ * Category, Start Time and End Time.
+ * 
  * @author A0117989H
  *
  */
@@ -15,12 +18,20 @@ public class TaskFilter {
 	private JSONArray jsonArr;
 	private Option filterOption;
 	
+	/** Constructor Method **/
+	
 	public TaskFilter(JSONArray jsonArr, Option filterOption) {
 		this.filterOption = filterOption;
 		this.jsonArr = new JSONArray();
 		clone(jsonArr);
 	}
 	
+	/**
+	 * This method filters the tasks by given filter option.
+	 * Return the filtered task list.
+	 * 
+	 * @return filtered task list : JSONArray
+	 */
 	public JSONArray refine() {
 		if (filterOption.getSelectAll()) {
 			return jsonArr;

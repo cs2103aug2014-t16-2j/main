@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import org.json.simple.JSONObject;
 
 /**
+ * This class creates a task object representing an actual task.
+ * 
  * @author A0117989H
  *
  */
@@ -110,7 +112,7 @@ public class TaskData {
 		JsonCodec coder = new JsonCodec();
 		JSONObject obj = new JSONObject();
 		
-		obj = coder.encodeJsonObj(this);
+		obj = coder.taskToJsonObj(this);
 		
 		return obj;
 	}

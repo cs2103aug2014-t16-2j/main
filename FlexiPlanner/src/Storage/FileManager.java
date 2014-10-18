@@ -18,11 +18,14 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
+ * This class handles file related operations.
+ * 
  * @author A0117989H
  *
  */
 
 public class FileManager {
+	
 	public void create(String filePath) throws IOException {
 		File file = new File(filePath);
 		if (!file.exists()) {
@@ -30,7 +33,7 @@ public class FileManager {
 		}
 	}
 	
-	public void writeJson(String filePath, JSONObject jsonObj, boolean isAppendable) throws IOException, FileNotFoundException {
+	public void writeInJsonFormat(String filePath, JSONObject jsonObj, boolean isAppendable) throws IOException, FileNotFoundException {
 		JsonFormatter formatter = new JsonFormatter();
 		write(filePath, formatter.toPrettyFormat(jsonObj), isAppendable);
 	}
@@ -42,7 +45,7 @@ public class FileManager {
 		bWriter.close();
 	}
 	
-	public JSONObject readJson(String filePath) throws FileNotFoundException, IOException, ParseException{
+	public JSONObject readInJsonFormat(String filePath) throws FileNotFoundException, IOException, ParseException{
 		if (isEmptyFile(filePath)) {
 			return new JSONObject();
 		}

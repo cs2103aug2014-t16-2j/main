@@ -8,6 +8,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 /**
+ * This class implements functions of saving and loading
+ * tasks from respective files.
+ * The files must only contain task data in JSON format.
+ * 
  * @author A0117989H
  *
  */
@@ -22,11 +26,14 @@ public class TaskFileStorage implements Storage {
 	/** Constructor Method **/
 	
 	public TaskFileStorage() throws IOException {
-		this("data/tasks.json");
+		this("tasks.json");
 	}
 	
 	public TaskFileStorage(String filePath) throws IOException {
+		assert filePath != null;
+		
 		this.setFilePath(filePath);
+		
 		manager = new FileManager();
 		coder = new JsonCodec();
 		formatter = new JsonFormatter();
@@ -42,29 +49,33 @@ public class TaskFileStorage implements Storage {
 	/** Mutator Method **/
 
 	public void setFilePath(String filePath) {
+		assert filePath != null;
+		
 		this.filePath = filePath;
 	}
 
 	@Override
 	public boolean saveData(ArrayList<TaskData> taskList, boolean isAppendable) {
+		assert taskList != null;
+		
 		boolean isSaveSuccess = false;
 		try {
 			JSONObject jObj, jObjToSave;
 			JSONArray jArr1, jArr2, jArr;
 			
 			if (isAppendable && !manager.isEmptyFile(filePath)) {
-				jObj = manager.readJson(filePath);
-				jArr1 = coder.retrieveJsonArrFromObj(jObj);
-				jArr2 = coder.encodeJsonArr(taskList);
-				jArr = formatter.concatJsonArrs(jArr1, jArr2);
-				jObjToSave = coder.encloseWithinJsonObj(jArr);
-				manager.writeJson(filePath, jObjToSave, false);
+				jObj = manager.readInJsonFormat(filePath);
+				jArr1 = coder.retrieveJsonArrFromJsonObj(jObj);
+				jArr2 = coder.tasksToJsonArr(taskList);
+				jArr = formatter.mergeJsonArrs(jArr1, jArr2);
+				jObjToSave = coder.encloseJsonArrInJsonObj(jArr);
+				manager.writeInJsonFormat(filePath, jObjToSave, false);
 				isSaveSuccess = true;
 			}
 			else {
-				jArr = coder.encodeJsonArr(taskList);
-				jObjToSave = coder.encloseWithinJsonObj(jArr);
-				manager.writeJson(filePath, jObjToSave, false);
+				jArr = coder.tasksToJsonArr(taskList);
+				jObjToSave = coder.encloseJsonArrInJsonObj(jArr);
+				manager.writeInJsonFormat(filePath, jObjToSave, false);
 				isSaveSuccess = true;
 			}
 		} catch (IOException e) {
@@ -77,12 +88,14 @@ public class TaskFileStorage implements Storage {
 
 	@Override
 	public ArrayList<TaskData> loadData(Option loadOption) throws IOException, ParseException{
+		assert loadOption != null;
+		
 		ArrayList<TaskData> tasksToReturn = new ArrayList<TaskData>();
 		try {
-			JSONObject jObj = manager.readJson(filePath);
-			JSONArray jArr = coder.retrieveJsonArrFromObj(jObj);
+			JSONObject jObj = manager.readInJsonFormat(filePath);
+			JSONArray jArr = coder.retrieveJsonArrFromJsonObj(jObj);
 			
-			tasksToReturn = coder.decodeJsonArr(new TaskFilter(jArr, loadOption).refine());
+			tasksToReturn = coder.jsonArrToTasks(new TaskFilter(jArr, loadOption).refine());
 			
 		} catch (IOException e) {
 			throw e;
