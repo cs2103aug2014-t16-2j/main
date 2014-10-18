@@ -55,12 +55,12 @@ public class FlexiPlannerUI {
 	private JFrame schedulerFrame;
 	private JTextField inputCommand;
 	private int actualYear, actualMonth, actualDay, currentDisplayedYear,
-			currentDisplayedMonth;
+	currentDisplayedMonth;
 	private String[] months = { "January", "February", "March", "April", "May",
 			"June", "July", "August", "September", "October", "November",
-			"December" };
+	"December" };
 	private String day;
-	
+
 	private static UICall logic;
 
 	public FlexiPlannerUI() {
@@ -75,15 +75,15 @@ public class FlexiPlannerUI {
 
 	public void loadInterfaceandData() {
 		JFrame.setDefaultLookAndFeelDecorated(false);// the frame is changed to
-														// different style here
+		// different style here
 		schedulerFrame = new JFrame("FlexiPlanner");// create new frame named
-													// *CALENDAR*
+		// *CALENDAR*
 		schedulerFrame.setUndecorated(false);// the frame is changed
 		schedulerFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);// Program
-																		// exits
-																		// when
-																		// closed
-		
+		// exits
+		// when
+		// closed
+
 		schedulerFrame.setSize(750, 410);// set frame size
 		schedulerFrame.setResizable(false);
 		schedulerFrame.setLocationRelativeTo(null);
@@ -96,14 +96,14 @@ public class FlexiPlannerUI {
 		};// get dafault table model for calendar
 		calendar1 = new JTable(calendar2);// create new table
 		calendarScroll = new JScrollPane(calendar1,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
-											JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		schedulerPanel = new JPanel(null);// this is needed in order to show
-											// table
-		
+		// table
+
 		schedulerFrame.getContentPane().add(schedulerPanel);// add panel to
-															// frame(add table
-														    // to frame)
-		
+		// frame(add table
+		// to frame)
+
 		// get calendar format
 		GregorianCalendar cal = new GregorianCalendar();
 		actualDay = cal.get(GregorianCalendar.DAY_OF_MONTH);
@@ -137,27 +137,27 @@ public class FlexiPlannerUI {
 		overDueTaskLabel.setBackground(Color.LIGHT_GRAY);
 		overDueTaskLabel.setForeground(Color.BLACK);		
 		overDueTaskLabel.setBorder(BorderFactory.createCompoundBorder(border, 
-	            BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+				BorderFactory.createEmptyBorder(10, 10, 10, 10)));
 		overDueTaskLabel.setText("Overdue tasks");
-		
+
 		showOverDueTask = new JTextArea();
 		showOverDueTask.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		showOverDueTask.setForeground(Color.BLACK);
 		showOverDueTask.setBackground(Color.LIGHT_GRAY);
 		showOverDueTask.setText("Get from logic to show overdue tasks");
 		showOverDueTask.setEditable(false);
-		
+
 		showOverDueTaskScroll = new JScrollPane (showOverDueTask, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		showOverDueTaskScroll.setRowHeaderView(overDueTaskLabel);
 		showOverDueTaskScroll.setBounds(320, 4, 410, 50);
-		
+
 		todayTasksLabel = new JTextArea();
 		todayTasksLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		todayTasksLabel.setBackground(Color.LIGHT_GRAY);
 		todayTasksLabel.setForeground(Color.BLACK);
 		todayTasksLabel.setBorder(BorderFactory.createCompoundBorder(border, 
-	            BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+				BorderFactory.createEmptyBorder(10, 10, 10, 10)));
 		todayTasksLabel.setText("Today tasks");
 
 		showTodayTask = new JTextArea();
@@ -166,7 +166,7 @@ public class FlexiPlannerUI {
 		showTodayTask.setBackground(Color.LIGHT_GRAY);
 		showTodayTask.setText("Get from logic to show today tasks");
 		showTodayTask.setEditable(false);
-		
+
 		showTodayTaskScroll = new JScrollPane (showTodayTask, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		showTodayTaskScroll.setRowHeaderView(todayTasksLabel);
@@ -178,24 +178,24 @@ public class FlexiPlannerUI {
 		showUserExecutedCommand.setBackground(Color.LIGHT_GRAY);
 		showUserExecutedCommand.setText(logic.getData(""));
 		showUserExecutedCommand.setEditable(false);
-		
+
 		showUserExecutedCommandScroll = new JScrollPane (showUserExecutedCommand, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		showUserExecutedCommandScroll.setBounds(320, 120, 410, 170);		
-		
+
 		commandFeedback = new JLabel("");
 		commandFeedback.setBackground(new Color(240, 240, 240));
 		commandFeedback.setForeground(Color.RED);
 		commandFeedback.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		commandFeedback.setBounds(334, 295, 350, 20);
-		
+
 		inputCommand = new JTextField();
 		inputCommand.setBackground(Color.LIGHT_GRAY);
 		inputCommand.setForeground(Color.RED);
 		inputCommand.setBounds(10, 326, 724, 46);
 		inputCommand.setColumns(10);
 		inputCommand.setFont(new Font("Times New Roman", Font.BOLD, 20));
-	
+
 		schedulerPanel.add(displayedMonth);
 		schedulerPanel.add(displayedYear);
 		schedulerPanel.add(selectYear);
@@ -209,10 +209,10 @@ public class FlexiPlannerUI {
 		schedulerPanel.add(inputCommand);
 		schedulerPanel.setBounds(2, 1, 400, 335);
 		String[] headers = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" }; // All
-																				// headers
+		// headers
 		for (int i = 0; i < 7; i++) {
 			calendar2.addColumn(headers[i]);// add it on top column(left to
-											// right)
+			// right)
 		}
 
 		calendar1.getTableHeader().setResizingAllowed(false);
@@ -234,11 +234,12 @@ public class FlexiPlannerUI {
 	}
 
 	private void executeKeyAction(final JLabel commandFeedback,final JTextArea showOverDueTask,
-				final JTextArea showTodayTask,final JTextArea showUserExecutedCommand) {
+			final JTextArea showTodayTask,final JTextArea showUserExecutedCommand) {
 		inputCommand.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				int key = e.getKeyCode();
-				if (key == KeyEvent.VK_ENTER) {
+				switch (key){
+				case KeyEvent.VK_ENTER: 
 					String userCommand = inputCommand.getText();
 					commandFeedback.setText(logic
 							.executeInputCommand(userCommand)[0]);
@@ -247,7 +248,41 @@ public class FlexiPlannerUI {
 					showTodayTask.setText("Get today task from logic");
 					showUserExecutedCommand.setText(logic.getData(userCommand));
 					refreshCalendar(actualMonth, actualYear);
+					break;
+				case KeyEvent.VK_F1:
+					showUserExecutedCommand.setText("Guide\nFirst just relax\nSecond quit doing this shit");
+					break;
+				case KeyEvent.VK_F2:
+					showUserExecutedCommand.setText(logic.getData(""));
+					break;
+				case KeyEvent.VK_F3:
+					showOverDueTask.setText("Get Over due Task from logic");
+					showTodayTask.setText("Get today task from logic");
+					showUserExecutedCommand.setText("So some Undo shit");
+					refreshCalendar(actualMonth, actualYear);
+					break;
+				case KeyEvent.VK_F4:
+					showOverDueTask.setText("Get Over due Task from logic");
+					showTodayTask.setText("Get today task from logic");
+					showUserExecutedCommand.setText("So some Redo shit");
+					refreshCalendar(actualMonth, actualYear);
+					break;
+				case KeyEvent.VK_PAGE_UP:
+					if (currentDisplayedMonth  == 0 && currentDisplayedYear == actualYear) {
+						break;
+					}
+					prevMth();
+					break;
+				case KeyEvent.VK_PAGE_DOWN:
+					if (currentDisplayedMonth == 11 && currentDisplayedYear >= actualYear + 20) {
+						break;
+					} 
+					nextMth();
+					break;
+				default: 
+					break;
 				}
+
 			}
 			public void keyReleased(KeyEvent e) {
 				int key = e.getKeyCode();
@@ -298,15 +333,15 @@ public class FlexiPlannerUI {
 			nextMonth.setEnabled(false);
 		} // disable button as out of range
 		displayedMonth.setText(months[month]); // Refresh the month label (at
-												// the top)
+		// the top)
 		displayedMonth.setBounds(
 				160 - displayedMonth.getPreferredSize().width / 2, 5, 180, 25); // Re-align
-																				// label
-																				// with
-																				// calendar
+		// label
+		// with
+		// calendar
 		selectYear.setSelectedItem(String.valueOf(year)); // Select the correct
-															// year in the combo
-															// box
+		// year in the combo
+		// box
 
 		// Clear table
 		for (int i = 0; i < 6; i++) {
@@ -327,7 +362,7 @@ public class FlexiPlannerUI {
 
 		calendar1.setDefaultRenderer(calendar1.getColumnClass(0),
 				new Calendar1Renderer());// using Calendar1Renderer class to set
-											// table display
+		// table display
 	}// end of refreshCalendar method
 
 	// class Calendar1Renderer used for editting how things are displayed
@@ -351,16 +386,16 @@ public class FlexiPlannerUI {
 				if (Integer.parseInt(value.toString()) == actualDay
 						&& currentDisplayedMonth == actualMonth
 						&& currentDisplayedYear == actualYear) { // Today
-					if (logic.hasTask(date)) {
+					/*if (logic.hasTask(date)) {
 						setBackground(Color.RED);// set colour for current day
-													// with task
+						// with task
 					} else {
 						setBackground(Color.LIGHT_GRAY);// set colour current
-														// day
-					}
-				} else if (logic.hasTask(date)) {
+						// day
+					}*/setBackground(Color.LIGHT_GRAY);
+				}/* else if (logic.hasTask(date)) {
 					setBackground(Color.ORANGE);// set colour for days with task
-				}
+				}*/
 
 			}
 			setBorder(null);
@@ -380,7 +415,7 @@ public class FlexiPlannerUI {
 			refreshCalendar(currentDisplayedMonth, currentDisplayedYear);
 		}
 	}// end of class Prev_Action
-		// Next_Action points to the next year
+	// Next_Action points to the next year
 
 	class Next_Action implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
