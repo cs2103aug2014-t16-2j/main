@@ -16,30 +16,28 @@ public class TaskData {
 	private String priority;
 	private LocalDateTime startDateTime;
 	private LocalDateTime endDateTime;
-	private boolean isDone;
 	private String taskId;
 	private static int id = 10;
 	
 	/** Constructor Method **/
 	
 	public TaskData() {
-		this(null, null, null, null, null, false);
+		this(null, null, null, null, null);
 	}
 	
 	public TaskData(TaskData t) {
 		this(t.getContent(), t.getCategory(), t.getPriority(), t.getStartDateTime(), 
-				t.getEndDateTime(), t.isDone());
+				t.getEndDateTime());
 		setTaskId(t.getTaskId());
 	}
 	
 	public TaskData(String _content, String _category, String _priority, 
-			LocalDateTime _startDateTime, LocalDateTime _endDateTime, boolean _isDone) {
+			LocalDateTime _startDateTime, LocalDateTime _endDateTime) {
 		this.setContent(_content);
 		this.setCategory(_category);
 		this.setPriority(_priority);
 		this.setStartDateTime(_startDateTime);
 		this.setEndDateTime(_endDateTime);
-		this.setDone(_isDone);
 		if (this.getTaskId() == null) {
 			this.generateTaskId();
 		}
@@ -67,10 +65,6 @@ public class TaskData {
 		return endDateTime;
 	}
 	
-	public boolean isDone() {
-		return isDone;
-	}
-	
 	public String getTaskId() {
 		return taskId;
 	}
@@ -95,10 +89,6 @@ public class TaskData {
 
 	public void setEndDateTime(LocalDateTime _endDateTime) {
 		this.endDateTime = _endDateTime;
-	}
-
-	public void setDone(boolean _isDone) {
-		this.isDone = _isDone;
 	}
 	
 	public void setTaskId(String _taskId) {
@@ -131,8 +121,7 @@ public class TaskData {
 		sb.append("Category   =   "+ this.getCategory() + "\n");
 		sb.append("Priority   =   "+ this.getPriority() + "\n");
 		sb.append("Start Date =   "+ this.getStartDateTime() + "\n");
-		sb.append("Deadline   =   "+ this.getEndDateTime() + "\n");
-		sb.append("Done       =   "+ this.isDone());
+		sb.append("Deadline   =   "+ this.getEndDateTime());
 		sb.append("\n******************************************");
 		
 		return sb.toString();

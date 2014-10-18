@@ -33,7 +33,6 @@ public class JsonCodec {
 		jsonObjToReturn.put("priority", task.getPriority());
 		jsonObjToReturn.put("startDateTime", startDateTime);
 		jsonObjToReturn.put("endDateTime", endDateTime);
-		jsonObjToReturn.put("isDone", Boolean.toString(task.isDone()));
 		return jsonObjToReturn;
 	}
 	
@@ -72,7 +71,6 @@ public class JsonCodec {
 		else {
 			taskToReturn.setEndDateTime(LocalDateTime.parse((String)obj.get("endDateTime")));
 		}
-		taskToReturn.setDone(Boolean.parseBoolean((String)obj.get("isDone")));
 		return taskToReturn;
 	}
 	
