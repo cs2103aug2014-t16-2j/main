@@ -69,6 +69,8 @@ public class FileStorage implements Storage {
 	public ArrayList<TaskData> loadTasks(String filePath, Option loadOption) throws IOException, ParseException{
 		assert loadOption != null;
 		
+		manager.create(filePath);
+		
 		ArrayList<TaskData> tasksToReturn = new ArrayList<TaskData>();
 		try {
 			JSONObject jObj = manager.readInJsonFormat(filePath);
