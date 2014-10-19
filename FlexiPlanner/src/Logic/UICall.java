@@ -37,5 +37,8 @@ public class UICall {
 		return logic.getOverdue();
 	}
 
+	public String getTodayTask() throws IOException, ParseException {
+		return logic.getTodayTask();
+	}
 
 }

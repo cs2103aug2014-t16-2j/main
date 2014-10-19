@@ -10,6 +10,8 @@ import java.util.Stack;
 
 import org.json.simple.parser.ParseException;
 
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
+
 import Storage.*;
 import Parser.*;
 
@@ -22,17 +24,20 @@ public class Logic {
 	private HashMap<String, HashMap<DateInfo, TaskData>> taskIdentifier;
 	private Stack<Action> actionList; // for undo and redo
 	private Stack<Action> redoList;
-	private Storage storer;
+	private TaskFileStorage storer;
 	private Parser parser;
-
 	private Action action;
 
 	private ArrayList<TaskData> currentDisplayedTask;
+	private ArrayList<TaskData> completedTask;
+	private TaskFileStorage storerForCompleted;
 	static Scanner sc = new Scanner(System.in);
 
 	// ----------Constructor----------//
 
-	public Logic() throws FileNotFoundException, IOException, ParseException {
+	public Logic() throws FileNotFoundException, IOException, ParseException {		
+		storer = new TaskFileStorage("text.json");
+		storerForCompleted = new TaskFileStorage("completed.json"); //For compeleted task
 		command = null;
 		task = null;
 		taskList = new ArrayList<TaskData>();
@@ -40,11 +45,10 @@ public class Logic {
 		taskIdentifier = new HashMap<String, HashMap<DateInfo, TaskData>>();
 		actionList = new Stack<Action>();
 		redoList = new Stack<Action>();
-		storer = new TaskFileStorage("text.json"); // At the present, I load and
-													// save
-		// for file
-		// text
+		 
+		currentDisplayedTask = new ArrayList<TaskData>();
 		parser = new Parser();
+		completedTask = new ArrayList<TaskData>();
 		loadData();
 	}
 
@@ -99,6 +103,11 @@ public class Logic {
 			}
 
 		}
+		
+		completedTask = new ArrayList<TaskData>(storerForCompleted.loadData(new Option(true)));
+		
+
+		
 	}
 
 	// this method is to execute a command
@@ -154,6 +163,7 @@ public class Logic {
 		}
 		taskList.add(task);
 		taskToBeAdded.add(task);
+		currentDisplayedTask.add(0, task);
 		storer.saveData(taskToBeAdded, true);
 		taskToBeAdded.clear();
 	}
@@ -162,9 +172,10 @@ public class Logic {
 	// content
 	private void deleteTask(TaskData task) {
 
-		if (taskIdentifier.containsKey(task.getContent())) {
-			HashMap<DateInfo, TaskData> toDeleteList = taskIdentifier.get(task
-					.getContent());
+		String content = task.getContent();
+		if (isInteger(content)) deleteIndex(Integer.parseInt(content));
+		if (taskIdentifier.containsKey(content)) {
+			HashMap<DateInfo, TaskData> toDeleteList = taskIdentifier.get(content);
 			TaskData toDelete = null;
 
 			if (toDeleteList.size() == 1) {
@@ -199,6 +210,9 @@ public class Logic {
 
 			}
 			taskList.remove(toDelete);
+			if (currentDisplayedTask.contains(toDelete)) {
+				currentDisplayedTask.remove(toDelete);
+			}
 
 			Task t = new Task();
 			t.setContent(toDelete.getContent());
@@ -219,7 +233,7 @@ public class Logic {
 			System.out.print("Error-----------");
 			return;
 		} else {
-			TaskData task = currentDisplayedTask.get(index);
+			TaskData task = currentDisplayedTask.get(index - 1);
 			deleteTask(task);
 		}
 	}
@@ -360,10 +374,38 @@ public class Logic {
 		String category = task.getCategory();
 		String priority = task.getPriority();
 
-		ArrayList<TaskData> toSearch;
+		ArrayList<TaskData> toSearch = new ArrayList<TaskData>();
 		if (startTime != null && endTime != null) {
-			toSearch = storer.loadData(new Option(startTime, endTime));
-		} else {
+			startTime = startTime.minusSeconds(1);
+			endTime = endTime.plusSeconds(1);
+			for (TaskData _task : taskList) {
+
+				/*
+				 * option 1: highlight start day and end day
+				 */
+				LocalDateTime st = _task.getStartDateTime();
+				LocalDateTime et = _task.getEndDateTime();
+				if (st != null && st.isAfter(startTime) && st.isBefore(endTime)) {
+					toSearch.add(_task);
+					
+				} else if (et != null && et.isAfter(startTime)
+						&& et.isBefore(endTime)) {
+					toSearch.add(_task);
+					
+				}
+
+				
+			}
+		} else if (startTime != null ){
+			startTime = startTime.minusSeconds(1);
+			for (TaskData _task : taskList) {
+
+				LocalDateTime st = _task.getStartDateTime();
+				if (st != null && st.isAfter(startTime)) {
+					toSearch.add(_task);
+				}
+			}
+		} else  {
 			toSearch = storer.loadData(new Option(true));
 		}
 
@@ -389,7 +431,6 @@ public class Logic {
 				searchResult.add(t);
 		}
 		searchRes = displaySearch(searchResult);
-		System.out.print(displaySearch(searchResult));
 	}
 
 	private String displaySearch(ArrayList<TaskData> list) {
@@ -430,18 +471,35 @@ public class Logic {
 	}
 
 	// return data to show to UI
-	protected String dataToShow() throws IOException, ParseException {
+	protected String getTodayTask() throws IOException, ParseException {
 		LocalDateTime now = LocalDateTime.now();
 		int dateToday = now.getDayOfMonth();
 		int monthToday = now.getMonthValue();
 		int yearToday = now.getYear();
 		LocalDateTime today = LocalDateTime.of(yearToday, monthToday,
-				dateToday, 0, 0, 0);
-		LocalDateTime tomorrow = today.plusSeconds(172799);
-		ArrayList<TaskData> taskToShow = storer.loadData(new Option(today,
-				tomorrow));
+				dateToday, 0, 0, 0).minusSeconds(1);
+		LocalDateTime tomorrow = today.plusSeconds(86402);
+		ArrayList<TaskData> taskToShow = new ArrayList<TaskData>();
+		
+		for (TaskData _task : taskList) {
+
+			
+			LocalDateTime st = _task.getStartDateTime();
+			LocalDateTime et = _task.getEndDateTime();
+			if (st != null && st.isAfter(today) && st.isBefore(tomorrow)) {
+				taskToShow.add(_task);
+			} else if (et != null && et.isAfter(today)
+					&& et.isBefore(tomorrow)) {
+				taskToShow.add(_task);
+			}
+		}
+
 
 		return showToUser(taskToShow);
+	}
+	
+	protected String dataToShow() throws IOException, ParseException {
+		return showToUser(currentDisplayedTask);
 	}
 
 	private String showToUser(ArrayList<TaskData> taskToShow) {
@@ -470,9 +528,9 @@ public class Logic {
 		int month = time.getMonthValue();
 		int year = time.getYear();
 		LocalDateTime startTime = LocalDateTime.of(year, month, dayOfMonth, 0,
-				0, 0);
+				0, 0).minusSeconds(1);
 		LocalDateTime endTime = LocalDateTime.of(year, month, dayOfMonth, 23,
-				59, 59);
+				59, 59).plusSeconds(1);
 
 		ArrayList<TaskData> task = new ArrayList<TaskData>();
 
@@ -493,7 +551,8 @@ public class Logic {
 			}
 
 			/*
-			 * another option to choose if (st != null && et != null) { if
+			 * another option to choose 
+			 * if (st != null && et != null) { if
 			 * ((st.isAfter(startTime) && st.isBefore(endTime)) ||
 			 * (startTime.isAfter(st) && startTime.isBefore(et)))
 			 * task.add(_task); } else if (st != null) { if
