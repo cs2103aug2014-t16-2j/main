@@ -248,7 +248,7 @@ public class FlexiPlannerUI {
 					String userCommand = inputCommand.getText();
 					try {
 						commandFeedback.setText(logic
-								.executeInputCommand(userCommand)[0]);
+								.executeInputCommand(userCommand));
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();

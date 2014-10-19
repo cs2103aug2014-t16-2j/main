@@ -15,10 +15,14 @@ public class UICall {
 		logic = new Logic();
 	}
 
-	public String[] executeInputCommand(String command) throws IOException, ParseException {
-
-		logic.execute(command);
-		String[] a = {command +" Successful"};
+	public String executeInputCommand(String command) throws IOException, ParseException {
+		String a;		
+		if(command==null||command.isEmpty()){
+			a = "Please try with an input";
+		}else{
+			logic.execute(command);
+			a = command +" Successful";
+		}
 		return a;
 	}
 
