@@ -593,10 +593,11 @@ public class Logic {
 		LocalDateTime now = LocalDateTime.now();
 		for (TaskData _task : taskList) {
 			LocalDateTime endTime = _task.getEndDateTime();
-			if (endTime != null && endTime.isAfter(now)) {
+			if (endTime != null && endTime.isBefore(now)) {
 				overdue.add(_task);
 			}
 		}
+		if (overdue.isEmpty()) return "Great, You have completed very tasks!";
 		return showToUser(overdue);
 	}
 
