@@ -149,7 +149,7 @@ public class FlexiPlannerUI {
 		showOverDueTask.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		showOverDueTask.setForeground(Color.BLACK);
 		showOverDueTask.setBackground(Color.LIGHT_GRAY);
-		showOverDueTask.setText("Get from logic to show overdue tasks");
+		showOverDueTask.setText(logic.getOverdue());
 		showOverDueTask.setEditable(false);
 
 		showOverDueTaskScroll = new JScrollPane (showOverDueTask, 
@@ -257,7 +257,7 @@ public class FlexiPlannerUI {
 						e1.printStackTrace();
 					}
 					inputCommand.setText("");
-					showOverDueTask.setText("Get Over due Task from logic");
+					showOverDueTask.setText(logic.getOverdue());
 					showTodayTask.setText("Get today task from logic");
 					try {
 						showUserExecutedCommand.setText(logic.getData(userCommand));
@@ -285,13 +285,13 @@ public class FlexiPlannerUI {
 					}
 					break;
 				case KeyEvent.VK_F3:
-					showOverDueTask.setText("Get Over due Task from logic");
+					showOverDueTask.setText(logic.getOverdue());
 					showTodayTask.setText("Get today task from logic");
 					showUserExecutedCommand.setText("So some Undo shit");
 					refreshCalendar(actualMonth, actualYear);
 					break;
 				case KeyEvent.VK_F4:
-					showOverDueTask.setText("Get Over due Task from logic");
+					showOverDueTask.setText(logic.getOverdue());
 					showTodayTask.setText("Get today task from logic");
 					showUserExecutedCommand.setText("So some Redo shit");
 					refreshCalendar(actualMonth, actualYear);
@@ -412,21 +412,23 @@ public class FlexiPlannerUI {
 				String date = Integer.parseInt(value.toString()) + " "
 						+ months[currentDisplayedMonth] + " "
 						+ currentDisplayedYear;
+
 				if (Integer.parseInt(value.toString()) == actualDay
 						&& currentDisplayedMonth == actualMonth
 						&& currentDisplayedYear == actualYear) { // Today
 					try {
-						if (logic.hasTask(date)) {
-							setBackground(Color.RED);// set colour for current day
-							// with task
-						} else {
-							setBackground(Color.LIGHT_GRAY);// set colour current
-							// day
-						}
+					if (logic.hasTask(date)) {
+						setBackground(Color.RED);// set colour for current day
+						// with task
+					} else {
+						setBackground(Color.LIGHT_GRAY);// set colour current
+						// day
+					}
 					} catch (IOException | ParseException e) {
 						// TODO Auto-generated catch block
+						setBackground(Color.LIGHT_GRAY);
 						e.printStackTrace();
-					}setBackground(Color.LIGHT_GRAY);
+					}
 				} else
 					try {
 						if (logic.hasTask(date)) {
