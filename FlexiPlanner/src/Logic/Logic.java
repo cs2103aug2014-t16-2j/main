@@ -24,22 +24,28 @@ public class Logic {
 	private HashMap<String, HashMap<DateInfo, TaskData>> taskIdentifier;
 	private Stack<Action> actionList; // for undo and redo
 	private Stack<Action> redoList;
-	private TaskFileStorage storer;
+	private Storage storer;
 	private Parser parser;
 	private Action action;
 
 	private ArrayList<TaskData> currentDisplayedTask;
 	private ArrayList<TaskData> completedTask;
-	private TaskFileStorage storerForCompleted;
+	//private TaskFileStorage storerForCompleted;
 	static Scanner sc = new Scanner(System.in);
 
 	// ----------Constructor----------//
 
+<<<<<<< HEAD
 	public Logic() throws FileNotFoundException, IOException, ParseException {
 		storer = new TaskFileStorage("text.json");
 		storerForCompleted = new TaskFileStorage("completed.json"); // For
 																	// compeleted
 																	// task
+=======
+	public Logic() throws FileNotFoundException, IOException, ParseException {		
+		storer = new FileStorage();
+		//storerForCompleted = new TaskFileStorage("completed.json"); //For compeleted task
+>>>>>>> branch 'master' of https://github.com/cs2103aug2014-t16-2j/main.git
 		command = null;
 		task = null;
 		taskList = new ArrayList<TaskData>();
@@ -88,7 +94,7 @@ public class Logic {
 
 	// load all data saved in the file
 	private void loadData() throws IOException, ParseException {
-		taskList = new ArrayList<TaskData>(storer.loadData(new Option(true)));
+		taskList = new ArrayList<TaskData>(storer.loadTasks("text.json", new Option(true)));
 		// select all task from the day before onwards
 
 		for (TaskData t : taskList) {
@@ -105,6 +111,12 @@ public class Logic {
 			}
 
 		}
+<<<<<<< HEAD
+=======
+		
+		completedTask = new ArrayList<TaskData>(storer.loadTasks("completed.json", new Option(true)));
+		
+>>>>>>> branch 'master' of https://github.com/cs2103aug2014-t16-2j/main.git
 
 		completedTask = new ArrayList<TaskData>(
 				storerForCompleted.loadData(new Option(true)));
@@ -150,7 +162,7 @@ public class Logic {
 	}
 
 	// add a task
-	private void addTask(TaskData task) {
+	private void addTask(TaskData task) throws IOException {
 
 		String content = task.getContent();
 		if (taskIdentifier.containsKey(content)) {
@@ -166,13 +178,13 @@ public class Logic {
 		taskList.add(task);
 		taskToBeAdded.add(task);
 		currentDisplayedTask.add(0, task);
-		storer.saveData(taskToBeAdded, true);
+		storer.saveTasks("text.json", taskToBeAdded, true);
 		taskToBeAdded.clear();
 	}
 
 	// delete a task described by content -> doesn't handle task with same
 	// content
-	private void deleteTask(TaskData task) {
+	private void deleteTask(TaskData task) throws IOException {
 
 		String content = task.getContent();
 		if (isInteger(content))
@@ -231,7 +243,7 @@ public class Logic {
 		saveData();
 	}
 
-	private void deleteIndex(int index) {
+	private void deleteIndex(int index) throws IOException {
 		int size = currentDisplayedTask.size();
 		if (index < 1 || index > size) {
 			System.out.print("Error-----------");
@@ -254,7 +266,7 @@ public class Logic {
 	}
 
 	// undo. Currently undo supports undo add and delete
-	private void undo() {
+	private void undo() throws IOException {
 		if (actionList.isEmpty())
 			return;
 		Action done = actionList.pop();
@@ -276,22 +288,22 @@ public class Logic {
 
 	}
 
-	private void undoDelete(Action done) {
+	private void undoDelete(Action done) throws IOException {
 		addTask(toTaskData(done.getTask()));
 	}
 
-	private void undoAdd(Action done) {
+	private void undoAdd(Action done) throws IOException {
 		deleteTask(toTaskData(done.getTask()));
 	}
 
-	private void undoModify(Action done) {
+	private void undoModify(Action done) throws IOException {
 		modifyTask(done.getTask());
 
 	}
 
 	// modify a task
 
-	private void modifyTask(Task task) {
+	private void modifyTask(Task task) throws IOException {
 		String content = task.getContent();
 
 		if (!isInteger(content)) {
@@ -301,7 +313,7 @@ public class Logic {
 		}
 	}
 
-	private void modifyTask(Task task, String content) {
+	private void modifyTask(Task task, String content) throws IOException {
 		LocalDateTime newStartTime = task.getStartDateTime();
 		LocalDateTime newEndTime = task.getEndDateTime();
 		String newCategory = task.getCategory();
@@ -371,7 +383,7 @@ public class Logic {
 		saveData();
 	}
 
-	private void modifyIndex(Task task, int index) {
+	private void modifyIndex(Task task, int index) throws IOException {
 		int size = currentDisplayedTask.size();
 		if (index < 1 || index > size) {
 			System.out.print("Error-----------");
@@ -429,8 +441,13 @@ public class Logic {
 					toSearch.add(_task);
 				}
 			}
+<<<<<<< HEAD
 		} else {
 			toSearch = storer.loadData(new Option(true));
+=======
+		} else  {
+			toSearch = storer.loadTasks("text.json", new Option(true));
+>>>>>>> branch 'master' of https://github.com/cs2103aug2014-t16-2j/main.git
 		}
 
 		for (TaskData t : toSearch) {
@@ -469,7 +486,7 @@ public class Logic {
 	}
 
 	// mark as done
-	private void markAsDone(Task _task) {
+	private void markAsDone(Task _task) throws IOException {
 		String content = _task.getContent();
 		HashMap<DateInfo, TaskData> _taskToEdit = taskIdentifier.get(content);
 		TaskData task = null;
@@ -483,15 +500,15 @@ public class Logic {
 
 	// exit
 
-	private void exit() {
+	private void exit() throws IOException {
 		// store when exit
 		saveData();
 		System.exit(0);
 	}
 
 	//
-	private void saveData() {
-		storer.saveData(taskList, false);
+	private void saveData() throws IOException {
+		storer.saveTasks("text.json", taskList, false);
 	}
 
 	// return data to show to UI
@@ -628,7 +645,7 @@ public class Logic {
 		assert categories.length > 0;
 		for (String cat : categories) {
 			try {
-				taskInCategory.addAll(storer.loadData(new Option(cat)));
+				taskInCategory.addAll(storer.loadTasks("text.json", new Option(cat)));
 			} catch (IOException | ParseException e) {
 				continue;
 			}

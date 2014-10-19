@@ -17,7 +17,7 @@
       "content": "task "
     },
     {
-      "startDateTime": "2014-10-19T21:00",
+      "startDateTime": "2014-10-23T00:00",
       "category": null,
       "priority": null,
       "endDateTime": null,
@@ -95,22 +95,6 @@
       "endDateTime": null,
       "taskId": "2014101916495052222",
       "content": "new task "
-    },
-    {
-      "startDateTime": "2014-10-15T00:00",
-      "category": null,
-      "priority": null,
-      "endDateTime": "2014-10-30T00:00",
-      "taskId": "2014101920493007941",
-      "content": "new task "
-    },
-    {
-      "startDateTime": null,
-      "category": null,
-      "priority": null,
-      "endDateTime": null,
-      "taskId": "2014101920493192942",
-      "content": "new things "
     }
   ]
 }

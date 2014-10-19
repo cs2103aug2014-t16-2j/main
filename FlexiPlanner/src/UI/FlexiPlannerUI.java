@@ -169,7 +169,7 @@ public class FlexiPlannerUI {
 		showTodayTask.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		showTodayTask.setForeground(Color.BLACK);
 		showTodayTask.setBackground(Color.LIGHT_GRAY);
-		showTodayTask.setText("Get from logic to show today tasks");
+		showTodayTask.setText(logic.getTodayTask());
 		showTodayTask.setEditable(false);
 
 		showTodayTaskScroll = new JScrollPane (showTodayTask, 
@@ -248,7 +248,7 @@ public class FlexiPlannerUI {
 					String userCommand = inputCommand.getText();
 					try {
 						commandFeedback.setText(logic
-								.executeInputCommand(userCommand)[0]);
+								.executeInputCommand(userCommand));
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -258,8 +258,8 @@ public class FlexiPlannerUI {
 					}
 					inputCommand.setText("");
 					showOverDueTask.setText(logic.getOverdue());
-					showTodayTask.setText("Get today task from logic");
 					try {
+						showTodayTask.setText(logic.getTodayTask());
 						showUserExecutedCommand.setText(logic.getData(userCommand));
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
@@ -286,13 +286,29 @@ public class FlexiPlannerUI {
 					break;
 				case KeyEvent.VK_F3:
 					showOverDueTask.setText(logic.getOverdue());
-					showTodayTask.setText("Get today task from logic");
+					try {
+						showTodayTask.setText(logic.getTodayTask());
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (ParseException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					showUserExecutedCommand.setText("So some Undo shit");
 					refreshCalendar(actualMonth, actualYear);
 					break;
 				case KeyEvent.VK_F4:
 					showOverDueTask.setText(logic.getOverdue());
-					showTodayTask.setText("Get today task from logic");
+					try {
+						showTodayTask.setText(logic.getTodayTask());
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (ParseException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					showUserExecutedCommand.setText("So some Redo shit");
 					refreshCalendar(actualMonth, actualYear);
 					break;
@@ -417,13 +433,13 @@ public class FlexiPlannerUI {
 						&& currentDisplayedMonth == actualMonth
 						&& currentDisplayedYear == actualYear) { // Today
 					try {
-					if (logic.hasTask(date)) {
-						setBackground(Color.RED);// set colour for current day
-						// with task
-					} else {
-						setBackground(Color.LIGHT_GRAY);// set colour current
-						// day
-					}
+						if (logic.hasTask(date)) {
+							setBackground(Color.RED);// set colour for current day
+							// with task
+						} else {
+							setBackground(Color.LIGHT_GRAY);// set colour current
+							// day
+						}
 					} catch (IOException | ParseException e) {
 						// TODO Auto-generated catch block
 						setBackground(Color.LIGHT_GRAY);

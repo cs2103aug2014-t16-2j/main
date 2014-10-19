@@ -16,47 +16,26 @@ import org.json.simple.parser.ParseException;
  *
  */
 
-public class TaskFileStorage implements Storage {
+public class FileStorage implements Storage {
 	
-	private String filePath;
 	private FileManager manager;
 	private JsonCodec coder;
 	private JsonFormatter formatter;
 	
 	/** Constructor Method **/
 	
-	public TaskFileStorage() throws IOException {
-		this("tasks.json");
-	}
-	
-	public TaskFileStorage(String filePath) throws IOException {
-		assert filePath != null;
-		
-		this.setFilePath(filePath);
-		
+	public FileStorage() throws IOException {
 		manager = new FileManager();
 		coder = new JsonCodec();
 		formatter = new JsonFormatter();
-		manager.create(this.filePath);
-	}
-	
-	/** Accessor Method **/
-	
-	public String getFilePath() {
-		return filePath;
-	}
-	
-	/** Mutator Method **/
-
-	public void setFilePath(String filePath) {
-		assert filePath != null;
-		
-		this.filePath = filePath;
 	}
 
 	@Override
-	public boolean saveData(ArrayList<TaskData> taskList, boolean isAppendable) {
+	public boolean saveTasks(String filePath, ArrayList<TaskData> taskList, boolean isAppendable) throws IOException {
+		assert filePath != null;
 		assert taskList != null;
+		
+		manager.create(filePath);
 		
 		boolean isSaveSuccess = false;
 		try {
@@ -87,8 +66,10 @@ public class TaskFileStorage implements Storage {
 	}
 
 	@Override
-	public ArrayList<TaskData> loadData(Option loadOption) throws IOException, ParseException{
+	public ArrayList<TaskData> loadTasks(String filePath, Option loadOption) throws IOException, ParseException{
 		assert loadOption != null;
+		
+		manager.create(filePath);
 		
 		ArrayList<TaskData> tasksToReturn = new ArrayList<TaskData>();
 		try {
