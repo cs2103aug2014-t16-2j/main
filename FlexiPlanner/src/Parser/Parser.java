@@ -1,12 +1,13 @@
 package Parser;
 
+import java.text.NumberFormat;
+import java.text.ParsePosition;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 public class Parser {
@@ -16,16 +17,17 @@ public class Parser {
 	private final List<String> deleteCommandWords = Arrays.asList("delete", "remove", "clear");
 	private final List<String> searchCommandWords = Arrays.asList("display", "show", "find", "search");
 	private final List<String> otherCommandWords = Arrays.asList("exit", "undo", "redo");
-	private final List<String> dayWords = Arrays.asList("today", "tomorrow", "yesterday");
+	private final List<String> dayWords = Arrays.asList("today", "tomorrow", "yesterday", "tonight");
 	private final List<String> timeOfDayWords = Arrays.asList("morning", "noon", "afternoon", "evening", "night", "midnight");
 	private final List<String> dayOfWeekWords = Arrays.asList("monday","mon", "tuesday", "tue", "wednesday", "wed", "thursday", "thu", "friday", "fri", "saturday", "sat", "sunday", "sun");
 	private final List<String> datePeriodWords = Arrays.asList("day", "week", "month", "year");
-	private final List<String> dateTimeKeyWords = Arrays.asList("this", "next", "by", "last");
-	private final List<String> moreDateTimeKeyWords = Arrays.asList("after", "before");
+	private final List<String> keyWords = Arrays.asList("this", "next", "last");
+	private final List<String> moreKeyWords = Arrays.asList("after", "before", "by");
 	private final List<String> monthWords = Arrays.asList("jan", "january", "feb", "febuary", "mar", "march", "apr", "april", "may", "jun", "june", "jul", "july", "aug", "august", "sep", "september", "oct", "october", "nov", "november", "dec", "december");
 	private final List<String> ordinalNumWords = Arrays.asList("st", "nd", "rd" ,"th");
 	private final List<String> timeWords = Arrays.asList("am", "pm");
 	private final List<String> uselessWords = Arrays.asList("the", "on", "from", "to", "@", "at");
+	private final NumberFormat formatter = NumberFormat.getInstance();
 	
 	public Action getAction(String input) {
 		
@@ -74,22 +76,30 @@ public class Parser {
 	private Task getTask(MyStringList words) {
 		
 		Task t = new Task();
+		//setIsDone(words, t);
+		//setCategory(words, t);
+		//setPriority(words, t);
 		setDateTime(words, t);
 		setContent(words, t);
+		//fixTaskData(t) //fix datetime and maybe more
 		return t;
 		
 	}
 	
+	/*private void setIsDone(MyStringList words, Task t) {
+		
+		
+	}*/
+	
 	private void setDateTime(MyStringList words, Task t) {
 		
-		GregorianCalendar gc = new GregorianCalendar();
 		for (int index = 0; index < words.size(); index++) {
-			index = findDateTime(words, t, gc, index);
+			index = findDateTime(words, t, index);
 		}
 		
 	}
 
-	private int findDateTime(MyStringList words, Task t, GregorianCalendar gc, int index) {
+	private int findDateTime(MyStringList words, Task t, int index) {
 		
 		LocalDate ld = null;
 		LocalTime lt = null;
@@ -97,29 +107,32 @@ public class Parser {
 			words.remove(index);
 		}
 		if (words.get(index).length() <= 4) {
-			ld = findDateWithDay(words, index, gc);
+			ld = findDateWithDay(words, index);
 			if (ld == null) {
-				ld = findDateWithYear(words, index, gc);
+				ld = findDateWithYear(words, index);
 			}
 		}
 		if (ld == null) {
-			ld = findDateWithMonth(words, index, gc);
+			ld = findDateWithMonth(words, index);
 		}
 		if (ld == null) {
-			ld = findDate(words, index, gc);
+			ld = findDate(words, index);
 		}
 		if (ld == null) {
-			ld = findDateWithWord(words, index, gc);//get date with dayofweek or "next" or "last" or "by"
+			ld = findDateWithWord(words, index);//get date with dayofweek or "next" or "last" or "by"
+		}
+		if (ld == null) {
+			ld = findDateWithKeyWord(words, index);
 		}
 		if (ld == null) {
 			lt = findTime(words, index);
 		}
 		if (ld == null && lt == null) {
-			lt = findTimeWithWord(words, index);if(lt!=null){System.out.println(lt.toString());}
+			lt = findTimeWithWord(words, index);
 		}
 		if (ld != null || lt != null) {
 			setDateTimeToTask(t, ld, lt);
-			index -= adjustDateTimeOfTask(t, words, index - 1, gc);//adjust date with "after" or "before"
+			index -= adjustDateTimeOfTask(t, words, index - 1);
 			index -= 1 + removeUselessWord(words, index - 1);
 		}
 		return index;
@@ -160,256 +173,115 @@ public class Parser {
 		
 	}
 	
-	private int adjustDateTimeOfTask(Task t, MyStringList words, int index, GregorianCalendar gc) {
+	private int adjustDateTimeOfTask(Task t, MyStringList words, int index) {
 
-		int removedWord = 0;
 		if (index >= 0) {
 			String word = words.get(index).toLowerCase();
-			if (dateTimeKeyWords.contains(word)) {
-				changeDateTimeOfTask(t, word, gc);
-				words.remove(index);
-				removedWord++;
-				index--;
-			}
-			if (moreDateTimeKeyWords.contains(word)) {
-				removedWord += changeMoreDateTimeOfTask(t, words, index - 1, gc);
-				words.remove(index);
-				removedWord++;
-			}
-		}
-		return removedWord;
-		
-	}
-	
-	private void changeDateTimeOfTask(Task t, String word, GregorianCalendar gc) {
-		
-		LocalDateTime startDateTime = t.getStartDateTime();
-		LocalDateTime endDateTime = t.getEndDateTime();
-		switch (word) {
-			case "this" :
-				if (endDateTime == null && startDateTime.getYear() == 0) {
-					t.setStartDateTime(LocalDateTime.of(gc.get(GregorianCalendar.YEAR), gc.get(GregorianCalendar.MONTH) + 1, gc.get(GregorianCalendar.DAY_OF_MONTH), startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-				} else if (endDateTime != null && endDateTime.getYear() == 0) {
-					t.setEndDateTime(LocalDateTime.of(gc.get(GregorianCalendar.YEAR), gc.get(GregorianCalendar.MONTH) + 1, gc.get(GregorianCalendar.DAY_OF_MONTH), endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-				}
-				break;
-			case "next" :
-				if (endDateTime != null) {
-					try {
-						t.setEndDateTime(LocalDateTime.of(endDateTime.getYear(), endDateTime.getMonthValue(), endDateTime.getDayOfMonth() + 7, endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-					} catch (DateTimeException dte) {
-						try {
-							t.setEndDateTime(LocalDateTime.of(endDateTime.getYear(), endDateTime.getMonthValue() + 1, new GregorianCalendar(endDateTime.getYear(), endDateTime.getMonthValue() - 1, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH) - endDateTime.getDayOfMonth() + 7, endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-						} catch (DateTimeException dte2) {
-							t.setEndDateTime(LocalDateTime.of(endDateTime.getYear() + 1, 1, new GregorianCalendar(endDateTime.getYear(), endDateTime.getMonthValue() - 1, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH) - endDateTime.getDayOfMonth() + 7, endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-						}
-					}
-				} else {
-					try {
-						t.setEndDateTime(LocalDateTime.of(startDateTime.getYear(), startDateTime.getMonthValue(), startDateTime.getDayOfMonth() + 7, startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-					} catch (DateTimeException dte) {
-						try {
-							t.setEndDateTime(LocalDateTime.of(startDateTime.getYear(), startDateTime.getMonthValue() + 1, new GregorianCalendar(startDateTime.getYear(), startDateTime.getMonthValue() - 1, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH) - startDateTime.getDayOfMonth() + 7, startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-						} catch (DateTimeException dte2) {
-							t.setEndDateTime(LocalDateTime.of(startDateTime.getYear() + 1, 1, new GregorianCalendar(startDateTime.getYear(), startDateTime.getMonthValue() - 1, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH) - startDateTime.getDayOfMonth() + 7, startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-						}
-					}
-				}
-				break;
-			case "last" :
-				if (endDateTime != null) {
-					try {
-						t.setEndDateTime(LocalDateTime.of(endDateTime.getYear(), endDateTime.getMonthValue(), endDateTime.getDayOfMonth() - 7, endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-					} catch (DateTimeException dte) {
-						try {
-							t.setEndDateTime(LocalDateTime.of(endDateTime.getYear(), endDateTime.getMonthValue() - 1, new GregorianCalendar(endDateTime.getYear(), endDateTime.getMonthValue() - 2, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH) + endDateTime.getDayOfMonth() - 7, endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-						} catch (DateTimeException dte2) {
-							t.setEndDateTime(LocalDateTime.of(endDateTime.getYear() - 1, 12, new GregorianCalendar(endDateTime.getYear(), endDateTime.getMonthValue() - 2, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH) + endDateTime.getDayOfMonth() - 7, endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-						}
-					}
-				} else {
-					try {
-						t.setEndDateTime(LocalDateTime.of(startDateTime.getYear(), startDateTime.getMonthValue(), startDateTime.getDayOfMonth() - 7, startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-					} catch (DateTimeException dte) {
-						try {
-							t.setEndDateTime(LocalDateTime.of(startDateTime.getYear(), startDateTime.getMonthValue() - 1, new GregorianCalendar(startDateTime.getYear(), startDateTime.getMonthValue() - 2, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH) + startDateTime.getDayOfMonth() - 7, startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-						} catch (DateTimeException dte2) {
-							t.setEndDateTime(LocalDateTime.of(startDateTime.getYear() - 1, 12, new GregorianCalendar(startDateTime.getYear(), startDateTime.getMonthValue() - 2, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH) + startDateTime.getDayOfMonth() - 7, startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-						}
-					}
-				}
-				break;
-			case "by" :
-				if (endDateTime == null) {
-					t.setEndDateTime(startDateTime);
-					t.setStartDateTime(LocalDateTime.of(gc.get(GregorianCalendar.YEAR), gc.get(GregorianCalendar.MONTH) + 1, gc.get(GregorianCalendar.DAY_OF_MONTH), 0, 0));
-				}
-				break;
-			default :
-		}
-		
-	}
-	
-	private int changeMoreDateTimeOfTask(Task t, MyStringList words, int index, GregorianCalendar gc) {
-		
-		if (index >= 0) {
-			String word = words.get(index).toLowerCase();
-			switch (word) {
-				case "after" :
-					return changeDateTimeWithPeriodWord(t, words, index - 1, gc, 1);
-				case "before" :
-					return changeDateTimeWithPeriodWord(t, words, index - 1, gc, -1);
-				default :
+			if (moreKeyWords.contains(word)) {
+				return changeDateTimeOfTask(t, words, index);
 			}
 		}
 		return 0;
 		
 	}
 	
-	private int changeDateTimeWithPeriodWord(Task t, MyStringList words, int index, GregorianCalendar gc, int addOrMinus) {
+	private LocalDate findDateWithKeyWord(MyStringList words, int index) {
 		
-		if (index >= 0) {
+		LocalDate ld = null;
+		if (keyWords.contains(words.get(index).toLowerCase())) {
+			ld = getDateWithDayOfWeekWord(words, index + 1);
+			switch (words.get(index)) {
+				case "this" :
+					if (ld == null) {
+						ld = getDateWithPeriodWord(words, index + 1, 0);
+					}
+					break;
+				case "next" :
+					if (ld != null) {
+						ld = ld.plusWeeks(1);
+					} else {
+						ld = getDateWithPeriodWord(words, index + 1, 1);
+					}
+					break;
+				case "last" :
+					if (ld != null) {
+						ld = ld.plusWeeks(-1);
+					} else {
+						ld = getDateWithPeriodWord(words, index + 1, -1);
+					}
+				default :
+			}
+			if (ld != null) {
+				words.remove(index);
+			}
+		}
+		return ld;
+		
+	}
+	
+	private int changeDateTimeOfTask(Task t, MyStringList words, int index) {
+		
+		String word = words.get(index).toLowerCase();
+		int numOfWordsRemoved = 0;
+		switch (word) {
+			case "after" :
+				numOfWordsRemoved = changeDateTimeWithPeriodWord(t, words, index - 1, 1);
+				break;
+			case "before" :
+				numOfWordsRemoved = changeDateTimeWithPeriodWord(t, words, index - 1, -1);
+				if (numOfWordsRemoved != 0) {
+					break;
+				}
+			case "by" :
+				LocalDateTime startDateTime = t.getStartDateTime();
+				LocalDateTime endDateTime = t.getEndDateTime();
+				if (endDateTime == null) {
+					t.setEndDateTime(startDateTime);
+					t.setStartDateTime(LocalDateTime.now());
+				}
+		}
+		words.remove(index);
+		numOfWordsRemoved++;
+		return numOfWordsRemoved;
+		
+	}
+	
+	private int changeDateTimeWithPeriodWord(Task t, MyStringList words, int index, int multiplier) {
+		
+		if (index >= 0 && datePeriodWords.contains(words.get(index))) {
 			String word = words.get(index).toLowerCase();
 			LocalDateTime startDateTime = t.getStartDateTime();
 			LocalDateTime endDateTime = t.getEndDateTime();
 			switch (word) {
 				case "day" :
 					if (endDateTime != null) {
-						try {
-							t.setEndDateTime(LocalDateTime.of(endDateTime.getYear(), endDateTime.getMonthValue(), endDateTime.getDayOfMonth() + addOrMinus, endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-						} catch (DateTimeException dte) {
-							try {
-								if (addOrMinus > 0) {
-									t.setEndDateTime(LocalDateTime.of(endDateTime.getYear(), endDateTime.getMonthValue() + 1, 1, endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-								} else if (addOrMinus < 0) {
-									t.setEndDateTime(LocalDateTime.of(endDateTime.getYear(), endDateTime.getMonthValue() - 1, new GregorianCalendar(endDateTime.getYear(), endDateTime.getMonthValue() - 2, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH), endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-								}
-							} catch (DateTimeException dte2) {
-								if (addOrMinus > 0) {
-									t.setEndDateTime(LocalDateTime.of(endDateTime.getYear() + 1, 1, 1, endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-								} else if (addOrMinus < 0) {
-									t.setEndDateTime(LocalDateTime.of(endDateTime.getYear() - 1, 12, new GregorianCalendar(endDateTime.getYear() - 1, 12, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH), endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-								}
-							}
-						}
+						t.setEndDateTime(endDateTime.plusDays(multiplier));
 					} else {
-						try {
-							t.setStartDateTime(LocalDateTime.of(startDateTime.getYear(), startDateTime.getMonthValue(), startDateTime.getDayOfMonth() + addOrMinus, startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-						} catch (DateTimeException dte) {
-							try {
-								if (addOrMinus > 0) {
-									t.setStartDateTime(LocalDateTime.of(startDateTime.getYear(), startDateTime.getMonthValue() + 1, 1, startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-								} else if (addOrMinus < 0) {
-									t.setStartDateTime(LocalDateTime.of(startDateTime.getYear(), startDateTime.getMonthValue() - 1, new GregorianCalendar(startDateTime.getYear(), startDateTime.getMonthValue() - 2, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH), startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-								}
-							} catch (DateTimeException dte2) {
-								if (addOrMinus > 0) {
-									t.setStartDateTime(LocalDateTime.of(startDateTime.getYear() + 1, 1, 1, startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-								} else if (addOrMinus < 0) {
-									t.setStartDateTime(LocalDateTime.of(startDateTime.getYear() - 1, 12, new GregorianCalendar(startDateTime.getYear() - 1, 12, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH), startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-								}
-							}
-						}
+						t.setStartDateTime(startDateTime.plusDays(multiplier));
 					}
 					words.remove(index);
 					return 1;
 				case "week" :
 					if (endDateTime != null) {
-						try {
-							t.setEndDateTime(LocalDateTime.of(endDateTime.getYear(), endDateTime.getMonthValue(), endDateTime.getDayOfMonth() + 7 * addOrMinus, endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-						} catch (DateTimeException dte) {
-							try {
-								if (addOrMinus > 0) {
-									t.setEndDateTime(LocalDateTime.of(endDateTime.getYear(), endDateTime.getMonthValue() + 1, endDateTime.getDayOfMonth() + 7 - new GregorianCalendar(endDateTime.getYear(), endDateTime.getMonthValue() - 1, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH), endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-								} else if (addOrMinus < 0) {
-									t.setEndDateTime(LocalDateTime.of(endDateTime.getYear(), endDateTime.getMonthValue() - 1, new GregorianCalendar(endDateTime.getYear(), endDateTime.getMonthValue() - 2, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH) + endDateTime.getDayOfMonth() - 7, endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-								}
-							} catch (DateTimeException dte2) {
-								if (addOrMinus > 0) {
-									t.setEndDateTime(LocalDateTime.of(endDateTime.getYear() + 1, 1, endDateTime.getDayOfMonth() + 7 - new GregorianCalendar(endDateTime.getYear(), endDateTime.getMonthValue(), 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH), endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-								} else if (addOrMinus < 0) {
-									t.setEndDateTime(LocalDateTime.of(endDateTime.getYear() - 1, 12, new GregorianCalendar(endDateTime.getYear() - 1, 12, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH) + endDateTime.getDayOfMonth() - 7, endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-								}
-							}
-						}
+						t.setEndDateTime(endDateTime.plusWeeks(multiplier));
 					} else {
-						try {
-							t.setStartDateTime(LocalDateTime.of(startDateTime.getYear(), startDateTime.getMonthValue(), startDateTime.getDayOfMonth() + 7 * addOrMinus, startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-						} catch (DateTimeException dte) {
-							try {
-								if (addOrMinus > 0) {
-									t.setStartDateTime(LocalDateTime.of(startDateTime.getYear(), startDateTime.getMonthValue() + 1, startDateTime.getDayOfMonth() + 7 - new GregorianCalendar(startDateTime.getYear(), startDateTime.getMonthValue() - 1, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH), startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-								} else if (addOrMinus < 0) {
-									t.setStartDateTime(LocalDateTime.of(startDateTime.getYear(), startDateTime.getMonthValue() - 1, new GregorianCalendar(startDateTime.getYear(), startDateTime.getMonthValue() - 2, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH) + startDateTime.getDayOfMonth() - 7, startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-								}
-							} catch (DateTimeException dte2) {
-								if (addOrMinus > 0) {
-									t.setStartDateTime(LocalDateTime.of(startDateTime.getYear() + 1, 1, startDateTime.getDayOfMonth() + 7 - new GregorianCalendar(startDateTime.getYear(), startDateTime.getMonthValue(), 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH), startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-								} else if (addOrMinus < 0) {
-									t.setStartDateTime(LocalDateTime.of(startDateTime.getYear() - 1, 12, new GregorianCalendar(startDateTime.getYear() - 1, 12, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH) + startDateTime.getDayOfMonth() - 7, startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-								}
-							}
-						}
+						t.setStartDateTime(startDateTime.plusWeeks(multiplier));
 					}
 					words.remove(index);
 					return 1;
 				case "month" :
 					if (endDateTime != null) {
-						try {
-							t.setEndDateTime(LocalDateTime.of(endDateTime.getYear(), endDateTime.getMonthValue(), endDateTime.getDayOfMonth() + 7 * addOrMinus, endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-						} catch (DateTimeException dte) {
-							try {
-								if (addOrMinus > 0) {
-									t.setEndDateTime(LocalDateTime.of(endDateTime.getYear(), endDateTime.getMonthValue() + 1, endDateTime.getDayOfMonth() + 7 - new GregorianCalendar(endDateTime.getYear(), endDateTime.getMonthValue() - 1, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH), endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-								} else if (addOrMinus < 0) {
-									t.setEndDateTime(LocalDateTime.of(endDateTime.getYear(), endDateTime.getMonthValue() - 1, new GregorianCalendar(endDateTime.getYear(), endDateTime.getMonthValue() - 2, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH) + endDateTime.getDayOfMonth() - 7, endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-								}
-							} catch (DateTimeException dte2) {
-								if (addOrMinus > 0) {
-									t.setEndDateTime(LocalDateTime.of(endDateTime.getYear() + 1, 1, endDateTime.getDayOfMonth() + 7 - new GregorianCalendar(endDateTime.getYear(), endDateTime.getMonthValue(), 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH), endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-								} else if (addOrMinus < 0) {
-									t.setEndDateTime(LocalDateTime.of(endDateTime.getYear() - 1, 12, new GregorianCalendar(endDateTime.getYear() - 1, 12, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH) + endDateTime.getDayOfMonth() - 7, endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-								}
-							}
-						}
+						t.setEndDateTime(endDateTime.plusMonths(multiplier));
 					} else {
-						try {
-							t.setStartDateTime(LocalDateTime.of(startDateTime.getYear(), startDateTime.getMonthValue() + addOrMinus, startDateTime.getDayOfMonth(), startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-						} catch (DateTimeException dte) {
-							try {
-								t.setStartDateTime(LocalDateTime.of(startDateTime.getYear(), startDateTime.getMonthValue() + addOrMinus, new GregorianCalendar(startDateTime.getYear(), startDateTime.getMonthValue() - 1 + addOrMinus, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH), startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-							} catch (DateTimeException dte2) {
-								try {
-									if (addOrMinus > 0) {
-										t.setStartDateTime(LocalDateTime.of(startDateTime.getYear() + 1, 1, startDateTime.getDayOfMonth(), startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-									} else if (addOrMinus < 0) {
-										t.setStartDateTime(LocalDateTime.of(startDateTime.getYear() - 1, 12, startDateTime.getDayOfMonth(), startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-									}
-								} catch (DateTimeException dte3) {
-									if (addOrMinus > 0) {
-										t.setStartDateTime(LocalDateTime.of(startDateTime.getYear() + 1, 1, new GregorianCalendar(startDateTime.getYear() + 1, 1, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH), startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-									} else if (addOrMinus < 0) {
-										t.setStartDateTime(LocalDateTime.of(startDateTime.getYear() - 1, 12, new GregorianCalendar(startDateTime.getYear() - 1, 12, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH), startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-									}
-								}
-							}
-						}
+						t.setStartDateTime(startDateTime.plusMonths(multiplier));
 					}
 					words.remove(index);
 					return 1;
 				case "year" :
 					if (endDateTime != null) {
-						try {
-							t.setEndDateTime(LocalDateTime.of(endDateTime.getYear() + addOrMinus, endDateTime.getMonthValue(), endDateTime.getDayOfMonth(), endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-						} catch (DateTimeException dte) {
-							t.setEndDateTime(LocalDateTime.of(endDateTime.getYear() + addOrMinus, endDateTime.getMonthValue(), new GregorianCalendar(endDateTime.getYear() + addOrMinus, endDateTime.getMonthValue() - 1, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH), endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
-						}
+						t.setEndDateTime(endDateTime.plusYears(multiplier));
 					} else {
-						try {
-							t.setStartDateTime(LocalDateTime.of(startDateTime.getYear() + addOrMinus, startDateTime.getMonthValue(), startDateTime.getDayOfMonth(), startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-						} catch (DateTimeException dte) {
-							t.setStartDateTime(LocalDateTime.of(startDateTime.getYear() + addOrMinus, startDateTime.getMonthValue(), new GregorianCalendar(startDateTime.getYear() + addOrMinus, startDateTime.getMonthValue() - 1, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH), startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond()));
-						}
+						t.setStartDateTime(startDateTime.plusYears(multiplier));
 					}
 					words.remove(index);
 					return 1;
@@ -420,7 +292,7 @@ public class Parser {
 		
 	}
 	
-	private LocalDate findDateWithDay(MyStringList words, int index, GregorianCalendar gc){
+	private LocalDate findDateWithDay(MyStringList words, int index){
 		
 		if (index + 1 < words.size()) {
 			int day = getDay(words.get(index));
@@ -439,7 +311,7 @@ public class Parser {
 					}
 					words.remove(index + 1);
 					words.remove(index);
-					return LocalDate.of(gc.get(GregorianCalendar.YEAR), mth, day);
+					return LocalDate.now().withMonth(mth).withDayOfMonth(day);
 				}
 			}
 		}
@@ -447,7 +319,7 @@ public class Parser {
 		
 	}
 	
-	private LocalDate findDateWithMonth(MyStringList words, int index, GregorianCalendar gc){
+	private LocalDate findDateWithMonth(MyStringList words, int index){
 
 		if (index + 1 < words.size()) {
 			int mth = getMonth(words.get(index));
@@ -466,7 +338,7 @@ public class Parser {
 					}
 					words.remove(index + 1);
 					words.remove(index);
-					return LocalDate.of(gc.get(GregorianCalendar.YEAR), mth, day);
+					return LocalDate.now().withMonth(mth).withDayOfMonth(day);
 				}
 			}
 		}
@@ -474,7 +346,7 @@ public class Parser {
 		
 	}
 	
-	private LocalDate findDateWithYear(MyStringList words, int index, GregorianCalendar gc){
+	private LocalDate findDateWithYear(MyStringList words, int index){
 
 		if (index + 2 < words.size()) {
 			int yr = getYear(words.get(index));
@@ -506,7 +378,7 @@ public class Parser {
 		
 	}
 	
-	private LocalDate findDate(MyStringList words, int index, GregorianCalendar gc) {
+	private LocalDate findDate(MyStringList words, int index) {
 
 		MyStringList s = new MyStringList();
 		LocalDate ld = null;
@@ -517,12 +389,12 @@ public class Parser {
 		} else if (words.get(index).contains("-")) {
 			s.addAll(Arrays.asList(words.get(index).split("-")));
 		}
-		ld = findDateWithDay(s, 0, gc);
+		ld = findDateWithDay(s, 0);
 		if (ld == null) {
-			ld = findDateWithMonth(s, 0, gc);
+			ld = findDateWithMonth(s, 0);
 		}
 		if (ld == null) {
-			ld = findDateWithYear(s, 0, gc);
+			ld = findDateWithYear(s, 0);
 		}
 		if (ld != null) {
 			words.remove(index);
@@ -573,13 +445,13 @@ public class Parser {
 		
 	}
 	
-	private LocalDate findDateWithWord(MyStringList words, int index, GregorianCalendar gc) {
+	private LocalDate findDateWithWord(MyStringList words, int index) {
 		
 		String word = words.get(index).toLowerCase();
 		if (dayWords.contains(word)) {
-			return getDateWithDayWord(words, index, gc);
+			return getDateWithDayWord(words, index);
 		} else if (dayOfWeekWords.contains(word)){
-			return getDateWithDayOfWeekWord(words, index, gc);
+			return getDateWithDayOfWeekWord(words, index);
 		}
 		return null;
 		
@@ -596,58 +468,37 @@ public class Parser {
 		
 	}
 	
-	private LocalDate getDateWithDayWord(MyStringList words, int index, GregorianCalendar gc) {
+	private LocalDate getDateWithDayWord(MyStringList words, int index) {
 		
 		String word = words.get(index);
+		words.remove(index);
 		switch (word) {
+			case "tonight" :
+				words.add(index, "night");
 			case "today" :
-				words.remove(index);
-				return LocalDate.of(gc.get(GregorianCalendar.YEAR), gc.get(GregorianCalendar.MONTH) + 1, gc.get(GregorianCalendar.DAY_OF_MONTH));
+				return LocalDate.now();
 			case "tomorrow" :
-				words.remove(index);
-				try {
-					return LocalDate.of(gc.get(GregorianCalendar.YEAR), gc.get(GregorianCalendar.MONTH) + 1, gc.get(GregorianCalendar.DAY_OF_MONTH) + 1);
-				} catch (DateTimeException dte) {
-					try {
-						return LocalDate.of(gc.get(GregorianCalendar.YEAR), gc.get(GregorianCalendar.MONTH) + 2, 1);
-					} catch (DateTimeException dte2) {
-						return LocalDate.of(gc.get(GregorianCalendar.YEAR) + 1, 1, 1);
-					}
-				}
+				return LocalDate.now().plusDays(1);
 			case "yesterday" :
-				words.remove(index);
-				try {
-					return LocalDate.of(gc.get(GregorianCalendar.YEAR), gc.get(GregorianCalendar.MONTH) + 1, gc.get(GregorianCalendar.DAY_OF_MONTH) - 1);
-				} catch (DateTimeException dte) {
-					try {
-						return LocalDate.of(gc.get(GregorianCalendar.YEAR), gc.get(GregorianCalendar.MONTH), new GregorianCalendar(gc.get(GregorianCalendar.YEAR), gc.get(GregorianCalendar.MONTH) - 1, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH));
-					} catch (DateTimeException dte2) {
-						return LocalDate.of(gc.get(GregorianCalendar.YEAR) + 1, 12, new GregorianCalendar(gc.get(GregorianCalendar.YEAR) - 1, 11, 1).getActualMaximum(GregorianCalendar.DAY_OF_MONTH));
-					}
-				}
+				return LocalDate.now().plusDays(-1);
 			default :
-				return null;
 		}
+		return null;
 		
 	}
 	
-	private LocalDate getDateWithDayOfWeekWord(MyStringList words, int index, GregorianCalendar gc) {
+	private LocalDate getDateWithDayOfWeekWord(MyStringList words, int index) {
 		
-		int day = getNumeric(words.get(index).toLowerCase()); System.out.println(day);
-		int dayToAdd = day - gc.get(GregorianCalendar.DAY_OF_WEEK) + 1;
-		if (dayToAdd < 0) {
-			dayToAdd += 7;
-		}
-		words.remove(index);
-		try {
-			return LocalDate.of(gc.get(GregorianCalendar.YEAR), gc.get(GregorianCalendar.MONTH) + 1, gc.get(GregorianCalendar.DAY_OF_MONTH) + dayToAdd);
-		} catch (DateTimeException dte) {
-			try {
-				return LocalDate.of(gc.get(GregorianCalendar.YEAR), gc.get(GregorianCalendar.MONTH) + 2, gc.get(GregorianCalendar.DAY_OF_MONTH) + dayToAdd - gc.getActualMaximum(GregorianCalendar.DAY_OF_MONTH));
-			} catch (DateTimeException dte2) {
-				return LocalDate.of(gc.get(GregorianCalendar.YEAR) + 1, 1, gc.get(GregorianCalendar.DAY_OF_MONTH) + dayToAdd - gc.getActualMaximum(GregorianCalendar.DAY_OF_MONTH));
+		if (index < words.size()) {
+			int day = getNumeric(words.get(index).toLowerCase());
+			int daysToAdd = day - LocalDate.now().getDayOfWeek().getValue();
+			if (daysToAdd < 0) {
+				daysToAdd += 7;
 			}
+			words.remove(index);
+			return LocalDate.now().plusDays(daysToAdd);
 		}
+		return null;
 		
 	}
 	
@@ -672,15 +523,34 @@ public class Parser {
 		
 	}
 	
+	private LocalDate getDateWithPeriodWord(MyStringList words, int index, int multiplier) {
+		
+		if (index < words.size() && datePeriodWords.contains(words.get(index))) {
+			switch (words.get(index).toLowerCase()) {
+				case "day" :
+					return LocalDate.now().plusDays(multiplier);
+				case "week" :
+					return LocalDate.now().plusWeeks(multiplier);
+				case "month" :
+					return LocalDate.now().plusMonths(multiplier);
+				case "year" :
+					return LocalDate.now().plusYears(multiplier);
+				default :
+			}
+		}
+		return null;
+		
+	}
+	
 	private int getDay(String s) {
 		
 		if (s.length() <= 4) {
-			try {
+			if (isNumeric(s)) {
 				int num = Integer.parseInt(s);
 				if (num <= 31 && num > 0){
 					return num;
 				}
-			} catch (Exception e) {
+			} else {
 				for (String onw : ordinalNumWords) {
 					if (s.endsWith(onw)) {
 						return getDay(s.substring(0, s.lastIndexOf(onw)));
@@ -694,12 +564,12 @@ public class Parser {
 	
 	private int getMonth(String s) {
 		
-		try {
+		if (isNumeric(s)) {
 			int num = Integer.parseInt(s);
 			if (num <= 12 && num > 0){
 				return num;
 			}
-		} catch (Exception e) {
+		} else {
 			for (String m : monthWords) {
 				if (s.equalsIgnoreCase(m)) {
 					return getNumeric(m);
@@ -712,12 +582,11 @@ public class Parser {
 	
 	private int getYear(String s) {
 		
-		try {
+		if (isNumeric(s)) {
 			int num = Integer.parseInt(s);
 			if (num < 10000 && num > 999){
 				return num;
 			}
-		} catch (Exception e) {
 		}
 		return 0;
 		
@@ -726,23 +595,28 @@ public class Parser {
 	private LocalTime getTime(MyStringList s, int hrToAdd) {
 		
 		if (!s.isEmpty()) {
+			for (int i = 0; i < s.size(); i++) {
+				if (!isNumeric(s.get(i))) {
+					return null;
+				}
+			}
+			int hr = 0;
+			int min = 0;
+			int sec = 0;
+			switch (s.size()) {
+				case 3 :
+					sec = Integer.parseInt(s.get(2));
+				case 2 :
+					min = Integer.parseInt(s.get(1));
+				case 1 :
+					hr = Integer.parseInt(s.get(0));
+			}
+			if (hr != 12 && hr + hrToAdd <= 24) {
+				hr += hrToAdd;
+			}
 			try {
-				int hr = 0;
-				int min = 0;
-				int sec = 0;
-				switch (s.size()) {
-					case 3 :
-						sec = Integer.parseInt(s.get(2));
-					case 2 :
-						min = Integer.parseInt(s.get(1));
-					case 1 :
-						hr = Integer.parseInt(s.get(0));
-				}
-				if (hr != 12 && hr + hrToAdd <= 24) {
-					hr += hrToAdd;
-				}
 				return LocalTime.of(hr, min, sec);
-			} catch (Exception e) {
+			} catch (DateTimeException dte) {
 			}
 		}
 		return null;
@@ -784,7 +658,7 @@ public class Parser {
 			case "tue" :
 			case "tuesday" :
 			case "feb" :
-			case "febuary" :
+			case "february" :
 				return 2;
 			case "wed" :
 			case "wednesday" :
@@ -829,6 +703,16 @@ public class Parser {
 				return 0;
 		}
 		
+	}
+	
+	private boolean isNumeric(String word) {
+		
+		ParsePosition pos = new ParsePosition(0);
+		formatter.parse(word, pos);
+		if (word.length() == pos.getIndex()) {
+			return true;
+		}
+		return false;
 	}
 }
 
