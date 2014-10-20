@@ -63,11 +63,11 @@ public class FlexiPlannerUI {
 	"December" };
 	private String day;
 
-	private static UICall logic;
+	private static Logic logic;
 
 	public FlexiPlannerUI() {
 		try {
-			logic  = new UICall();
+			logic  = new Logic();
 		} catch (FileNotFoundException e) {
 			System.out.println("Error");
 		} catch (IOException e) {
