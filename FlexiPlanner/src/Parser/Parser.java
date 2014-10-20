@@ -23,7 +23,7 @@ public class Parser {
 	private final List<String> datePeriodWords = Arrays.asList("day", "week", "month", "year");
 	private final List<String> keyWords = Arrays.asList("this", "next", "last");
 	private final List<String> moreKeyWords = Arrays.asList("after", "before", "by");
-	private final List<String> monthWords = Arrays.asList("jan", "january", "feb", "febuary", "mar", "march", "apr", "april", "may", "jun", "june", "jul", "july", "aug", "august", "sep", "september", "oct", "october", "nov", "november", "dec", "december");
+	private final List<String> monthWords = Arrays.asList("jan", "january", "feb", "february", "mar", "march", "apr", "april", "may", "jun", "june", "jul", "july", "aug", "august", "sep", "september", "oct", "october", "nov", "november", "dec", "december");
 	private final List<String> ordinalNumWords = Arrays.asList("st", "nd", "rd" ,"th");
 	private final List<String> timeWords = Arrays.asList("am", "pm");
 	private final List<String> uselessWords = Arrays.asList("the", "on", "from", "to", "@", "at");
