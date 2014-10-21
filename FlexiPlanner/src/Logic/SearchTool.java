@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Scanner;
 import java.util.List;
 
 import org.json.simple.parser.ParseException;
@@ -15,18 +14,18 @@ import Parser.*;
 import Storage.*;
 
 public class SearchTool {
-	private static Scanner sc;
-	private Parser parser;
+	
+	private final String message = "xxxxxxxxxxxxxxxxxxxx";
 
-	public SearchTool () {
-		sc = new Scanner(System.in);
-		parser = new Parser();
-	}
+	
 	public TaskData findTaskByContentandDate(TaskData task,
 			HashMap<DateInfo, TaskData> toFindList) {
+		
+
 		TaskData taskFound = null;
 		LocalDateTime st = task.getStartDateTime();
 		LocalDateTime et = task.getEndDateTime();
+		
 		if (toFindList.size() == 1) {
 			for (TaskData _task : toFindList.values()) {
 				taskFound = _task;
@@ -40,40 +39,29 @@ public class SearchTool {
 				taskFound = null;
 		} else if (toFindList.size() > 1) {
 			if (st == null && et == null) {
-				System.out.print("Provide start and end time\n"); // ask for
-																	// date
-																	// and
-																	// time
-																	// to
-																	// specify
-
-				String s = sc.nextLine();
-				Task _task = parser.getAction(s).getTask();
-				st = _task.getStartDateTime();
-				et = _task.getEndDateTime();
+				taskFound = new TaskData();
+				taskFound.setContent(message);
+				return taskFound;
 			}
-			DateInfo d = new DateInfo(st, et);
+			DateInfo d = new DateInfo(st, et);	
 			if (toFindList.containsKey(d)) {
 				taskFound = toFindList.get(d);
 			}
+			
 
 		}
 		return taskFound;
 	}
 
-	
-
 	public String search(ArrayList<TaskData> taskList, Task task)
-			throws IOException, ParseException {		
+			throws IOException, ParseException {
 		String content = task.getContent();
 		String[] words = content.split(" "); // keyword for searching
 		LocalDateTime startTime = task.getStartDateTime();
-		LocalDateTime endTime = task.getEndDateTime();
-									// search in between startTime and endTime
-		String category = task.getCategory();
-									// search in category
-		String priority = task.getPriority();
-									// search by priority
+		LocalDateTime endTime = task.getEndDateTime(); // search in between
+														// startTime and endTime
+		String category = task.getCategory(); // search in category
+		String priority = task.getPriority(); // search by priority
 		ArrayList<TaskData> searchResult = new ArrayList<TaskData>();
 		searchResult = filterByTime(taskList, startTime, endTime);
 		if (category != null)
@@ -81,11 +69,9 @@ public class SearchTool {
 		if (priority != null)
 			searchResult = filterByPriority(searchResult, priority.split(" "));
 		searchResult = filterByKeywords(searchResult, words);
-		
+
 		return displaySearch(searchResult);
 	}
-
-
 
 	private ArrayList<TaskData> filterByTime(ArrayList<TaskData> taskList,
 			LocalDateTime startTime, LocalDateTime endTime) {
@@ -118,11 +104,13 @@ public class SearchTool {
 		}
 		return searchResult;
 	}
-	
-	private ArrayList<TaskData> filterByCategory (ArrayList<TaskData> taskList, String[] _category) {
+
+	private ArrayList<TaskData> filterByCategory(ArrayList<TaskData> taskList,
+			String[] _category) {
 		ArrayList<TaskData> searchResult = new ArrayList<TaskData>();
-		List<String> _cat =  Arrays.asList(_category);
-		if (_category.length == 0) return taskList;
+		List<String> _cat = Arrays.asList(_category);
+		if (_category.length == 0)
+			return taskList;
 		else {
 			for (TaskData t : taskList) {
 				if (_cat.contains(t.getCategory()))
@@ -131,11 +119,13 @@ public class SearchTool {
 			return searchResult;
 		}
 	}
-	
-	private ArrayList<TaskData> filterByPriority (ArrayList<TaskData> taskList, String[] _priority) {
+
+	private ArrayList<TaskData> filterByPriority(ArrayList<TaskData> taskList,
+			String[] _priority) {
 		ArrayList<TaskData> searchResult = new ArrayList<TaskData>();
-		List<String> _prior =  Arrays.asList(_priority);
-		if (_prior.isEmpty()) return taskList;
+		List<String> _prior = Arrays.asList(_priority);
+		if (_prior.isEmpty())
+			return taskList;
 		else {
 			for (TaskData t : taskList) {
 				if (_prior.contains(t.getPriority()))
@@ -144,8 +134,9 @@ public class SearchTool {
 			return searchResult;
 		}
 	}
-	
-	private ArrayList<TaskData> filterByKeywords(ArrayList<TaskData> taskList, String[] _words) {
+
+	private ArrayList<TaskData> filterByKeywords(ArrayList<TaskData> taskList,
+			String[] _words) {
 		ArrayList<TaskData> searchResult = new ArrayList<TaskData>();
 		for (TaskData t : taskList) {
 			boolean isContained = true;
