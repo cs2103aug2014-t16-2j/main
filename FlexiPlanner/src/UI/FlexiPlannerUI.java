@@ -187,7 +187,7 @@ public class FlexiPlannerUI {
 		showUserExecutedCommandScroll = new JScrollPane (showUserExecutedCommand, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		showUserExecutedCommandScroll.setBounds(320, 120, 410, 170);		
-
+		showUserExecutedCommandScroll.getVerticalScrollBar().getModel().getValue();
 		commandFeedback = new JLabel("");
 		commandFeedback.setBackground(new Color(240, 240, 240));
 		commandFeedback.setForeground(Color.RED);
@@ -235,14 +235,19 @@ public class FlexiPlannerUI {
 		nextMonth.addActionListener(new Next_Action());
 		selectYear.addActionListener(new Years_Action());
 		inputCommand.requestFocusInWindow();
-		executeKeyAction(commandFeedback,showOverDueTask,showTodayTask,showUserExecutedCommand);
+		executeKeyAction(commandFeedback,showOverDueTask,showTodayTask,showUserExecutedCommand,
+				showOverDueTaskScroll,showTodayTaskScroll,showUserExecutedCommandScroll);
 	}
 
 	private void executeKeyAction(final JLabel commandFeedback,final JTextArea showOverDueTask,
-			final JTextArea showTodayTask,final JTextArea showUserExecutedCommand) {
+			final JTextArea showTodayTask,final JTextArea showUserExecutedCommand, 
+			final JScrollPane showOverDueTaskScroll, final JScrollPane showTodayTaskScroll ,final JScrollPane showUserExecutedCommandScroll) {
 		inputCommand.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				int key = e.getKeyCode();
+				int overDueScrollPane = showOverDueTaskScroll.getVerticalScrollBar().getModel().getValue();
+				int valueTodayScrollPane = showTodayTaskScroll.getVerticalScrollBar().getModel().getValue();
+				int valueCustomTextArea=showUserExecutedCommandScroll.getVerticalScrollBar().getModel().getValue();
 				switch (key){
 				case KeyEvent.VK_ENTER: 
 					String userCommand = inputCommand.getText();
@@ -311,6 +316,24 @@ public class FlexiPlannerUI {
 					}
 					showUserExecutedCommand.setText("So some Redo shit");
 					refreshCalendar(actualMonth, actualYear);
+					break;
+				case KeyEvent.VK_F5:
+					showOverDueTaskScroll.getVerticalScrollBar().getModel().setValue(overDueScrollPane-5);
+					break;
+				case KeyEvent.VK_F6:
+					showOverDueTaskScroll.getVerticalScrollBar().getModel().setValue(overDueScrollPane+5);
+					break;
+				case KeyEvent.VK_F7:
+					showTodayTaskScroll.getVerticalScrollBar().getModel().setValue(valueTodayScrollPane-5);
+					break;
+				case KeyEvent.VK_F8:
+					showTodayTaskScroll.getVerticalScrollBar().getModel().setValue(valueTodayScrollPane+5);
+					break;
+				case KeyEvent.VK_F9:
+					showUserExecutedCommandScroll.getVerticalScrollBar().getModel().setValue(valueCustomTextArea-5);
+					break;
+				case KeyEvent.VK_F10:
+					showUserExecutedCommandScroll.getVerticalScrollBar().getModel().setValue(valueCustomTextArea+5);
 					break;
 				case KeyEvent.VK_PAGE_UP:
 					if (currentDisplayedMonth  == 0 && currentDisplayedYear == actualYear) {
