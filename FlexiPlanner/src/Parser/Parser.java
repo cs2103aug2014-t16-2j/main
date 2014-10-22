@@ -28,6 +28,12 @@ public class Parser {
 	private final List<String> timeWords = Arrays.asList("am", "pm");
 	private final List<String> uselessWords = Arrays.asList("the", "on", "from", "to", "@", "at");
 	private final NumberFormat formatter = NumberFormat.getInstance();
+	private final String CATEGORY_SYMBOL = "#";
+	private final String PRIORITY_SYMBOL = "!";
+	private final String PRIORITY_VERY_HIGH = "very high";
+	private final String PRIORITY_HIGH = "high";
+	private final String PRIORITY_NORMAL = "normal";
+	private final int MAX_PRIORITY_LEVEL = 2;
 	
 	public Action getAction(String input) {
 		
@@ -69,27 +75,101 @@ public class Parser {
 				return c;
 			}
 		}
+		if (isMarkedDone(words)) {
+			return "mark done";
+		}
 		return "add";
+		
+	}
+	
+	private boolean isMarkedDone(MyStringList words) {
+		
+		return false;
 		
 	}
 	
 	private Task getTask(MyStringList words) {
 		
 		Task t = new Task();
-		//setIsDone(words, t);
-		//setCategory(words, t);
-		//setPriority(words, t);
+		setCategory(words, t);
+		setPriority(words, t);
 		setDateTime(words, t);
 		setContent(words, t);
-		//fixTaskData(t) //fix datetime and maybe more
+		fixTaskData(t); //fix datetime and maybe more
 		return t;
 		
 	}
 	
-	/*private void setIsDone(MyStringList words, Task t) {
+	private void setCategory(MyStringList words, Task t) {
 		
+		for (String word : words) {
+			if(word.startsWith(CATEGORY_SYMBOL)) {
+				t.setCategory(word.substring(1));
+				words.remove(words.indexOf(word));
+				break;
+			}
+		}
 		
-	}*/
+	}
+	
+	private void setPriority(MyStringList words, Task t) {
+
+		int priorityLevel = getPriorityLevel(words, MAX_PRIORITY_LEVEL);
+		assert (priorityLevel < 2 && priorityLevel >= 0);
+		switch (priorityLevel) {
+			case 2 :
+				t.setPriority(PRIORITY_VERY_HIGH);
+				break;
+			case 1 :
+				t.setPriority(PRIORITY_HIGH);
+			case 0 :
+				t.setPriority(PRIORITY_NORMAL);
+		}
+		
+	}
+	
+	private int getPriorityLevel(MyStringList words, int priorityLevel) {
+		
+		if (priorityLevel == 0) {
+			return priorityLevel;
+		}
+		String priorityString = "";
+		for (int count = 0; count < priorityLevel; count++) {
+			priorityString += PRIORITY_SYMBOL;
+		}
+		for (int index = 0; index < words.size(); index++) {
+			String word = words.get(index);
+			if (word.endsWith(priorityString)) {
+				word = word.substring(0, word.lastIndexOf(priorityString));
+				if (word.isEmpty()) {
+					words.remove(index);
+				} else {
+					words.set(index, word);
+				}
+				return priorityLevel;
+			}
+		}
+		return getPriorityLevel(words, priorityLevel - 1);
+		
+	}
+	
+	private void fixTaskData(Task t) {
+		
+		LocalDateTime startDateTime = t.getStartDateTime();
+		LocalDateTime endDateTime = t.getEndDateTime();
+		if (startDateTime != null && startDateTime.getYear() == 0) {
+			t.setStartDateTime(LocalDateTime.now().withHour(startDateTime.getHour()).withMinute(startDateTime.getMinute()).withSecond(startDateTime.getSecond()));
+		}
+		if (endDateTime != null) {
+			if (endDateTime.getYear() == 0) {
+				t.setStartDateTime(LocalDateTime.now().withHour(startDateTime.getHour()).withMinute(startDateTime.getMinute()).withSecond(startDateTime.getSecond()));
+			}
+			if (startDateTime.isAfter(endDateTime)) {
+				t.setEndDateTime(endDateTime.plusWeeks(1));
+			}
+		}
+		
+	}
 	
 	private void setDateTime(MyStringList words, Task t) {
 		
