@@ -187,7 +187,7 @@ public class FlexiPlannerUI {
 		showUserExecutedCommandScroll = new JScrollPane (showUserExecutedCommand, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		showUserExecutedCommandScroll.setBounds(320, 120, 410, 170);		
-		showUserExecutedCommandScroll.getVerticalScrollBar().getModel().getValue();
+		
 		commandFeedback = new JLabel("");
 		commandFeedback.setBackground(new Color(240, 240, 240));
 		commandFeedback.setForeground(Color.RED);
