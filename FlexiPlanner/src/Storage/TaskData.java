@@ -118,6 +118,51 @@ public class TaskData {
 	}
 	
 	@Override
+	public boolean equals(Object object) {
+		if (object == null) {
+			return false;
+		}
+		if (getClass() != object.getClass()) {
+			return false;
+		}
+		
+		final TaskData other = (TaskData) object;
+		
+		if (this.content == null && other.content != null) {
+			return false;
+		}
+		if (this.content != null && !this.content.equals(other.content)) {
+			return false;
+		}
+		if (this.category == null && other.category != null) {
+			return false;
+		}
+		if (this.category != null && !this.category.equals(other.category)) {
+			return false;
+		}
+		if (this.priority == null && other.priority != null) {
+			return false;
+		}
+		if (this.priority != null && !this.priority.equals(other.priority)) {
+			return false;
+		}
+		if (this.startDateTime == null && other.startDateTime != null) {
+			return false;
+		}
+		if (this.startDateTime != null && !this.startDateTime.equals(other.startDateTime)) {
+			return false;
+		}
+		if (this.endDateTime == null && other.endDateTime != null) {
+			return false;
+		}
+		if (this.endDateTime != null && !this.endDateTime.equals(other.endDateTime)) {
+			return false;
+		}
+
+		return true;
+ 	}
+	
+	@Override
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
 		sb.append("************** Task Details **************\n");
