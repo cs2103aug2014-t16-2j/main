@@ -18,6 +18,9 @@ import org.json.simple.parser.ParseException;
 
 public class FileStorage implements Storage {
 	
+	private final String ERROR_IO = "IO Error!";
+	private final String ERROR_PARSE = "Parse Error!";
+	
 	private FileManager manager;
 	private JsonCodec coder;
 	private JsonFormatter formatter;
@@ -56,11 +59,9 @@ public class FileStorage implements Storage {
 				isSaveSuccess = true;
 			}
 		} catch (IOException e) {
-			isSaveSuccess = false;
-			System.out.println("IO Error!");
+			reportError(ERROR_IO);
 		} catch (ParseException pe) {
-			isSaveSuccess = false;
-			System.out.println("Parse Error!");
+			reportError(ERROR_PARSE);
 		}
 		
 		return isSaveSuccess;
@@ -89,5 +90,9 @@ public class FileStorage implements Storage {
 		}
 		
 		return tasksToReturn;
+	}
+	
+	private void reportError(final String err) {
+		System.out.println(err);
 	}
 }
