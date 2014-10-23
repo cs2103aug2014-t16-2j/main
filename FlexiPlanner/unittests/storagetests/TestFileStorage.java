@@ -2,8 +2,10 @@ package storagetests;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -19,6 +21,8 @@ import Storage.TaskData;
 public class TestFileStorage {
 	Storage database = new FileStorage();
 	FileManager manager = new FileManager();
+	
+	private final ByteArrayOutputStream out = new ByteArrayOutputStream();
 	
 	TaskData t1 = new TaskData("first", "personal", "normal", LocalDateTime.of(2014, 10, 23, 0, 0), LocalDateTime.of(2014, 10, 24, 0, 0));
 	TaskData t2 = new TaskData("second", "work", "high", LocalDateTime.of(2014, 10, 25, 0, 0), LocalDateTime.of(2014, 10, 26, 0, 0));
@@ -36,24 +40,26 @@ public class TestFileStorage {
 	}
 	
 	@Test (expected = NullPointerException.class)
-	public void testLoadWithNullOption() throws IOException, ParseException {
+	public void testLoadWithNullOption() {
 		database.loadTasks("testresources/onetask.json", null);
 	}
 	
-	@Test (expected = ParseException.class)
-	public void testLoadFileNotInJSONFormat() throws IOException, ParseException {
+	@Test
+	public void testLoadFileNotInJSONFormat() {
+		System.setOut(new PrintStream(out));
 		database.loadTasks("testresources/notinjsonformat.json", new Option(true));
+		assertEquals("Parse Error!\n", out.toString());
 	}
 	
 	@Test 
-	public void testLoadEmptyFile() throws IOException, ParseException {
+	public void testLoadEmptyFile() {
 		ArrayList<TaskData> tasks = new ArrayList<TaskData>();
 		tasks = database.loadTasks("testresources/empty.json", new Option(true));
 		assertTrue(tasks.isEmpty());
 	}
 	
 	@Test 
-	public void testLoadFileWithOneTask() throws IOException, ParseException {
+	public void testLoadFileWithOneTask() {
 		ArrayList<TaskData> tasks = new ArrayList<TaskData>();
 		tasks = database.loadTasks("testresources/onetask.json", new Option(true));
 		assertTrue(tasks.size() == 1);
@@ -61,7 +67,7 @@ public class TestFileStorage {
 	}
 	
 	@Test 
-	public void testLoadFileWithThreeTask() throws IOException, ParseException {
+	public void testLoadFileWithThreeTask() {
 		ArrayList<TaskData> tasks = new ArrayList<TaskData>();
 		tasks = database.loadTasks("testresources/threetask.json", new Option(true));
 		assertTrue(tasks.size() == 3);
@@ -90,7 +96,7 @@ public class TestFileStorage {
 	}
 	
 	@Test 
-	public void testSaveEmptyList() throws IOException, ParseException {
+	public void testSaveEmptyList() {
 		ArrayList<TaskData> tasks = new ArrayList<TaskData> ();
 		deleteFile("testresources/testingsave.json");
 		assertTrue(database.saveTasks("testresources/testingsave.json", new ArrayList<TaskData>(), false));
@@ -99,7 +105,7 @@ public class TestFileStorage {
 	}
 	
 	@Test 
-	public void testSaveEmptyListAppend() throws IOException, ParseException {
+	public void testSaveEmptyListAppend() {
 		ArrayList<TaskData> tasks = new ArrayList<TaskData> ();
 		deleteFile("testresources/testingsave.json");
 		assertTrue(database.saveTasks("testresources/testingsave.json", new ArrayList<TaskData>(), true));
@@ -108,7 +114,7 @@ public class TestFileStorage {
 	}
 	
 	@Test 
-	public void testSaveATaskInEmptyFile() throws IOException, ParseException {
+	public void testSaveATaskInEmptyFile() {
 		ArrayList<TaskData> oneTask = new ArrayList<TaskData>();
 		ArrayList<TaskData> tasks = new ArrayList<TaskData> ();
 		oneTask.add(t1);
@@ -120,7 +126,7 @@ public class TestFileStorage {
 	}
 	
 	@Test 
-	public void testAppendATaskInEmptyFile() throws IOException, ParseException {
+	public void testAppendATaskInEmptyFile() {
 		ArrayList<TaskData> oneTask = new ArrayList<TaskData>();
 		ArrayList<TaskData> tasks = new ArrayList<TaskData> ();
 		oneTask.add(t1);
@@ -132,7 +138,7 @@ public class TestFileStorage {
 	}
 	
 	@Test 
-	public void testAppendATask() throws IOException, ParseException {
+	public void testAppendATask() throws FileNotFoundException, IOException {
 		ArrayList<TaskData> oneTask = new ArrayList<TaskData>();
 		ArrayList<TaskData> tasks = new ArrayList<TaskData> ();
 		oneTask.add(t2);
@@ -145,7 +151,7 @@ public class TestFileStorage {
 	}
 	
 	@Test 
-	public void testAppendMultiTask() throws IOException, ParseException {
+	public void testAppendMultiTask() throws FileNotFoundException, IOException  {
 		ArrayList<TaskData> threeTask = new ArrayList<TaskData>();
 		ArrayList<TaskData> tasks = new ArrayList<TaskData> ();
 		threeTask.add(t1);
@@ -162,7 +168,7 @@ public class TestFileStorage {
 	}
 	
 	@Test 
-	public void testOverwrite() throws IOException, ParseException {
+	public void testOverwrite() {
 		ArrayList<TaskData> threeTasks = new ArrayList<TaskData>();
 		ArrayList<TaskData> tasks = new ArrayList<TaskData> ();
 		threeTasks.add(t1);
