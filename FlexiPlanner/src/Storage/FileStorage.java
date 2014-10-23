@@ -68,7 +68,7 @@ public class FileStorage implements Storage {
 	}
 
 	@Override
-	public ArrayList<TaskData> loadTasks(String filePath, Option loadOption) throws IOException, ParseException{
+	public ArrayList<TaskData> loadTasks(String filePath, Option loadOption) {
 		ArrayList<TaskData> tasksToReturn = new ArrayList<TaskData>();
 		
 		try {
@@ -84,9 +84,9 @@ public class FileStorage implements Storage {
 			tasksToReturn = coder.jsonArrToTasks(new TaskFilter(jArr, loadOption).refine());
 			
 		} catch (IOException e) {
-			throw e;
+			reportError(ERROR_IO);
 		} catch (ParseException pe) {
-			throw pe;
+			reportError(ERROR_PARSE);
 		}
 		
 		return tasksToReturn;
