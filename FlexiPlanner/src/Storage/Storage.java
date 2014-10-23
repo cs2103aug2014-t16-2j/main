@@ -13,18 +13,18 @@ import org.json.simple.parser.ParseException;
 public interface Storage {
 	/**
 	 * This method saves a list of data in a specified file.
-	 * @param filePath TODO
+	 * @param filePath : path to the file to save into
 	 * @param taskList : ArrayList<TaskData>
 	 * @param isAppendable : boolean
 	 * 
 	 * @return successful or not : boolean
 	 * @throws IOException 
 	 */
-	public boolean saveTasks(String filePath, ArrayList<TaskData> taskList, boolean isAppendable) throws IOException;
+	public boolean saveTasks(String filePath, ArrayList<TaskData> taskList, boolean isAppendable);
 	
 	/**
 	 * This method loads data from a specified file.
-	 * @param filePath TODO
+	 * @param filePath : path to the file to load from
 	 * @param loadOption : Option
 	 * 
 	 * @return taskList : ArrayList<TaskData>

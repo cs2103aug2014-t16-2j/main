@@ -215,7 +215,7 @@ public class Logic {
 		currentDisplayedTask.add(0, task);
 		try {
 			storer.saveTasks(filePath, taskToBeAdded, true);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			System.out.println("Error while saving data");
 			return false;
 		}

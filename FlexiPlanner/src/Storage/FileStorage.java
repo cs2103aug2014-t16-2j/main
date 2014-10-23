@@ -24,23 +24,21 @@ public class FileStorage implements Storage {
 	
 	/** Constructor Method **/
 	
-	public FileStorage() throws IOException {
+	public FileStorage() {
 		manager = new FileManager();
 		coder = new JsonCodec();
 		formatter = new JsonFormatter();
 	}
 
 	@Override
-	public boolean saveTasks(String filePath, ArrayList<TaskData> taskList, boolean isAppendable) throws IOException {
-		assert filePath != null;
-		assert taskList != null;
-		
-		manager.create(filePath);
-		
+	public boolean saveTasks(String filePath, ArrayList<TaskData> taskList, boolean isAppendable) {
 		boolean isSaveSuccess = false;
+		
 		try {
 			JSONObject jObj, jObjToSave;
 			JSONArray jArr1, jArr2, jArr;
+			
+			manager.create(filePath);
 			
 			if (isAppendable && !manager.isEmptyFile(filePath)) {
 				jObj = manager.readInJsonFormat(filePath);
@@ -59,20 +57,26 @@ public class FileStorage implements Storage {
 			}
 		} catch (IOException e) {
 			isSaveSuccess = false;
+			System.out.println("IO Error!");
 		} catch (ParseException pe) {
 			isSaveSuccess = false;
+			System.out.println("Parse Error!");
 		}
+		
 		return isSaveSuccess;
 	}
 
 	@Override
 	public ArrayList<TaskData> loadTasks(String filePath, Option loadOption) throws IOException, ParseException{
-		assert loadOption != null;
-		
-		manager.create(filePath);
-		
 		ArrayList<TaskData> tasksToReturn = new ArrayList<TaskData>();
+		
 		try {
+			manager.create(filePath);
+			
+			if (manager.isEmptyFile(filePath)) {
+				return tasksToReturn;
+			}
+			
 			JSONObject jObj = manager.readInJsonFormat(filePath);
 			JSONArray jArr = coder.retrieveJsonArrFromJsonObj(jObj);
 			
