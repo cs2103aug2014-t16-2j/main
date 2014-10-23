@@ -109,7 +109,7 @@ public class TaskData {
 	}
 	
 	public JSONObject convertToJsonObject() {
-		JsonCodec coder = new JsonCodec();
+		JsonConverter coder = new JsonConverter();
 		JSONObject obj = new JSONObject();
 		
 		obj = coder.taskToJsonObj(this);

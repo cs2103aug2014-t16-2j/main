@@ -17,7 +17,7 @@ import org.json.simple.parser.ParseException;
  *
  */
 @SuppressWarnings("unchecked")
-public class JsonCodec {
+public class JsonConverter {
 	
 	public JSONObject taskToJsonObj(TaskData task) {
 		JSONObject jsonObjToReturn = new JSONObject();

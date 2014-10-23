@@ -22,14 +22,14 @@ public class FileStorage implements Storage {
 	private final String ERROR_PARSE = "Parse Error!";
 	
 	private FileManager manager;
-	private JsonCodec coder;
+	private JsonConverter coder;
 	private JsonFormatter formatter;
 	
 	/** Constructor Method **/
 	
 	public FileStorage() {
 		manager = new FileManager();
-		coder = new JsonCodec();
+		coder = new JsonConverter();
 		formatter = new JsonFormatter();
 	}
 
