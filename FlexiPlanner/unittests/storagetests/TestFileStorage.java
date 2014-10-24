@@ -18,6 +18,12 @@ import Storage.Option;
 import Storage.Storage;
 import Storage.TaskData;
 
+/**
+ * This unit test class is for testing FileStorage class under storage component. 
+ * 
+ * @author A0117989H
+ *
+ */
 public class TestFileStorage {
 	Storage database = new FileStorage();
 	FileManager manager = new FileManager();
