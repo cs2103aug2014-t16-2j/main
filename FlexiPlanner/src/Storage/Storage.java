@@ -23,7 +23,7 @@ public interface Storage {
 	 * @param filePath : path to the file to load from
 	 * @param loadOption : Option
 	 * 
-	 * @return taskList : ArrayList<TaskData>
+	 * @return taskList : ArrayList<TaskData> 
 	 */
 	public ArrayList<TaskData> loadTasks(String filePath, Option loadOption);
 }
