@@ -3,6 +3,7 @@ package UI;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.util.GregorianCalendar;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -31,6 +33,7 @@ import javax.swing.table.DefaultTableModel;
 import org.json.simple.parser.ParseException;
 
 import Logic.*;
+//import com.apple.eawt.Application;
 
 /**
  *
@@ -88,7 +91,9 @@ public class FlexiPlannerUI {
 		// exits
 		// when
 		// closed
-
+		ImageIcon img = new ImageIcon("logo.png");
+		schedulerFrame.setIconImage(img.getImage());
+		//Application.getApplication().setDockIconImage(new ImageIcon("logo.png").getImage());
 		schedulerFrame.setSize(750, 410);// set frame size
 		schedulerFrame.setResizable(false);
 		schedulerFrame.setLocationRelativeTo(null);
