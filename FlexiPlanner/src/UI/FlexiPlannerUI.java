@@ -8,9 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.GregorianCalendar;
 
@@ -32,6 +30,7 @@ import javax.swing.table.DefaultTableModel;
 
 import org.json.simple.parser.ParseException;
 import org.jdesktop.swingx.JXCollapsiblePane;
+
 import Logic.*;
 //import com.apple.eawt.Application;
 
@@ -45,15 +44,19 @@ public class FlexiPlannerUI {
 	private JTable calendar1;
 	private DefaultTableModel calendar2;
 	private Border border;
-	private JTextArea overDueTaskLabel;
+	private JXCollapsiblePane overDueCollapsePane;
+	private JXCollapsiblePane todayCollapsePane;
+	private JXCollapsiblePane showUserExecutedCommandCollapsePane;
 	private JTextArea showOverDueTask;
-	private JTextArea todayTasksLabel;
 	private JTextArea showTodayTask;
 	private JTextArea showUserExecutedCommand;
 	private JScrollPane calendarScroll;
 	private JScrollPane showTodayTaskScroll;
 	private JScrollPane showOverDueTaskScroll;
 	private JScrollPane showUserExecutedCommandScroll;
+	private JLabel todayTasksLabel;
+	private JLabel overDueTaskLabel;
+	private JLabel showUserExecutedCommandLabel;
 	private JLabel commandFeedback;
 	private JPanel schedulerPanel;
 	private JComboBox selectYear;
@@ -98,7 +101,7 @@ public class FlexiPlannerUI {
 		schedulerFrame.setResizable(false);
 		schedulerFrame.setLocationRelativeTo(null);
 		schedulerFrame.setVisible(true);
-
+		
 		calendar2 = new DefaultTableModel() {
 			public boolean isCellEditable(int rowIndex, int mColIndex) {
 				return false;
@@ -142,12 +145,11 @@ public class FlexiPlannerUI {
 		calendarScroll.setBounds(10, 35, 300, 250);
 
 		border = BorderFactory.createLineBorder(Color.BLACK);
-		overDueTaskLabel = new JTextArea();
+		overDueTaskLabel = new JLabel();
 		overDueTaskLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		overDueTaskLabel.setBackground(Color.LIGHT_GRAY);
 		overDueTaskLabel.setForeground(Color.BLACK);		
 		overDueTaskLabel.setBorder(BorderFactory.createCompoundBorder(border, 
-				BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		overDueTaskLabel.setText("Overdue tasks");
 
 		showOverDueTask = new JTextArea();
@@ -159,15 +161,18 @@ public class FlexiPlannerUI {
 
 		showOverDueTaskScroll = new JScrollPane (showOverDueTask, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		showOverDueTaskScroll.setRowHeaderView(overDueTaskLabel);
-		showOverDueTaskScroll.setBounds(320, 4, 410, 50);
-
-		todayTasksLabel = new JTextArea();
+		showOverDueTaskScroll.setColumnHeaderView(overDueTaskLabel);
+		
+		overDueCollapsePane = new JXCollapsiblePane();
+		overDueCollapsePane.add(showOverDueTaskScroll);
+		overDueCollapsePane.setCollapsed(true);
+		overDueCollapsePane.setBounds(320, 4, 410, 0);
+		
+		todayTasksLabel = new JLabel();
 		todayTasksLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		todayTasksLabel.setBackground(Color.LIGHT_GRAY);
 		todayTasksLabel.setForeground(Color.BLACK);
 		todayTasksLabel.setBorder(BorderFactory.createCompoundBorder(border, 
-				BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		todayTasksLabel.setText("Today tasks");
 
 		showTodayTask = new JTextArea();
@@ -179,9 +184,13 @@ public class FlexiPlannerUI {
 
 		showTodayTaskScroll = new JScrollPane (showTodayTask, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		showTodayTaskScroll.setRowHeaderView(todayTasksLabel);
-		showTodayTaskScroll.setBounds(320, 62, 410, 50);
-
+		showTodayTaskScroll.setColumnHeaderView(todayTasksLabel);
+		
+		todayCollapsePane = new JXCollapsiblePane();
+		todayCollapsePane.add(showTodayTaskScroll);
+		todayCollapsePane.setCollapsed(true);
+		todayCollapsePane.setBounds(320, 4, 410, 0);
+		
 		showUserExecutedCommand = new JTextArea();
 		showUserExecutedCommand.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		showUserExecutedCommand.setForeground(Color.BLACK);
@@ -189,9 +198,22 @@ public class FlexiPlannerUI {
 		showUserExecutedCommand.setText(logic.getData(""));
 		showUserExecutedCommand.setEditable(false);
 
+		showUserExecutedCommandLabel = new JLabel();
+		showUserExecutedCommandLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
+		showUserExecutedCommandLabel.setForeground(Color.BLACK);
+		showUserExecutedCommandLabel.setBorder(BorderFactory.createCompoundBorder(border, 
+				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+		showUserExecutedCommandLabel.setText("Executed Commands");
+		
 		showUserExecutedCommandScroll = new JScrollPane (showUserExecutedCommand, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		showUserExecutedCommandScroll.setBounds(320, 120, 410, 170);		
+		showUserExecutedCommandScroll.setColumnHeaderView(showUserExecutedCommandLabel);
+		
+		showUserExecutedCommandCollapsePane = new JXCollapsiblePane();
+		showUserExecutedCommandCollapsePane.add(showUserExecutedCommandScroll);
+		showUserExecutedCommandCollapsePane.setCollapsed(true);
+		showUserExecutedCommandCollapsePane.setCollapsed(false);
+		showUserExecutedCommandCollapsePane.setBounds(320, 4, 410, 0);
 		
 		commandFeedback = new JLabel("");
 		commandFeedback.setBackground(new Color(240, 240, 240));
@@ -212,12 +234,12 @@ public class FlexiPlannerUI {
 		schedulerPanel.add(prevMonth);
 		schedulerPanel.add(nextMonth);
 		schedulerPanel.add(calendarScroll);
-		schedulerPanel.add(showOverDueTaskScroll);
-		schedulerPanel.add(showTodayTaskScroll);
-		schedulerPanel.add(showUserExecutedCommandScroll);
+		schedulerPanel.add(overDueCollapsePane);
+		schedulerPanel.add(todayCollapsePane);
+		schedulerPanel.add(showUserExecutedCommandCollapsePane);
 		schedulerPanel.add(commandFeedback);
 		schedulerPanel.add(inputCommand);
-		schedulerPanel.setBounds(2, 1, 400, 335);
+		
 		String[] headers = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" }; // All
 		// headers
 		for (int i = 0; i < 7; i++) {
@@ -241,12 +263,14 @@ public class FlexiPlannerUI {
 		selectYear.addActionListener(new Years_Action());
 		inputCommand.requestFocusInWindow();
 		executeKeyAction(commandFeedback,showOverDueTask,showTodayTask,showUserExecutedCommand,
-				showOverDueTaskScroll,showTodayTaskScroll,showUserExecutedCommandScroll);
+				showOverDueTaskScroll,showTodayTaskScroll,showUserExecutedCommandScroll
+				,overDueCollapsePane,todayCollapsePane,showUserExecutedCommandCollapsePane);
 	}
 
 	private void executeKeyAction(final JLabel commandFeedback,final JTextArea showOverDueTask,
 			final JTextArea showTodayTask,final JTextArea showUserExecutedCommand, 
-			final JScrollPane showOverDueTaskScroll, final JScrollPane showTodayTaskScroll ,final JScrollPane showUserExecutedCommandScroll) {
+			final JScrollPane showOverDueTaskScroll, final JScrollPane showTodayTaskScroll ,final JScrollPane showUserExecutedCommandScroll
+			,final JXCollapsiblePane overDueCollapsePane,final JXCollapsiblePane todayCollapsePane,final JXCollapsiblePane showUserExecutedCommandCollapsePane) {
 		inputCommand.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				int key = e.getKeyCode();
@@ -278,49 +302,50 @@ public class FlexiPlannerUI {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
+					overDueCollapsePane.setCollapsed(true);
+					todayCollapsePane.setCollapsed(true);
+					showUserExecutedCommandCollapsePane.setCollapsed(true);
+					showUserExecutedCommandCollapsePane.setCollapsed(false);
 					refreshCalendar(actualMonth, actualYear);
 					break;
 				case KeyEvent.VK_F1:
 					showUserExecutedCommand.setText("Guide\nFirst just relax\nSecond quit doing this shit");
+					overDueCollapsePane.setCollapsed(true);
+					todayCollapsePane.setCollapsed(true);
+					showUserExecutedCommandCollapsePane.setCollapsed(true);					
+					showUserExecutedCommandCollapsePane.setCollapsed(false);
 					break;
 				case KeyEvent.VK_F2:
-					try {
-						showUserExecutedCommand.setText(logic.getData(""));
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (ParseException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+					if(showUserExecutedCommandCollapsePane.isCollapsed()){
+						showUserExecutedCommandCollapsePane.setCollapsed(true);
+						showUserExecutedCommandCollapsePane.setCollapsed(false);
+					}else{
+						showUserExecutedCommandCollapsePane.setCollapsed(true);
 					}
 					break;
 				case KeyEvent.VK_F3:
-					showOverDueTask.setText(logic.getOverdue());
-					try {
-						showTodayTask.setText(logic.getTodayTask());
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (ParseException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+					if(overDueCollapsePane.isCollapsed()){
+						overDueCollapsePane.setCollapsed(false);
+						showUserExecutedCommandCollapsePane.setCollapsed(true);
+						todayCollapsePane.setCollapsed(true);
+					}else{
+						overDueCollapsePane.setCollapsed(true);
+							if(todayCollapsePane.isCollapsed()){
+								showUserExecutedCommandCollapsePane.setCollapsed(false);
+							}
 					}
-					showUserExecutedCommand.setText("So some Undo shit");
-					refreshCalendar(actualMonth, actualYear);
 					break;
 				case KeyEvent.VK_F4:
-					showOverDueTask.setText(logic.getOverdue());
-					try {
-						showTodayTask.setText(logic.getTodayTask());
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (ParseException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+					if(todayCollapsePane.isCollapsed()){
+						todayCollapsePane.setCollapsed(false);
+						showUserExecutedCommandCollapsePane.setCollapsed(true);
+						overDueCollapsePane.setCollapsed(true);
+					}else{
+						todayCollapsePane.setCollapsed(true);
+						if(overDueCollapsePane.isCollapsed()){
+							showUserExecutedCommandCollapsePane.setCollapsed(false);
+						}
 					}
-					showUserExecutedCommand.setText("So some Redo shit");
-					refreshCalendar(actualMonth, actualYear);
 					break;
 				case KeyEvent.VK_F5:
 					showOverDueTaskScroll.getVerticalScrollBar().getModel().setValue(overDueScrollPane-5);
