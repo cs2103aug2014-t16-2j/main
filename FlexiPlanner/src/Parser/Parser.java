@@ -16,6 +16,7 @@ public class Parser {
 	private final List<String> modifyCommandWords = Arrays.asList("modify", "edit", "reschedule", "change");
 	private final List<String> deleteCommandWords = Arrays.asList("delete", "remove", "clear");
 	private final List<String> searchCommandWords = Arrays.asList("display", "show", "find", "search");
+	private final List<String> blockCommandWords = Arrays.asList("block", "reserve");
 	private final List<String> otherCommandWords = Arrays.asList("exit", "undo", "redo");
 	private final List<String> dayWords = Arrays.asList("today", "tomorrow", "yesterday", "tonight");
 	private final List<String> timeOfDayWords = Arrays.asList("morning", "noon", "afternoon", "evening", "night", "midnight");
@@ -67,6 +68,12 @@ public class Parser {
 			if (words.containsIgnoreCase(c)) {
 				words.removeIgnoreCase(c);
 				return "search";
+			}
+		}
+		for (String c : blockCommandWords) {
+			if (words.containsIgnoreCase(c)) {
+				words.removeIgnoreCase(c);
+				return "block";
 			}
 		}
 		for (String c : otherCommandWords) {
