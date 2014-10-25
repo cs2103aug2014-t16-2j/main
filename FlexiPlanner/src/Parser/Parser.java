@@ -122,6 +122,7 @@ public class Parser {
 				break;
 			case 1 :
 				t.setPriority(PRIORITY_HIGH);
+				break;
 			case 0 :
 				t.setPriority(PRIORITY_NORMAL);
 		}
@@ -159,14 +160,22 @@ public class Parser {
 		LocalDateTime endDateTime = t.getEndDateTime();
 		if (startDateTime != null && startDateTime.getYear() == 0) {
 			t.setStartDateTime(LocalDateTime.now().withHour(startDateTime.getHour()).withMinute(startDateTime.getMinute()).withSecond(startDateTime.getSecond()));
+			startDateTime = t.getStartDateTime();
 		}
 		if (endDateTime != null) {
 			if (endDateTime.getYear() == 0) {
-				t.setStartDateTime(LocalDateTime.now().withHour(startDateTime.getHour()).withMinute(startDateTime.getMinute()).withSecond(startDateTime.getSecond()));
+				t.setEndDateTime(startDateTime.withHour(endDateTime.getHour()).withMinute(endDateTime.getMinute()).withSecond(endDateTime.getSecond()));
+				endDateTime = t.getEndDateTime();
 			}
 			if (startDateTime.isAfter(endDateTime)) {
 				t.setEndDateTime(endDateTime.plusWeeks(1));
+				endDateTime = t.getEndDateTime();
 			}
+			if (endDateTime.getHour() == 0 && endDateTime.getMinute() == 0 && endDateTime.getSecond() == 0) {
+				t.setEndDateTime(endDateTime.withHour(23).withMinute(59).withSecond(59));
+			}
+		} else {
+			t.setEndDateTime(startDateTime.withHour(23).withMinute(59).withSecond(59));
 		}
 		
 	}
