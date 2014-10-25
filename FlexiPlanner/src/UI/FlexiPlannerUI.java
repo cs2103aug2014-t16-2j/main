@@ -50,15 +50,18 @@ public class FlexiPlannerUI {
 	private JTextArea showOverDueTask;
 	private JTextArea showTodayTask;
 	private JTextArea showUserExecutedCommand;
+	private JTextArea commandFeedback;
+	private JTextArea showCategory;
 	private JScrollPane calendarScroll;
 	private JScrollPane showTodayTaskScroll;
 	private JScrollPane showOverDueTaskScroll;
 	private JScrollPane showUserExecutedCommandScroll;
+	private JScrollPane showCategoryScroll;
 	private JLabel todayTasksLabel;
 	private JLabel overDueTaskLabel;
 	private JLabel showUserExecutedCommandLabel;
-	private JTextArea commandFeedback;
 	private JPanel schedulerPanel;
+	private JLabel showCategoryLabel;
 	private JComboBox selectYear;
 	private JFrame schedulerFrame;
 	private JTextField inputCommand;
@@ -227,10 +230,29 @@ public class FlexiPlannerUI {
 		inputCommand = new JTextField();
 		inputCommand.setBackground(Color.LIGHT_GRAY);
 		inputCommand.setForeground(Color.RED);
-		inputCommand.setBounds(10, 540, 880, 46);
-		inputCommand.setColumns(10);
 		inputCommand.setFont(new Font("Times New Roman", Font.BOLD, 20));
-
+		inputCommand.setBounds(10, 540, 880, 46);
+		
+		showCategory = new JTextArea();
+		showCategory.setFont(new Font("Times New Roman", Font.BOLD, 14));
+		showCategory.setForeground(Color.BLACK);
+		showCategory.setBackground(Color.LIGHT_GRAY);
+		showCategory.setLineWrap(true);
+		showCategory.setText("Get category to display from logic");
+		showCategory.setEditable(false);
+		
+		showCategoryLabel = new JLabel();
+		showCategoryLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
+		showCategoryLabel.setForeground(Color.BLACK);
+		showCategoryLabel.setBorder(BorderFactory.createCompoundBorder(border, 
+				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+		showCategoryLabel.setText("Categories");
+		
+		showCategoryScroll = new JScrollPane (showCategory, 
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		showCategoryScroll.setColumnHeaderView(showCategoryLabel);
+		showCategoryScroll.setBounds(10, 325, 300, 175);
+		
 		schedulerPanel.add(displayedMonth);
 		schedulerPanel.add(displayedYear);
 		schedulerPanel.add(selectYear);
@@ -240,6 +262,7 @@ public class FlexiPlannerUI {
 		schedulerPanel.add(showOverDueCollapsePane);
 		schedulerPanel.add(todayCollapsePane);
 		schedulerPanel.add(showUserExecutedCommandCollapsePane);
+		schedulerPanel.add(showCategoryScroll);
 		schedulerPanel.add(commandFeedback);
 		schedulerPanel.add(inputCommand);
 		
@@ -265,14 +288,14 @@ public class FlexiPlannerUI {
 		nextMonth.addActionListener(new Next_Action());
 		selectYear.addActionListener(new Years_Action());
 		inputCommand.requestFocusInWindow();
-		executeKeyAction(commandFeedback,showOverDueTask,showTodayTask,showUserExecutedCommand,
-				showOverDueTaskScroll,showTodayTaskScroll,showUserExecutedCommandScroll
+		executeKeyAction(commandFeedback,showOverDueTask,showTodayTask,showUserExecutedCommand,showCategory,
+				showOverDueTaskScroll,showTodayTaskScroll,showUserExecutedCommandScroll,showCategoryScroll
 				,showOverDueCollapsePane,todayCollapsePane,showUserExecutedCommandCollapsePane);
 	}
 
 	private void executeKeyAction(final JTextArea commandFeedback,final JTextArea showOverDueTask,
-			final JTextArea showTodayTask,final JTextArea showUserExecutedCommand, 
-			final JScrollPane showOverDueTaskScroll, final JScrollPane showTodayTaskScroll ,final JScrollPane showUserExecutedCommandScroll
+			final JTextArea showTodayTask,final JTextArea showUserExecutedCommand,final JTextArea showCategory, 
+			final JScrollPane showOverDueTaskScroll, final JScrollPane showTodayTaskScroll ,final JScrollPane showUserExecutedCommandScroll,final JScrollPane showCategoryScroll
 			,final JXCollapsiblePane overDueCollapsePane,final JXCollapsiblePane todayCollapsePane,final JXCollapsiblePane showUserExecutedCommandCollapsePane) {
 		inputCommand.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
@@ -280,6 +303,7 @@ public class FlexiPlannerUI {
 				int overDueScrollPane = showOverDueTaskScroll.getVerticalScrollBar().getModel().getValue();
 				int valueTodayScrollPane = showTodayTaskScroll.getVerticalScrollBar().getModel().getValue();
 				int valueCustomTextArea=showUserExecutedCommandScroll.getVerticalScrollBar().getModel().getValue();
+				int valueCategoryScrollPane = showCategoryScroll.getVerticalScrollBar().getModel().getValue();
 				switch (key){
 				case KeyEvent.VK_ENTER: 
 					String userCommand = inputCommand.getText();
@@ -295,6 +319,7 @@ public class FlexiPlannerUI {
 					}
 					inputCommand.setText("");
 					showOverDueTask.setText(logic.getOverdue());
+					showCategory.setText("Update category\n");
 					try {
 						showTodayTask.setText(logic.getTodayTask());
 						showUserExecutedCommand.setText(logic.getData(userCommand));
@@ -366,9 +391,15 @@ public class FlexiPlannerUI {
 					break;
 				case KeyEvent.VK_F9:
 					showUserExecutedCommandScroll.getVerticalScrollBar().getModel().setValue(valueCustomTextArea-5);
-					break;
+					break;					
 				case KeyEvent.VK_F10:
 					showUserExecutedCommandScroll.getVerticalScrollBar().getModel().setValue(valueCustomTextArea+5);
+					break;
+				case KeyEvent.VK_F11:
+					showCategoryScroll.getVerticalScrollBar().getModel().setValue(valueCategoryScrollPane-5);
+					break;					
+				case KeyEvent.VK_F12:
+					showCategoryScroll.getVerticalScrollBar().getModel().setValue(valueCategoryScrollPane+5);
 					break;
 				case KeyEvent.VK_PAGE_UP:
 					if (currentDisplayedMonth  == 0 && currentDisplayedYear == actualYear) {
