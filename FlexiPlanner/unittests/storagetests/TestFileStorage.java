@@ -34,6 +34,10 @@ public class TestFileStorage {
 	TaskData t2 = new TaskData("second", "work", "high", LocalDateTime.of(2014, 10, 25, 0, 0), LocalDateTime.of(2014, 10, 26, 0, 0));
 	TaskData t3 = new TaskData("third", "work", "high", LocalDateTime.of(2014, 10, 27, 0, 0), LocalDateTime.of(2014, 10, 28, 0, 0));
 	
+	final String c1 = "#personal";
+	final String c2 = "#work";
+	final String c3 = "#today";
+	
 	/** Test Loading Method **/
 	/** ******************* **/
 	/** ******************* **/
@@ -91,9 +95,9 @@ public class TestFileStorage {
 		database.saveTasks(null, new ArrayList<TaskData>(), false);
 	}
 
-	@Test (expected = NullPointerException.class)
+	@Test 
 	public void testSaveNullList() {
-		database.saveTasks("testresources/testingsave.json", null, true);
+		assertFalse(database.saveTasks("testresources/testingsave.json", null, true));
 	}
 	
 	@Test 
@@ -185,6 +189,24 @@ public class TestFileStorage {
 		assertTrue(tasks.size() == 3);
 		assertTrue(tasks.get(0).equals(t1) && tasks.get(1).equals(t2) &&
 				   tasks.get(2).equals(t2));
+	}
+	
+	/** Test Save Category Method **/
+	/** ******************* **/
+	/** ******************* **/
+	/** ******************* **/
+	/** ******************* **/
+	@Test
+	public void testSaveCategory() {
+		ArrayList<String> c = new ArrayList<String>();
+		ArrayList<String> load = new ArrayList<String>();
+		c.add(c1);
+		c.add(c2);
+		c.add(c3);
+		assertTrue(database.saveCategory("testresources/save.txt", c));
+		load = database.loadCategory("testresources/save.txt");
+		assertTrue(load.size() == 3);
+		assertTrue(load.get(0).equals(c1) && load.get(1).equals(c2) && load.get(2).equals(c3));
 	}
 	
 	/** Assist Methods **/

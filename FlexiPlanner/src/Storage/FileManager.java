@@ -54,7 +54,7 @@ public class FileManager {
 		return jsonObj;
 	}
 	
-	public ArrayList<String> read(String filePath) throws FileNotFoundException, IOException {
+	public ArrayList<String> read(String filePath) throws IOException {
 		ArrayList<String> listToReturn = new ArrayList<String>();
 		String line;
 		BufferedReader reader = new BufferedReader(new FileReader(filePath));

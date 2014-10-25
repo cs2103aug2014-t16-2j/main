@@ -26,4 +26,8 @@ public interface Storage {
 	 * @return taskList : ArrayList<TaskData> 
 	 */
 	public ArrayList<TaskData> loadTasks(String filePath, Option loadOption);
+	
+	public boolean saveCategory(String filePath, ArrayList<String> categoryList);
+	
+	public ArrayList<String> loadCategory(String filePath);
 }

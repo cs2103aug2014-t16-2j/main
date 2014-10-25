@@ -27,6 +27,7 @@ public class FileStorage implements Storage {
 	
 	private final String FILE_NAME_PATTERN = "^[\\w,\\s-]+$";
 	private final String VALID_EXTENSION_TASKS_FILE = "json";
+	private final String VALID_EXTENSION_NORMAL_FILE = "txt";
 	
 	private FileManager manager;
 	private JsonConverter coder;
@@ -44,7 +45,7 @@ public class FileStorage implements Storage {
 	public boolean saveTasks(String filePath, ArrayList<TaskData> taskList, boolean isAppendable) {
 		boolean isSaveSuccess = false;
 		
-		if (!isValidFileName(filePath)) {
+		if (!isValidFileName(filePath) || taskList == null) {
 			reportError(ERROR_INVALID_FILE_NAME);
 			return isSaveSuccess;
 		}
@@ -109,8 +110,61 @@ public class FileStorage implements Storage {
 		return tasksToReturn;
 	}
 	
+	@Override
+	public boolean saveCategory(String filePath, ArrayList<String> categoryList) {
+		boolean isSaveSuccess = false;
+		
+		if (!isValidFileName(filePath)) {
+			reportError(ERROR_INVALID_FILE_NAME);
+			return isSaveSuccess;
+		}
+		
+		try {
+			manager.create(filePath);
+			manager.write(filePath, "", false);
+			
+			for (String category : categoryList) {
+				manager.write(filePath, category, true);
+				if (categoryList.indexOf(category) != (categoryList.size() - 1)) {
+					manager.write(filePath, "\n", true);
+				}
+			}
+			
+			isSaveSuccess = true;
+		} catch (IOException e) {
+			reportError(ERROR_IO);
+		}
+		
+		return isSaveSuccess;
+	}
+
+	@Override
+	public ArrayList<String> loadCategory(String filePath) {
+		ArrayList<String> categories = new ArrayList<String>();
+		
+		if (!isValidFileName(filePath)) {
+			reportError(ERROR_INVALID_FILE_NAME);
+			return categories;
+		}
+		
+		try {
+			manager.create(filePath);
+			
+			if (manager.isEmptyFile(filePath)) {
+				return categories;
+			}
+			
+			categories = manager.read(filePath);
+		} catch (IOException e) {
+			reportError(ERROR_IO);
+		}
+		
+		return categories;
+	}
+	
 	private boolean isValidFileName(final String filePath) {
-		if (!FilenameUtils.getExtension(filePath).equalsIgnoreCase(VALID_EXTENSION_TASKS_FILE)) {
+		if (!FilenameUtils.getExtension(filePath).equalsIgnoreCase(VALID_EXTENSION_TASKS_FILE) &&
+			!FilenameUtils.getExtension(filePath).equalsIgnoreCase(VALID_EXTENSION_NORMAL_FILE)) {
 			return false;
 		}
 		
