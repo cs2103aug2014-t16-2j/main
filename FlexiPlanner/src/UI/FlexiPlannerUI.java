@@ -31,7 +31,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import org.json.simple.parser.ParseException;
-
+import org.jdesktop.swingx.JXCollapsiblePane;
 import Logic.*;
 //import com.apple.eawt.Application;
 
