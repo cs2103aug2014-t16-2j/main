@@ -44,7 +44,7 @@ public class FlexiPlannerUI {
 	private JTable calendar1;
 	private DefaultTableModel calendar2;
 	private Border border;
-	private JXCollapsiblePane overDueCollapsePane;
+	private JXCollapsiblePane showOverDueCollapsePane;
 	private JXCollapsiblePane todayCollapsePane;
 	private JXCollapsiblePane showUserExecutedCommandCollapsePane;
 	private JTextArea showOverDueTask;
@@ -57,7 +57,7 @@ public class FlexiPlannerUI {
 	private JLabel todayTasksLabel;
 	private JLabel overDueTaskLabel;
 	private JLabel showUserExecutedCommandLabel;
-	private JLabel commandFeedback;
+	private JTextArea commandFeedback;
 	private JPanel schedulerPanel;
 	private JComboBox selectYear;
 	private JFrame schedulerFrame;
@@ -97,7 +97,7 @@ public class FlexiPlannerUI {
 		ImageIcon img = new ImageIcon("logo.png");
 		schedulerFrame.setIconImage(img.getImage());
 		//Application.getApplication().setDockIconImage(new ImageIcon("logo.png").getImage());
-		schedulerFrame.setSize(750, 410);// set frame size
+		schedulerFrame.setSize(900, 620);// set frame size
 		schedulerFrame.setResizable(false);
 		schedulerFrame.setLocationRelativeTo(null);
 		schedulerFrame.setVisible(true);
@@ -153,9 +153,10 @@ public class FlexiPlannerUI {
 		overDueTaskLabel.setText("Overdue tasks");
 
 		showOverDueTask = new JTextArea();
-		showOverDueTask.setFont(new Font("Times New Roman", Font.BOLD, 15));
+		showOverDueTask.setFont(new Font("Times New Roman", Font.BOLD, 14));
 		showOverDueTask.setForeground(Color.BLACK);
 		showOverDueTask.setBackground(Color.LIGHT_GRAY);
+		showOverDueTask.setLineWrap(true);
 		showOverDueTask.setText(logic.getOverdue());
 		showOverDueTask.setEditable(false);
 
@@ -163,10 +164,10 @@ public class FlexiPlannerUI {
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		showOverDueTaskScroll.setColumnHeaderView(overDueTaskLabel);
 		
-		overDueCollapsePane = new JXCollapsiblePane();
-		overDueCollapsePane.add(showOverDueTaskScroll);
-		overDueCollapsePane.setCollapsed(true);
-		overDueCollapsePane.setBounds(320, 4, 410, 0);
+		showOverDueCollapsePane = new JXCollapsiblePane();
+		showOverDueCollapsePane.add(showOverDueTaskScroll);
+		showOverDueCollapsePane.setCollapsed(true);
+		showOverDueCollapsePane.setBounds(320, 4, 570, 0);
 		
 		todayTasksLabel = new JLabel();
 		todayTasksLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
@@ -176,9 +177,10 @@ public class FlexiPlannerUI {
 		todayTasksLabel.setText("Today tasks");
 
 		showTodayTask = new JTextArea();
-		showTodayTask.setFont(new Font("Times New Roman", Font.BOLD, 15));
+		showTodayTask.setFont(new Font("Times New Roman", Font.BOLD, 14));
 		showTodayTask.setForeground(Color.BLACK);
 		showTodayTask.setBackground(Color.LIGHT_GRAY);
+		showTodayTask.setLineWrap(true);
 		showTodayTask.setText(logic.getTodayTask());
 		showTodayTask.setEditable(false);
 
@@ -189,13 +191,14 @@ public class FlexiPlannerUI {
 		todayCollapsePane = new JXCollapsiblePane();
 		todayCollapsePane.add(showTodayTaskScroll);
 		todayCollapsePane.setCollapsed(true);
-		todayCollapsePane.setBounds(320, 4, 410, 0);
+		todayCollapsePane.setBounds(320, 4, 570, 0);
 		
 		showUserExecutedCommand = new JTextArea();
-		showUserExecutedCommand.setFont(new Font("Times New Roman", Font.BOLD, 15));
+		showUserExecutedCommand.setFont(new Font("Times New Roman", Font.BOLD, 14));
 		showUserExecutedCommand.setForeground(Color.BLACK);
 		showUserExecutedCommand.setBackground(Color.LIGHT_GRAY);
-		showUserExecutedCommand.setText(logic.getData(""));
+		showUserExecutedCommand.setText("");
+		showUserExecutedCommand.setLineWrap(true);
 		showUserExecutedCommand.setEditable(false);
 
 		showUserExecutedCommandLabel = new JLabel();
@@ -208,23 +211,23 @@ public class FlexiPlannerUI {
 		showUserExecutedCommandScroll = new JScrollPane (showUserExecutedCommand, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		showUserExecutedCommandScroll.setColumnHeaderView(showUserExecutedCommandLabel);
-		
 		showUserExecutedCommandCollapsePane = new JXCollapsiblePane();
 		showUserExecutedCommandCollapsePane.add(showUserExecutedCommandScroll);
 		showUserExecutedCommandCollapsePane.setCollapsed(true);
 		showUserExecutedCommandCollapsePane.setCollapsed(false);
-		showUserExecutedCommandCollapsePane.setBounds(320, 4, 410, 0);
+		showUserExecutedCommandCollapsePane.setBounds(320, 4, 570, 0);
 		
-		commandFeedback = new JLabel("");
+		commandFeedback = new JTextArea("");
 		commandFeedback.setBackground(new Color(240, 240, 240));
 		commandFeedback.setForeground(Color.RED);
 		commandFeedback.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		commandFeedback.setBounds(334, 295, 350, 20);
-
+		commandFeedback.setLineWrap(true);
+		commandFeedback.setBounds(11, 500, 870, 40);
+		
 		inputCommand = new JTextField();
 		inputCommand.setBackground(Color.LIGHT_GRAY);
 		inputCommand.setForeground(Color.RED);
-		inputCommand.setBounds(10, 326, 724, 46);
+		inputCommand.setBounds(10, 540, 880, 46);
 		inputCommand.setColumns(10);
 		inputCommand.setFont(new Font("Times New Roman", Font.BOLD, 20));
 
@@ -234,7 +237,7 @@ public class FlexiPlannerUI {
 		schedulerPanel.add(prevMonth);
 		schedulerPanel.add(nextMonth);
 		schedulerPanel.add(calendarScroll);
-		schedulerPanel.add(overDueCollapsePane);
+		schedulerPanel.add(showOverDueCollapsePane);
 		schedulerPanel.add(todayCollapsePane);
 		schedulerPanel.add(showUserExecutedCommandCollapsePane);
 		schedulerPanel.add(commandFeedback);
@@ -264,10 +267,10 @@ public class FlexiPlannerUI {
 		inputCommand.requestFocusInWindow();
 		executeKeyAction(commandFeedback,showOverDueTask,showTodayTask,showUserExecutedCommand,
 				showOverDueTaskScroll,showTodayTaskScroll,showUserExecutedCommandScroll
-				,overDueCollapsePane,todayCollapsePane,showUserExecutedCommandCollapsePane);
+				,showOverDueCollapsePane,todayCollapsePane,showUserExecutedCommandCollapsePane);
 	}
 
-	private void executeKeyAction(final JLabel commandFeedback,final JTextArea showOverDueTask,
+	private void executeKeyAction(final JTextArea commandFeedback,final JTextArea showOverDueTask,
 			final JTextArea showTodayTask,final JTextArea showUserExecutedCommand, 
 			final JScrollPane showOverDueTaskScroll, final JScrollPane showTodayTaskScroll ,final JScrollPane showUserExecutedCommandScroll
 			,final JXCollapsiblePane overDueCollapsePane,final JXCollapsiblePane todayCollapsePane,final JXCollapsiblePane showUserExecutedCommandCollapsePane) {
@@ -318,6 +321,8 @@ public class FlexiPlannerUI {
 				case KeyEvent.VK_F2:
 					if(showUserExecutedCommandCollapsePane.isCollapsed()){
 						showUserExecutedCommandCollapsePane.setCollapsed(true);
+						todayCollapsePane.setCollapsed(true);
+						overDueCollapsePane.setCollapsed(true);
 						showUserExecutedCommandCollapsePane.setCollapsed(false);
 					}else{
 						showUserExecutedCommandCollapsePane.setCollapsed(true);
@@ -383,7 +388,7 @@ public class FlexiPlannerUI {
 
 			}
 			public void keyReleased(KeyEvent e) {
-				int key = e.getKeyCode();
+				int key = e.getKeyCode();				
 				if (key == KeyEvent.VK_ENTER) {
 					;
 				} else {
