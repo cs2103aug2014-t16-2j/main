@@ -1,21 +1,12 @@
 package UI;
 
-import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.Image;
-import java.awt.MenuItem;
-import java.awt.PopupMenu;
-import java.awt.SystemTray;
-import java.awt.Toolkit;
-import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowStateListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.GregorianCalendar;
@@ -31,6 +22,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -39,6 +31,9 @@ import javax.swing.table.DefaultTableModel;
 import org.json.simple.parser.ParseException;
 import org.jdesktop.swingx.JXCollapsiblePane;
 
+import com.tulskiy.keymaster.common.HotKey;
+import com.tulskiy.keymaster.common.HotKeyListener;
+
 import Logic.*;
 //import com.apple.eawt.Application;
 
@@ -46,7 +41,7 @@ import Logic.*;
  *
  * @author Eugene Tan Teck Li
  */
-public class FlexiPlannerUI {
+public class FlexiPlannerUI implements HotKeyListener {
 	private JLabel displayedMonth, displayedYear;
 	private JButton prevMonth, nextMonth;
 	private JTable calendar1;
@@ -91,7 +86,6 @@ public class FlexiPlannerUI {
 		} catch (IOException e) {
 			System.out.println("Error");
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -597,48 +591,29 @@ public class FlexiPlannerUI {
 	}// end of class Years_Action
 	
 	/**
-	 * This method placed the application in the system tray.
-	 * Closing application will only make JFrame to be ICOGNIFIED
-	 * so that it can run in the background.
-	 * This is also to support reminder method. 
+	 * This method return a current JFrame.
+	 * Implemented for global shortcuts.
+	 * 
+	 * @return JFrame
 	 * 
 	 * @author Moe Lwin Hein (A0117989H)
 	 */
-	public void createSystemTray() {
-		if (!SystemTray.isSupported()) {
-            System.out.println("SystemTray is not supported");
-            return;
-        }
-		
-		final SystemTray tray = SystemTray.getSystemTray();
-		final PopupMenu popupMenu = new PopupMenu();
-		Image icon = Toolkit.getDefaultToolkit().getImage("logo.png");
-		final TrayIcon trayIcon = new TrayIcon(icon, "FlexiPlanner", popupMenu);
-		trayIcon.setImageAutoSize(true);
-		
-		MenuItem item = new MenuItem("Open");
-		item.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				schedulerFrame.setVisible(true);
-				schedulerFrame.setExtendedState(JFrame.NORMAL);
-			}
-		});
-		popupMenu.add(item);
-		popupMenu.addSeparator();
-		item = new MenuItem("Exit");
-		item.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
-			}
-		});
-		popupMenu.add(item);
-		
-		try {
-			tray.add(trayIcon);
-		} catch (AWTException awtException) {
-			awtException.printStackTrace();
+	public JFrame getJFrame() {
+		return schedulerFrame;
+	}
+	
+	/**
+	 * This method execute when a hotKey is pressed.
+	 * 
+	 * @author Moe Lwin Hein (A0117989H)
+	 */
+	@Override
+	public void onHotKey(HotKey hotKey) {
+		switch(hotKey.keyStroke.getKeyCode()) {
+		case KeyEvent.VK_O : 
+			schedulerFrame.setVisible(true);
+			schedulerFrame.setExtendedState(JFrame.NORMAL);
+			break;
 		}
-	} /** end of createSystemTray() method **/
+	}
 }// end of class FlexiPlannerUI

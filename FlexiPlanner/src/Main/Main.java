@@ -10,16 +10,16 @@ public class Main {
 	public static void main(String args[]) {
 
 		FlexiPlannerUI userInterface = new FlexiPlannerUI();
+		
 		try {
 			userInterface.loadInterfaceandData();
-			userInterface.createSystemTray();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-	}// end of main
+		
+		Tray systemTray = new Tray(userInterface, userInterface.getJFrame());
+		systemTray.createSystemTray();
+	}
 }
