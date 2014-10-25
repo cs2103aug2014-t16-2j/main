@@ -15,7 +15,7 @@ import org.json.simple.parser.ParseException;
  * tasks from respective files.
  * The files must only contain task data in JSON format.
  * 
- * @author A0117989H
+ * @author Moe Lwin Hein (A0117989H)
  *
  */
 
@@ -24,6 +24,7 @@ public class FileStorage implements Storage {
 	private final String ERROR_IO = "IO Error!";
 	private final String ERROR_PARSE = "Parse Error!";
 	private final String ERROR_INVALID_FILE_NAME = "Invalid file name!";
+	private final String ERROR_NULL_LIST = "List cannot be null!";
 	
 	private final String FILE_NAME_PATTERN = "^[\\w,\\s-]+$";
 	private final String VALID_EXTENSION_TASKS_FILE = "json";
@@ -45,8 +46,13 @@ public class FileStorage implements Storage {
 	public boolean saveTasks(String filePath, ArrayList<TaskData> taskList, boolean isAppendable) {
 		boolean isSaveSuccess = false;
 		
-		if (!isValidFileName(filePath) || taskList == null) {
+		if (!isValidFileName(filePath)) {
 			reportError(ERROR_INVALID_FILE_NAME);
+			return isSaveSuccess;
+		}
+		
+		if (taskList == null) {
+			reportError(ERROR_NULL_LIST);
 			return isSaveSuccess;
 		}
 		
@@ -163,6 +169,10 @@ public class FileStorage implements Storage {
 	}
 	
 	private boolean isValidFileName(final String filePath) {
+		if (filePath == null) {
+			return false;
+		}
+		
 		if (!FilenameUtils.getExtension(filePath).equalsIgnoreCase(VALID_EXTENSION_TASKS_FILE) &&
 			!FilenameUtils.getExtension(filePath).equalsIgnoreCase(VALID_EXTENSION_NORMAL_FILE)) {
 			return false;

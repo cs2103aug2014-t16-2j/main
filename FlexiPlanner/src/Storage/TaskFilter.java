@@ -9,7 +9,7 @@ import org.json.simple.JSONObject;
  * This class filters the tasks according to :
  * Category, Start Time and End Time.
  * 
- * @author A0117989H
+ * @author Moe Lwin Hein (A0117989H)
  *
  */
 @SuppressWarnings("unchecked")

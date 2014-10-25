@@ -13,7 +13,7 @@ import org.json.simple.parser.ParseException;
  * This class handles encoding and decoding operations
  * among JSONObjects, JSONArrays, tasks and JSONStrings.
  * 
- * @author A0117989H
+ * @author Moe Lwin Hein (A0117989H)
  *
  */
 @SuppressWarnings("unchecked")

@@ -21,7 +21,7 @@ import Storage.TaskData;
 /**
  * This unit test class is for testing FileStorage class under storage component. 
  * 
- * @author A0117989H
+ * @author Moe Lwin Hein (A0117989H)
  *
  */
 public class TestFileStorage {
@@ -44,9 +44,13 @@ public class TestFileStorage {
 	/** ******************* **/
 	/** ******************* **/
 	
-	@Test (expected = NullPointerException.class)
+	@Test
 	public void testLoadFromNullFilePath() throws IOException, ParseException {
-		database.loadTasks(null, new Option(true));
+		ArrayList<TaskData> tasks = new ArrayList<TaskData>();
+		System.setOut(new PrintStream(out));
+		tasks = database.loadTasks(null, new Option(true));
+		assertTrue(tasks.isEmpty());
+		assertEquals("Invalid file name!\n", out.toString());
 	}
 	
 	@Test (expected = NullPointerException.class)
@@ -90,14 +94,18 @@ public class TestFileStorage {
 	/** ******************* **/
 	/** ******************* **/
 
-	@Test (expected = NullPointerException.class)
+	@Test
 	public void testSaveInNullFilePath() {
-		database.saveTasks(null, new ArrayList<TaskData>(), false);
+		System.setOut(new PrintStream(out));
+		assertFalse(database.saveTasks(null, new ArrayList<TaskData>(), false));
+		assertEquals("Invalid file name!\n", out.toString());
 	}
 
 	@Test 
 	public void testSaveNullList() {
+		System.setOut(new PrintStream(out));
 		assertFalse(database.saveTasks("testresources/testingsave.json", null, true));
+		assertEquals("List cannot be null!\n", out.toString());
 	}
 	
 	@Test 

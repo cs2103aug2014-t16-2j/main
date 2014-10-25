@@ -31,7 +31,7 @@ public class Task{
 	 * @param startDateTime
 	 * @param endDateTime
 	 * 
-	 * @author A0117989H
+	 * @author Moe Lwin Hein (A0117989H)
 	 */
 	public Task(String content, String category, String priority, 
 			LocalDateTime startDateTime, LocalDateTime endDateTime) {
@@ -42,6 +42,8 @@ public class Task{
 		this.setEndDateTime(endDateTime);
 		this.setDone(false);
 	}
+	
+	/** end **/
 	
 	public void setContent(String c){
 	
@@ -118,7 +120,7 @@ public class Task{
 	/**
 	 * Added this override method for convenience in testing.
 	 * 
-	 * @author A0117989H
+	 * @author Moe Lwin Hein (A0117989H)
 	 */
 	
 	@Override

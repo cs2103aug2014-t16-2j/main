@@ -16,7 +16,7 @@ import Parser.Task;
  * To test parsing of timed tasks.
  * Timed tasks are tasks which has start date/time and end date/time.
  * 
- * @author A0117989H
+ * @author Moe Lwin Hein (A0117989H)
  *
  */
 

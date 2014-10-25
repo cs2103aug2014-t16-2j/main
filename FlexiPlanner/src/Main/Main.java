@@ -12,6 +12,7 @@ public class Main {
 		FlexiPlannerUI userInterface = new FlexiPlannerUI();
 		try {
 			userInterface.loadInterfaceandData();
+			userInterface.createSystemTray();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

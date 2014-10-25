@@ -7,7 +7,7 @@ import org.json.simple.JSONObject;
 /**
  * This class creates a task object representing an actual task.
  * 
- * @author A0117989H
+ * @author Moe Lwin Hein (A0117989H)
  *
  */
 

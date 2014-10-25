@@ -20,7 +20,7 @@ import org.json.simple.parser.ParseException;
 /**
  * This class handles file related operations.
  * 
- * @author A0117989H
+ * @author Moe Lwin Hein (A0117989H)
  *
  */
 

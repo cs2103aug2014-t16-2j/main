@@ -1,13 +1,21 @@
 package UI;
 
+import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Image;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.SystemTray;
 import java.awt.Toolkit;
+import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.GregorianCalendar;
@@ -77,6 +85,7 @@ public class FlexiPlannerUI {
 	public FlexiPlannerUI() {
 		try {
 			logic  = new Logic();
+			schedulerFrame = new JFrame("FlexiPlanner");
 		} catch (FileNotFoundException e) {
 			System.out.println("Error");
 		} catch (IOException e) {
@@ -90,10 +99,11 @@ public class FlexiPlannerUI {
 	public void loadInterfaceandData() throws IOException, ParseException {
 		JFrame.setDefaultLookAndFeelDecorated(false);// the frame is changed to
 		// different style here
-		schedulerFrame = new JFrame("FlexiPlanner");// create new frame named
+		//schedulerFrame = new JFrame("FlexiPlanner");// create new frame named
 		// *CALENDAR*
 		schedulerFrame.setUndecorated(false);// the frame is changed
-		schedulerFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);// Program
+		/** ICONIFIED so as to still run the application although close button is pressed. **/
+		schedulerFrame.setDefaultCloseOperation(JFrame.ICONIFIED);// Program
 		// exits
 		// when
 		// closed
@@ -585,4 +595,50 @@ public class FlexiPlannerUI {
 			}
 		}
 	}// end of class Years_Action
+	
+	/**
+	 * This method placed the application in the system tray.
+	 * Closing application will only make JFrame to be ICOGNIFIED
+	 * so that it can run in the background.
+	 * This is also to support reminder method. 
+	 * 
+	 * @author Moe Lwin Hein (A0117989H)
+	 */
+	public void createSystemTray() {
+		if (!SystemTray.isSupported()) {
+            System.out.println("SystemTray is not supported");
+            return;
+        }
+		
+		final SystemTray tray = SystemTray.getSystemTray();
+		final PopupMenu popupMenu = new PopupMenu();
+		Image icon = Toolkit.getDefaultToolkit().getImage("logo.png");
+		final TrayIcon trayIcon = new TrayIcon(icon, "FlexiPlanner", popupMenu);
+		trayIcon.setImageAutoSize(true);
+		
+		MenuItem item = new MenuItem("Open");
+		item.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				schedulerFrame.setVisible(true);
+				schedulerFrame.setExtendedState(JFrame.NORMAL);
+			}
+		});
+		popupMenu.add(item);
+		popupMenu.addSeparator();
+		item = new MenuItem("Exit");
+		item.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+		popupMenu.add(item);
+		
+		try {
+			tray.add(trayIcon);
+		} catch (AWTException awtException) {
+			awtException.printStackTrace();
+		}
+	} /** end of createSystemTray() method **/
 }// end of class FlexiPlannerUI

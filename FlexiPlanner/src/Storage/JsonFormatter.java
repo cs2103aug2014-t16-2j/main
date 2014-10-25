@@ -10,7 +10,7 @@ import com.google.gson.GsonBuilder;
  * This class handles formatting operations
  * of JSONObjects and JSONArrays.
  * 
- * @author A0117989H
+ * @author Moe Lwin Hein (A0117989H)
  *
  */
 @SuppressWarnings("unchecked")

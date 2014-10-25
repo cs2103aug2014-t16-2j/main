@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
  * It purpose is to provide required data to load from a file.
  * Data refers to a task object.
  * 
- * @author A0117989H
+ * @author Moe Lwin Hein (A0117989H)
  *
  */
 
