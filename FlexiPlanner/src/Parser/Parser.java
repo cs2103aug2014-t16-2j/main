@@ -27,7 +27,7 @@ public class Parser {
 	private final List<String> monthWords = Arrays.asList("jan", "january", "feb", "february", "mar", "march", "apr", "april", "may", "jun", "june", "jul", "july", "aug", "august", "sep", "september", "oct", "october", "nov", "november", "dec", "december");
 	private final List<String> ordinalNumWords = Arrays.asList("st", "nd", "rd" ,"th");
 	private final List<String> timeWords = Arrays.asList("am", "pm");
-	private final List<String> uselessWords = Arrays.asList("the", "on", "from", "to", "@", "at");
+	private final List<String> uselessWords = Arrays.asList("on", "from", "to", "@", "at");
 	private final NumberFormat formatter = NumberFormat.getInstance();
 	private final String CATEGORY_SYMBOL = "#";
 	private final String PRIORITY_SYMBOL = "!";
@@ -345,6 +345,10 @@ public class Parser {
 		for (int i = numOfWordsToRemove; i > 0; i--) {
 			words.remove(index);
 			index--;
+		}
+		if (words.get(index).toLowerCase().equals("the")) {
+			numOfWordsToRemove++;
+			words.remove(index);
 		}
 		return numOfWordsToRemove;
 		
