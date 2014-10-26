@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.Dimension;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.GregorianCalendar;
@@ -172,6 +173,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		showOverDueCollapsePane.setContentPane(showOverDueTaskScroll);
 		showOverDueCollapsePane.setCollapsed(true);
 		showOverDueCollapsePane.setBounds(320, 4, 570, 0);
+		showOverDueCollapsePane.setPreferredSize(new Dimension(570,495));
 
 		todayTasksLabel = new JLabel();
 		todayTasksLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
@@ -196,6 +198,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		todayCollapsePane.setContentPane(showTodayTaskScroll);
 		todayCollapsePane.setCollapsed(true);
 		todayCollapsePane.setBounds(320, 4, 570, 0);
+		todayCollapsePane.setPreferredSize(new Dimension(570,495));
 
 		showUserExecutedCommandLabel = new JLabel();
 		showUserExecutedCommandLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
@@ -215,10 +218,11 @@ public class FlexiPlannerUI implements HotKeyListener {
 		showUserExecutedCommandScroll = new JScrollPane (showUserExecutedCommand, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		showUserExecutedCommandScroll.setColumnHeaderView(showUserExecutedCommandLabel);
-		
+	
 		showUserExecutedCommandCollapsePane = new JXCollapsiblePane();
 		showUserExecutedCommandCollapsePane.setContentPane(showUserExecutedCommandScroll);
 		showUserExecutedCommandCollapsePane.setBounds(320, 4, 570, 0);
+		showUserExecutedCommandCollapsePane.setPreferredSize(new Dimension(570,495));			
 		showUserExecutedCommandCollapsePane.setCollapsed(true);
 		showUserExecutedCommandCollapsePane.setCollapsed(false);
 
