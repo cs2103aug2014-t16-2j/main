@@ -462,21 +462,22 @@ public class FlexiPlannerUI implements HotKeyListener {
 	}
 	private String getguide(){
 		String guide="Guide:\nHotKeys:"
-				+ "\n1: 'shift+crtrl+o':Execute FlexiPlanner"
-				+ "\n2: 'f1': Guide"
-				+ "\n3: 'f2': Over due tasks"
-				+ "\n4: 'f3': Today task"
-				+ "\n5: 'f4': Executed commands"
-				+ "\n6: 'f5': Scroll up over due tasks"
-				+ "\n7: 'f6': Scroll down over due tasks"
-				+ "\n8: 'f7': Scroll up today tasks"
-				+ "\n9: 'f8': Scroll down today tasks"
-				+ "\n10: 'f9': Scroll up Executed commands"
-				+ "\n11: 'f10': Scroll down Executed commands"
-				+ "\n12: 'f11': Scroll up category"
-				+ "\n13: 'f12': Scroll down category"
-				+ "\n14: 'pgup': Previous month"
-				+ "\n15: 'pgdw': Next month";
+				+ "\n1: 'ctrl+o':Execute FlexiPlanner from system tray"
+				+ "\n2: 'ctrl+m': Minimise FlexiPlanner to system tray"
+				+ "\n3: 'f1': Guide"
+				+ "\n4: 'f2': Over due tasks"
+				+ "\n5: 'f3': Today task"
+				+ "\n7: 'f4': Executed commands"
+				+ "\n8: 'f5': Scroll up over due tasks"
+				+ "\n9: 'f6': Scroll down over due tasks"
+				+ "\n10: 'f7': Scroll up today tasks"
+				+ "\n11: 'f8': Scroll down today tasks"
+				+ "\n12: 'f9': Scroll up Executed commands"
+				+ "\n13: 'f10': Scroll down Executed commands"
+				+ "\n14: 'f11': Scroll up category"
+				+ "\n15: 'f12': Scroll down category"
+				+ "\n16: 'pgup': Previous month"
+				+ "\n17: 'pgdw': Next month";
 		return guide;
 	}
 
