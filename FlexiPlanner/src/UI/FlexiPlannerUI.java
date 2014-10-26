@@ -146,7 +146,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		border = BorderFactory.createLineBorder(Color.BLACK);
 		overDueTaskLabel = new JLabel();
 		overDueTaskLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		overDueTaskLabel.setForeground(Color.BLACK);		
+		overDueTaskLabel.setForeground(Color.BLACK);
 		overDueTaskLabel.setBorder(BorderFactory.createCompoundBorder(border, 
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		overDueTaskLabel.setText("Overdue tasks");
@@ -522,7 +522,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 			super.getTableCellRendererComponent(table, value, selected,
 					focused, row, column);
 			if (column == 0 || column == 6) { // Week-end
-				setBackground(Color.MAGENTA);
+				setBackground(Color.PINK);
 
 			} else { // Weekday
 				setBackground(Color.WHITE);
@@ -541,18 +541,30 @@ public class FlexiPlannerUI implements HotKeyListener {
 							setBackground(Color.RED);// set colour for current day
 							// with task
 						} else {
-							setBackground(Color.LIGHT_GRAY);// set colour current
+							setBackground(Color.GRAY);// set colour current
 							// day
 						}
 					} catch (IOException | ParseException e) {
 						// TODO Auto-generated catch block
-						setBackground(Color.LIGHT_GRAY);
+						setBackground(Color.GRAY);
 						e.printStackTrace();
 					}
 				} else
 					try {
-						if (logic.hasTask(date)) {
-							setBackground(Color.ORANGE);// set colour for days with task
+						if (logic.hasTask(date) 
+								&& (Integer.parseInt(value.toString()) < actualDay)
+								&& (currentDisplayedMonth == actualMonth)
+								&& (currentDisplayedYear == actualYear)) {
+							setBackground(Color.RED);
+						}else if(logic.hasTask(date) 
+								&& (currentDisplayedMonth < actualMonth)
+								&& (currentDisplayedYear == actualYear)){
+							setBackground(Color.RED);
+						}else if(logic.hasTask(date) 
+								&& (currentDisplayedYear < actualYear)){
+							setBackground(Color.RED);
+						}else if(logic.hasTask(date)){
+							setBackground(Color.ORANGE);
 						}
 					} catch (IOException | ParseException e) {
 						// TODO Auto-generated catch block
