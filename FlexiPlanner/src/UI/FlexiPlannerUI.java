@@ -169,7 +169,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		showOverDueTaskScroll.setColumnHeaderView(overDueTaskLabel);
 
 		showOverDueCollapsePane = new JXCollapsiblePane();
-		showOverDueCollapsePane.add(showOverDueTaskScroll);
+		showOverDueCollapsePane.setContentPane(showOverDueTaskScroll);
 		showOverDueCollapsePane.setCollapsed(true);
 		showOverDueCollapsePane.setBounds(320, 4, 570, 0);
 
@@ -193,7 +193,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		showTodayTaskScroll.setColumnHeaderView(todayTasksLabel);
 
 		todayCollapsePane = new JXCollapsiblePane();
-		todayCollapsePane.add(showTodayTaskScroll);
+		todayCollapsePane.setContentPane(showTodayTaskScroll);
 		todayCollapsePane.setCollapsed(true);
 		todayCollapsePane.setBounds(320, 4, 570, 0);
 
@@ -215,11 +215,12 @@ public class FlexiPlannerUI implements HotKeyListener {
 		showUserExecutedCommandScroll = new JScrollPane (showUserExecutedCommand, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		showUserExecutedCommandScroll.setColumnHeaderView(showUserExecutedCommandLabel);
+		
 		showUserExecutedCommandCollapsePane = new JXCollapsiblePane();
-		showUserExecutedCommandCollapsePane.add(showUserExecutedCommandScroll);
+		showUserExecutedCommandCollapsePane.setContentPane(showUserExecutedCommandScroll);
+		showUserExecutedCommandCollapsePane.setBounds(320, 4, 570, 0);
 		showUserExecutedCommandCollapsePane.setCollapsed(true);
 		showUserExecutedCommandCollapsePane.setCollapsed(false);
-		showUserExecutedCommandCollapsePane.setBounds(320, 4, 570, 0);
 
 		showCategoryLabel = new JLabel();
 		showCategoryLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
@@ -249,8 +250,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 		commandFeedback.setBounds(11, 500, 870, 40);
 
 		inputCommand = new JTextField();
-		inputCommand.setForeground(Color.CYAN);
-		inputCommand.setBackground(Color.BLUE);
+		inputCommand.setForeground(Color.BLUE);
+		inputCommand.setBackground(Color.WHITE);
 		inputCommand.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		inputCommand.setBounds(10, 540, 880, 46);
 
