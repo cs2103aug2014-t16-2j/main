@@ -125,36 +125,41 @@ public class FlexiPlannerUI implements HotKeyListener {
 		currentDisplayedYear = actualYear;
 
 		displayedMonth = new JLabel("January");
-		displayedYear = new JLabel("Select Year:");
-		selectYear = new JComboBox();
-		prevMonth = new JButton("<");
-		nextMonth = new JButton(">");
-
 		displayedMonth.setBounds(
 				160 - displayedMonth.getPreferredSize().width / 2, 5, 100, 25);
-		displayedMonth.setForeground(Color.red);
+		displayedMonth.setForeground(Color.BLUE);
+		displayedMonth.setFont(new Font("Times New Roman", Font.BOLD, 15));
+		
+		displayedYear = new JLabel("Select Year:");
 		displayedYear.setBounds(10, 295, 80, 20);
-		displayedYear.setForeground(Color.red);
+		displayedYear.setForeground(Color.BLUE);
+		
+		selectYear = new JComboBox();
 		selectYear.setBounds(230, 295, 80, 20);
-		selectYear.setForeground(Color.red);
+		selectYear.setForeground(Color.BLUE);
+		
+		prevMonth = new JButton("<");
 		prevMonth.setBounds(10, 5, 50, 25);
-		prevMonth.setForeground(Color.red);
+		prevMonth.setForeground(Color.BLUE);
+		
+		nextMonth = new JButton(">");
 		nextMonth.setBounds(260, 5, 50, 25);
-		nextMonth.setForeground(Color.red);
+		nextMonth.setForeground(Color.BLUE);
+		
 		calendarScroll.setBounds(10, 35, 300, 250);
 
 		border = BorderFactory.createLineBorder(Color.BLACK);
 		overDueTaskLabel = new JLabel();
 		overDueTaskLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		overDueTaskLabel.setForeground(Color.BLACK);
+		overDueTaskLabel.setForeground(Color.RED);
 		overDueTaskLabel.setBorder(BorderFactory.createCompoundBorder(border, 
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		overDueTaskLabel.setText("Overdue tasks");
 
 		showOverDueTask = new JTextArea();
 		showOverDueTask.setFont(new Font("Times New Roman", Font.BOLD, 14));
-		showOverDueTask.setForeground(Color.BLACK);
-		showOverDueTask.setBackground(Color.LIGHT_GRAY);
+		showOverDueTask.setForeground(Color.WHITE);
+		showOverDueTask.setBackground(Color.RED);
 		showOverDueTask.setLineWrap(true);
 		showOverDueTask.setText(logic.getOverdue());
 		showOverDueTask.setEditable(false);
@@ -170,15 +175,15 @@ public class FlexiPlannerUI implements HotKeyListener {
 
 		todayTasksLabel = new JLabel();
 		todayTasksLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		todayTasksLabel.setForeground(Color.BLACK);
+		todayTasksLabel.setForeground(Color.MAGENTA);
 		todayTasksLabel.setBorder(BorderFactory.createCompoundBorder(border, 
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		todayTasksLabel.setText("Today tasks");
 
 		showTodayTask = new JTextArea();
 		showTodayTask.setFont(new Font("Times New Roman", Font.BOLD, 14));
-		showTodayTask.setForeground(Color.BLACK);
-		showTodayTask.setBackground(Color.LIGHT_GRAY);
+		showTodayTask.setForeground(Color.WHITE);
+		showTodayTask.setBackground(Color.MAGENTA);
 		showTodayTask.setLineWrap(true);
 		showTodayTask.setText(logic.getTodayTask());
 		showTodayTask.setEditable(false);
@@ -192,21 +197,21 @@ public class FlexiPlannerUI implements HotKeyListener {
 		todayCollapsePane.setCollapsed(true);
 		todayCollapsePane.setBounds(320, 4, 570, 0);
 
-		showUserExecutedCommand = new JTextArea();
-		showUserExecutedCommand.setFont(new Font("Times New Roman", Font.BOLD, 14));
-		showUserExecutedCommand.setForeground(Color.BLACK);
-		showUserExecutedCommand.setBackground(Color.LIGHT_GRAY);
-		showUserExecutedCommand.setText("");
-		showUserExecutedCommand.setLineWrap(true);
-		showUserExecutedCommand.setEditable(false);
-
 		showUserExecutedCommandLabel = new JLabel();
 		showUserExecutedCommandLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		showUserExecutedCommandLabel.setForeground(Color.BLACK);
+		showUserExecutedCommandLabel.setForeground(Color.BLUE);
 		showUserExecutedCommandLabel.setBorder(BorderFactory.createCompoundBorder(border, 
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		showUserExecutedCommandLabel.setText("Executed Commands");
 
+		showUserExecutedCommand = new JTextArea();
+		showUserExecutedCommand.setFont(new Font("Times New Roman", Font.BOLD, 14));
+		showUserExecutedCommand.setForeground(Color.CYAN);
+		showUserExecutedCommand.setBackground(Color.BLUE);
+		showUserExecutedCommand.setText("");
+		showUserExecutedCommand.setLineWrap(true);
+		showUserExecutedCommand.setEditable(false);
+		
 		showUserExecutedCommandScroll = new JScrollPane (showUserExecutedCommand, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		showUserExecutedCommandScroll.setColumnHeaderView(showUserExecutedCommandLabel);
@@ -216,6 +221,26 @@ public class FlexiPlannerUI implements HotKeyListener {
 		showUserExecutedCommandCollapsePane.setCollapsed(false);
 		showUserExecutedCommandCollapsePane.setBounds(320, 4, 570, 0);
 
+		showCategoryLabel = new JLabel();
+		showCategoryLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
+		showCategoryLabel.setForeground(Color.BLUE);
+		showCategoryLabel.setBorder(BorderFactory.createCompoundBorder(border, 
+				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+		showCategoryLabel.setText("Categories");
+
+		showCategory = new JTextArea();
+		showCategory.setFont(new Font("Times New Roman", Font.BOLD, 14));
+		showCategory.setForeground(Color.CYAN);
+		showCategory.setBackground(Color.BLUE);
+		showCategory.setLineWrap(true);
+		showCategory.setText("Get category to display from logic");
+		showCategory.setEditable(false);
+		
+		showCategoryScroll = new JScrollPane (showCategory, 
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		showCategoryScroll.setColumnHeaderView(showCategoryLabel);
+		showCategoryScroll.setBounds(10, 325, 300, 175);
+
 		commandFeedback = new JTextArea("");
 		commandFeedback.setBackground(new Color(240, 240, 240));
 		commandFeedback.setForeground(Color.RED);
@@ -224,30 +249,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 		commandFeedback.setBounds(11, 500, 870, 40);
 
 		inputCommand = new JTextField();
-		inputCommand.setBackground(Color.LIGHT_GRAY);
-		inputCommand.setForeground(Color.RED);
+		inputCommand.setForeground(Color.CYAN);
+		inputCommand.setBackground(Color.BLUE);
 		inputCommand.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		inputCommand.setBounds(10, 540, 880, 46);
-
-		showCategory = new JTextArea();
-		showCategory.setFont(new Font("Times New Roman", Font.BOLD, 14));
-		showCategory.setForeground(Color.BLACK);
-		showCategory.setBackground(Color.LIGHT_GRAY);
-		showCategory.setLineWrap(true);
-		showCategory.setText("Get category to display from logic");
-		showCategory.setEditable(false);
-
-		showCategoryLabel = new JLabel();
-		showCategoryLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		showCategoryLabel.setForeground(Color.BLACK);
-		showCategoryLabel.setBorder(BorderFactory.createCompoundBorder(border, 
-				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-		showCategoryLabel.setText("Categories");
-
-		showCategoryScroll = new JScrollPane (showCategory, 
-				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		showCategoryScroll.setColumnHeaderView(showCategoryLabel);
-		showCategoryScroll.setBounds(10, 325, 300, 175);
 
 		schedulerPanel.add(displayedMonth);
 		schedulerPanel.add(displayedYear);
@@ -538,7 +543,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 						&& currentDisplayedYear == actualYear) { // Today
 					try {
 						if (logic.hasTask(date)) {
-							setBackground(Color.RED);// set colour for current day
+							setBackground(Color.MAGENTA);// set colour for current day
 							// with task
 						} else {
 							setBackground(Color.GRAY);// set colour current
