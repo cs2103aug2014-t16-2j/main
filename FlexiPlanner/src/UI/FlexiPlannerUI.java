@@ -330,7 +330,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 					todayCollapsePane.setCollapsed(true);
 					showUserExecutedCommandCollapsePane.setCollapsed(true);
 					showUserExecutedCommandCollapsePane.setCollapsed(false);
-					refreshCalendar(actualMonth, actualYear);
+					refreshCalendar(currentDisplayedMonth, currentDisplayedYear);
 					break;
 				case KeyEvent.VK_F1:
 					showUserExecutedCommand.setText(getguide());
