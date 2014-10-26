@@ -165,24 +165,26 @@ public class Parser {
 		
 		LocalDateTime startDateTime = t.getStartDateTime();
 		LocalDateTime endDateTime = t.getEndDateTime();
-		if (startDateTime != null && startDateTime.getYear() == 0) {
-			t.setStartDateTime(LocalDateTime.now().withHour(startDateTime.getHour()).withMinute(startDateTime.getMinute()).withSecond(startDateTime.getSecond()));
-			startDateTime = t.getStartDateTime();
-		}
-		if (endDateTime != null) {
-			if (endDateTime.getYear() == 0) {
-				t.setEndDateTime(startDateTime.withHour(endDateTime.getHour()).withMinute(endDateTime.getMinute()).withSecond(endDateTime.getSecond()));
-				endDateTime = t.getEndDateTime();
+		if (startDateTime != null) {
+			if (startDateTime.getYear() == 0) {
+				t.setStartDateTime(LocalDateTime.now().withHour(startDateTime.getHour()).withMinute(startDateTime.getMinute()).withSecond(startDateTime.getSecond()));
+				startDateTime = t.getStartDateTime();
 			}
-			if (startDateTime.isAfter(endDateTime)) {
-				t.setEndDateTime(endDateTime.plusWeeks(1));
-				endDateTime = t.getEndDateTime();
+			if (endDateTime != null) {
+				if (endDateTime.getYear() == 0) {
+					t.setEndDateTime(startDateTime.withHour(endDateTime.getHour()).withMinute(endDateTime.getMinute()).withSecond(endDateTime.getSecond()));
+					endDateTime = t.getEndDateTime();
+				}
+				if (startDateTime.isAfter(endDateTime)) {
+					t.setEndDateTime(endDateTime.plusWeeks(1));
+					endDateTime = t.getEndDateTime();
+				}
+				if (endDateTime.getHour() == 0 && endDateTime.getMinute() == 0 && endDateTime.getSecond() == 0) {
+					t.setEndDateTime(endDateTime.withHour(23).withMinute(59).withSecond(59));
+				}
+			} else {
+				t.setEndDateTime(startDateTime.withHour(23).withMinute(59).withSecond(59));
 			}
-			if (endDateTime.getHour() == 0 && endDateTime.getMinute() == 0 && endDateTime.getSecond() == 0) {
-				t.setEndDateTime(endDateTime.withHour(23).withMinute(59).withSecond(59));
-			}
-		} else {
-			t.setEndDateTime(startDateTime.withHour(23).withMinute(59).withSecond(59));
 		}
 		
 	}
@@ -262,7 +264,10 @@ public class Parser {
 				} else {
 					t.setEndDateTime(LocalDateTime.of(LocalDate.of(0, 1, 1), lt));
 				}
-			} else {
+			} else if (endDateTime.getHour() == 0 && endDateTime.getMinute() == 0 && endDateTime.getSecond() == 0) {
+				t.setEndDateTime(LocalDateTime.of(LocalDate.of(endDateTime.getYear(), endDateTime.getMonthValue(), endDateTime.getDayOfMonth()), lt));
+			} else if (startDateTime.getHour() == 0 && startDateTime.getMinute() == 0 && startDateTime.getSecond() == 0) {
+				t.setStartDateTime(LocalDateTime.of(startDateTime.getYear(), startDateTime.getMonthValue(), startDateTime.getDayOfMonth(), endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
 				t.setEndDateTime(LocalDateTime.of(LocalDate.of(endDateTime.getYear(), endDateTime.getMonthValue(), endDateTime.getDayOfMonth()), lt));
 			}
 		}
@@ -318,14 +323,14 @@ public class Parser {
 	private int changeDateTimeOfTask(Task t, MyStringList words, int index) {
 		
 		String word = words.get(index).toLowerCase();
-		int numOfWordsRemoved = 0;
+		int numOfWordsToRemove = 0;
 		switch (word) {
 			case "after" :
-				numOfWordsRemoved = changeDateTimeWithPeriodWord(t, words, index - 1, 1);
+				numOfWordsToRemove = changeDateTimeWithPeriodWord(t, words, index - 1, 1);
 				break;
 			case "before" :
-				numOfWordsRemoved = changeDateTimeWithPeriodWord(t, words, index - 1, -1);
-				if (numOfWordsRemoved != 0) {
+				numOfWordsToRemove = changeDateTimeWithPeriodWord(t, words, index - 1, -1);
+				if (numOfWordsToRemove != 0) {
 					break;
 				}
 			case "by" :
@@ -336,9 +341,12 @@ public class Parser {
 					t.setStartDateTime(LocalDateTime.now());
 				}
 		}
-		words.remove(index);
-		numOfWordsRemoved++;
-		return numOfWordsRemoved;
+		numOfWordsToRemove++;
+		for (int i = numOfWordsToRemove; i > 0; i--) {
+			words.remove(index);
+			index--;
+		}
+		return numOfWordsToRemove;
 		
 	}
 	
@@ -355,7 +363,6 @@ public class Parser {
 					} else {
 						t.setStartDateTime(startDateTime.plusDays(multiplier));
 					}
-					words.remove(index);
 					return 1;
 				case "week" :
 					if (endDateTime != null) {
@@ -363,7 +370,6 @@ public class Parser {
 					} else {
 						t.setStartDateTime(startDateTime.plusWeeks(multiplier));
 					}
-					words.remove(index);
 					return 1;
 				case "month" :
 					if (endDateTime != null) {
@@ -371,7 +377,6 @@ public class Parser {
 					} else {
 						t.setStartDateTime(startDateTime.plusMonths(multiplier));
 					}
-					words.remove(index);
 					return 1;
 				case "year" :
 					if (endDateTime != null) {
@@ -379,7 +384,6 @@ public class Parser {
 					} else {
 						t.setStartDateTime(startDateTime.plusYears(multiplier));
 					}
-					words.remove(index);
 					return 1;
 				default :
 			}
