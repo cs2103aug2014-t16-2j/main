@@ -39,10 +39,15 @@ import Logic.*;
 
 /**
  *
- * @author Eugene Tan Teck Li
+ * @author Eugene Tan Teck Li(A0111770R)
  */
 public class FlexiPlannerUI implements HotKeyListener {
 	private JLabel displayedMonth, displayedYear;
+	private JLabel todayTasksLabel;
+	private JLabel overDueTaskLabel;
+	private JLabel showUserExecutedCommandLabel;
+	private JLabel showCategoryLabel;
+	private JPanel schedulerPanel;
 	private JButton prevMonth, nextMonth;
 	private JTable calendar1;
 	private DefaultTableModel calendar2;
@@ -60,11 +65,6 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private JScrollPane showOverDueTaskScroll;
 	private JScrollPane showUserExecutedCommandScroll;
 	private JScrollPane showCategoryScroll;
-	private JLabel todayTasksLabel;
-	private JLabel overDueTaskLabel;
-	private JLabel showUserExecutedCommandLabel;
-	private JPanel schedulerPanel;
-	private JLabel showCategoryLabel;
 	private JComboBox selectYear;
 	private JFrame schedulerFrame;
 	private JTextField inputCommand;
@@ -341,7 +341,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 					refreshCalendar(actualMonth, actualYear);
 					break;
 				case KeyEvent.VK_F1:
-					showUserExecutedCommand.setText("Guide\nFirst just relax\nSecond quit doing this shit");
+					showUserExecutedCommand.setText(getguide());
 					overDueCollapsePane.setCollapsed(true);
 					todayCollapsePane.setCollapsed(true);
 					showUserExecutedCommandCollapsePane.setCollapsed(true);					
@@ -457,6 +457,25 @@ public class FlexiPlannerUI implements HotKeyListener {
 			currentDisplayedMonth += 1;
 		}
 		refreshCalendar(currentDisplayedMonth, currentDisplayedYear);
+	}
+	private String getguide(){
+				String guide="Guide:\nHotKeys:"
+				+ "\n1: 'shift+crtrl+o':Execute FlexiPlanner"
+				+ "\n2: 'f1': Guide"
+				+ "\n3: 'f2': Over due tasks"
+				+ "\n4: 'f3': Today task"
+				+ "\n5: 'f4': Executed commands"
+				+ "\n6: 'f5': Scroll up over due tasks"
+				+ "\n7: 'f6': Scroll down over due tasks"
+				+ "\n8: 'f7': Scroll up today tasks"
+				+ "\n9: 'f8': Scroll down today tasks"
+				+ "\n10: 'f9': Scroll up Executed commands"
+				+ "\n11: 'f10': Scroll down Executed commands"
+				+ "\n12: 'f11': Scroll up category"
+				+ "\n13: 'f12': Scroll down category"
+				+ "\n14: 'pgup': Previous month"
+				+ "\n15: 'pgdw': Next month";
+				return guide;
 	}
 
 	private void refreshCalendar(int month, int year) {
