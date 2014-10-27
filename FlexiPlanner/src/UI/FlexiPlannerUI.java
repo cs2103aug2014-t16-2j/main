@@ -42,6 +42,7 @@ import Logic.*;
  */
 public class FlexiPlannerUI implements HotKeyListener {
 	private JLabel displayedMonth, displayedYear;
+	private JLabel showUserGuideLabel;
 	private JLabel todayTasksLabel;
 	private JLabel overDueTaskLabel;
 	private JLabel showUserExecutedCommandLabel;
@@ -51,6 +52,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private JTable calendar1;
 	private DefaultTableModel calendar2;
 	private Border border;
+	private JXCollapsiblePane showUserGuidePane;
 	private JXCollapsiblePane showOverDueCollapsePane;
 	private JXCollapsiblePane todayCollapsePane;
 	private JXCollapsiblePane showUserExecutedCommandCollapsePane;
@@ -59,7 +61,9 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private JTextArea showUserExecutedCommand;
 	private JTextArea commandFeedback;
 	private JTextArea showCategory;
+	private JTextArea showUserGuide;
 	private JScrollPane calendarScroll;
+	private JScrollPane showUserGuideScroll;
 	private JScrollPane showTodayTaskScroll;
 	private JScrollPane showOverDueTaskScroll;
 	private JScrollPane showUserExecutedCommandScroll;
@@ -130,26 +134,53 @@ public class FlexiPlannerUI implements HotKeyListener {
 				160 - displayedMonth.getPreferredSize().width / 2, 5, 100, 25);
 		displayedMonth.setForeground(Color.BLUE);
 		displayedMonth.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		
+
 		displayedYear = new JLabel("Select Year:");
 		displayedYear.setBounds(10, 295, 80, 20);
 		displayedYear.setForeground(Color.BLUE);
-		
+
 		selectYear = new JComboBox();
 		selectYear.setBounds(230, 295, 80, 20);
 		selectYear.setForeground(Color.BLUE);
-		
+
 		prevMonth = new JButton("<");
 		prevMonth.setBounds(10, 5, 50, 25);
 		prevMonth.setForeground(Color.BLUE);
-		
+
 		nextMonth = new JButton(">");
 		nextMonth.setBounds(260, 5, 50, 25);
 		nextMonth.setForeground(Color.BLUE);
-		
+
 		calendarScroll.setBounds(10, 35, 300, 250);
 
 		border = BorderFactory.createLineBorder(Color.BLACK);
+
+		showUserGuideLabel = new JLabel();
+		showUserGuideLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
+		showUserGuideLabel.setForeground(Color.BLUE);
+		showUserGuideLabel.setBorder(BorderFactory.createCompoundBorder(border, 
+				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+		showUserGuideLabel.setText("Guide");
+
+		showUserGuide = new JTextArea();
+		showUserGuide.setFont(new Font("Times New Roman", Font.BOLD, 14));
+		showUserGuide.setForeground(Color.CYAN);
+		showUserGuide.setBackground(Color.BLUE);
+		showUserGuide.setText(getGuide());
+		showUserGuide.setLineWrap(true);
+		showUserGuide.setEditable(false);
+
+		showUserGuideScroll = new JScrollPane (showUserGuide, 
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		showUserGuideScroll.setColumnHeaderView(showUserGuideLabel);
+
+		showUserGuidePane = new JXCollapsiblePane();
+		showUserGuidePane.setContentPane(showUserGuideScroll);
+		showUserGuidePane.setCollapsed(true);
+		showUserGuidePane.setBounds(320, 4, 570, 0);
+		showUserGuidePane.setPreferredSize(new Dimension(570,495));			
+		showUserGuidePane.setCollapsed(false);
+
 		overDueTaskLabel = new JLabel();
 		overDueTaskLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		overDueTaskLabel.setForeground(Color.RED);
@@ -214,17 +245,16 @@ public class FlexiPlannerUI implements HotKeyListener {
 		showUserExecutedCommand.setText("");
 		showUserExecutedCommand.setLineWrap(true);
 		showUserExecutedCommand.setEditable(false);
-		
+
 		showUserExecutedCommandScroll = new JScrollPane (showUserExecutedCommand, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		showUserExecutedCommandScroll.setColumnHeaderView(showUserExecutedCommandLabel);
-	
+
 		showUserExecutedCommandCollapsePane = new JXCollapsiblePane();
 		showUserExecutedCommandCollapsePane.setContentPane(showUserExecutedCommandScroll);
+		showUserExecutedCommandCollapsePane.setCollapsed(true);
 		showUserExecutedCommandCollapsePane.setBounds(320, 4, 570, 0);
 		showUserExecutedCommandCollapsePane.setPreferredSize(new Dimension(570,495));			
-		showUserExecutedCommandCollapsePane.setCollapsed(true);
-		showUserExecutedCommandCollapsePane.setCollapsed(false);
 
 		showCategoryLabel = new JLabel();
 		showCategoryLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
@@ -240,7 +270,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		showCategory.setLineWrap(true);
 		showCategory.setText("Get category to display from logic");
 		showCategory.setEditable(false);
-		
+
 		showCategoryScroll = new JScrollPane (showCategory, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		showCategoryScroll.setColumnHeaderView(showCategoryLabel);
@@ -265,6 +295,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		schedulerPanel.add(prevMonth);
 		schedulerPanel.add(nextMonth);
 		schedulerPanel.add(calendarScroll);
+		schedulerPanel.add(showUserGuidePane);
 		schedulerPanel.add(showOverDueCollapsePane);
 		schedulerPanel.add(todayCollapsePane);
 		schedulerPanel.add(showUserExecutedCommandCollapsePane);
@@ -296,13 +327,13 @@ public class FlexiPlannerUI implements HotKeyListener {
 		inputCommand.requestFocusInWindow();
 		executeKeyAction(commandFeedback,showOverDueTask,showTodayTask,showUserExecutedCommand,showCategory,
 				showOverDueTaskScroll,showTodayTaskScroll,showUserExecutedCommandScroll,showCategoryScroll
-				,showOverDueCollapsePane,todayCollapsePane,showUserExecutedCommandCollapsePane);
+				,showUserGuidePane,showOverDueCollapsePane,todayCollapsePane,showUserExecutedCommandCollapsePane);
 	}
 
 	private void executeKeyAction(final JTextArea commandFeedback,final JTextArea showOverDueTask,
 			final JTextArea showTodayTask,final JTextArea showUserExecutedCommand,final JTextArea showCategory, 
 			final JScrollPane showOverDueTaskScroll, final JScrollPane showTodayTaskScroll ,final JScrollPane showUserExecutedCommandScroll,final JScrollPane showCategoryScroll
-			,final JXCollapsiblePane overDueCollapsePane,final JXCollapsiblePane todayCollapsePane,final JXCollapsiblePane showUserExecutedCommandCollapsePane) {
+			,final JXCollapsiblePane showUserGuidePane,final JXCollapsiblePane overDueCollapsePane,final JXCollapsiblePane todayCollapsePane,final JXCollapsiblePane showUserExecutedCommandCollapsePane) {
 		inputCommand.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				int key = e.getKeyCode();
@@ -334,6 +365,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
+					showUserGuidePane.setCollapsed(true);
 					overDueCollapsePane.setCollapsed(true);
 					todayCollapsePane.setCollapsed(true);
 					showUserExecutedCommandCollapsePane.setCollapsed(true);
@@ -341,34 +373,33 @@ public class FlexiPlannerUI implements HotKeyListener {
 					refreshCalendar(currentDisplayedMonth, currentDisplayedYear);
 					break;
 				case KeyEvent.VK_F1:
-					showUserExecutedCommand.setText(getguide());
+					showUserGuidePane.setCollapsed(false);						
+					showUserExecutedCommandCollapsePane.setCollapsed(true);
 					overDueCollapsePane.setCollapsed(true);
 					todayCollapsePane.setCollapsed(true);
-					showUserExecutedCommandCollapsePane.setCollapsed(true);					
-					showUserExecutedCommandCollapsePane.setCollapsed(false);
 					break;
 				case KeyEvent.VK_F2:
-					if(showUserExecutedCommandCollapsePane.isCollapsed()){
-						showUserExecutedCommandCollapsePane.setCollapsed(true);
-						todayCollapsePane.setCollapsed(true);
-						overDueCollapsePane.setCollapsed(true);
-						showUserExecutedCommandCollapsePane.setCollapsed(false);
-					}else{
-						showUserExecutedCommandCollapsePane.setCollapsed(true);
+					userCommand = inputCommand.getText();
+					try {
+						showUserExecutedCommand.setText(logic.getData(userCommand));
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (ParseException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					}
+					showUserExecutedCommandCollapsePane.setCollapsed(false);
+					showUserGuidePane.setCollapsed(true);
+					todayCollapsePane.setCollapsed(true);
+					overDueCollapsePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F3:
 					showOverDueTask.setText(logic.getOverdue());
-					if(overDueCollapsePane.isCollapsed()){
-						overDueCollapsePane.setCollapsed(false);
-						showUserExecutedCommandCollapsePane.setCollapsed(true);
-						todayCollapsePane.setCollapsed(true);
-					}else{
-						overDueCollapsePane.setCollapsed(true);
-						if(todayCollapsePane.isCollapsed()){
-							showUserExecutedCommandCollapsePane.setCollapsed(false);
-						}
-					}
+					overDueCollapsePane.setCollapsed(false);
+					showUserExecutedCommandCollapsePane.setCollapsed(true);
+					todayCollapsePane.setCollapsed(true);
+					showUserGuidePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F4:
 					try {
@@ -380,16 +411,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-					if(todayCollapsePane.isCollapsed()){
-						todayCollapsePane.setCollapsed(false);
-						showUserExecutedCommandCollapsePane.setCollapsed(true);
-						overDueCollapsePane.setCollapsed(true);
-					}else{
-						todayCollapsePane.setCollapsed(true);
-						if(overDueCollapsePane.isCollapsed()){
-							showUserExecutedCommandCollapsePane.setCollapsed(false);
-						}
-					}
+					todayCollapsePane.setCollapsed(false);
+					showUserExecutedCommandCollapsePane.setCollapsed(true);
+					overDueCollapsePane.setCollapsed(true);
+					showUserGuidePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F5:
 					showOverDueTaskScroll.getVerticalScrollBar().getModel().setValue(overDueScrollPane-5);
@@ -468,8 +493,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 		}
 		refreshCalendar(currentDisplayedMonth, currentDisplayedYear);
 	}
-	private String getguide(){
-		String guide="Guide:\nHotKeys:"
+	private String getGuide(){
+		String guide="HotKeys:"
 				+ "\n1: 'ctrl+o':Execute FlexiPlanner from system tray"
 				+ "\n2: 'ctrl+m': Minimise FlexiPlanner to system tray"
 				+ "\n3: 'f1': Guide"
@@ -641,8 +666,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 	 * @author Moe Lwin Hein (A0117989H)
 	 */
 	public static JFrame getJFrame() {
-		return schedulerFrame;
-	}
+ 		return schedulerFrame;
+ 	}
 
 	/**
 	 * This method execute when a hotKey is pressed.
