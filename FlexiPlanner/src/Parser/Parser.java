@@ -10,6 +10,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * This class translates an input String into Task data.
+ * 
+ * @author Choo Xin Min (A0111887Y)
+ */
+
 public class Parser {
 
 	private final List<String> addCommandWords = Arrays.asList("add", "schedule", "create", "remember");
@@ -28,6 +34,8 @@ public class Parser {
 	private final List<String> ordinalNumWords = Arrays.asList("st", "nd", "rd" ,"th");
 	private final List<String> timeWords = Arrays.asList("am", "pm");
 	private final List<String> uselessWords = Arrays.asList("on", "from", "to", "@", "at");
+	private final List<String> markDoneWords = Arrays.asList("complete", "completed", "incomplete", "done", "undone");
+	private final List<String> markDoneKeyWords = Arrays.asList("not", "yet", "to", "be", "has", "been", "is");
 	private final NumberFormat formatter = NumberFormat.getInstance();
 	private final String CATEGORY_SYMBOL = "#";
 	private final String PRIORITY_SYMBOL = "!";
@@ -44,6 +52,7 @@ public class Parser {
 		
 	}
 	
+	//This methods find the word representing a command and returns the command String.
 	private String getCommand(MyStringList words) {
 		
 		for (String c : addCommandWords) {
@@ -82,15 +91,26 @@ public class Parser {
 				return c;
 			}
 		}
-		if (isMarkedDone(words)) {
-			return "mark done";
+		if (isMarked(words)) {
+			return "mark";
 		}
 		return "add";
 		
 	}
 	
-	private boolean isMarkedDone(MyStringList words) {
+	//This method returns true if there are words that represent marking a Task as done.
+	private boolean isMarked(MyStringList words) {
 		
+		if (words.containsIgnoreCase("mark")) {
+			words.removeIgnoreCase("mark");
+			return true;
+		}
+		for (int index = 0; index < words.size(); index++) {
+			String word = words.get(index).toLowerCase();
+			if (markDoneWords.contains(word)) {
+				return true;
+			}
+		}
 		return false;
 		
 	}
@@ -101,8 +121,10 @@ public class Parser {
 		setCategory(words, t);
 		setPriority(words, t);
 		setDateTime(words, t);
+		setDone(words, t);
 		setContent(words, t);
-		fixTaskData(t); //fix datetime and maybe more
+		fixDateTime(t);
+		fixContent(t);
 		return t;
 		
 	}
@@ -161,7 +183,54 @@ public class Parser {
 		
 	}
 	
-	private void fixTaskData(Task t) {
+	private void setDone(MyStringList words, Task t) {
+
+		for (int index = 0; index < words.size(); index++) {
+			String word = words.get(index).toLowerCase();
+			if (markDoneWords.contains(word)) {
+				if (word.equals("undone") || word.equals("incomplete")) {
+					t.setDone(false);
+				} else {
+					t.setDone(true);
+				}
+				words.remove(index);
+				changeDone(words, index - 1, t);
+				break;
+			}
+		}
+		
+	}
+	
+	private void changeDone(MyStringList words, int index, Task t) {
+		
+		String word = words.get(index).toLowerCase();
+		boolean isDone = t.isDone();
+		while (markDoneKeyWords.contains(word)) {
+			switch (word) {
+				case "yet" :
+					if (words.get(index - 1).toLowerCase().equals("not")) {
+						words.remove(index);
+						index--;
+						break;
+					}
+				case "to" :
+				case "be" :
+				case "not" :
+					t.setDone(isDone ^= true);
+				default :
+					words.remove(index);
+					index--;
+			}
+			if (index >= 0) {
+				word = words.get(index).toLowerCase();
+			} else {
+				break;
+			}
+		}
+		
+	}
+	
+	private void fixDateTime(Task t) {
 		
 		LocalDateTime startDateTime = t.getStartDateTime();
 		LocalDateTime endDateTime = t.getEndDateTime();
@@ -185,6 +254,15 @@ public class Parser {
 			} else {
 				t.setEndDateTime(startDateTime.withHour(23).withMinute(59).withSecond(59));
 			}
+		}
+		
+	}
+	
+	private void fixContent(Task t) {
+		
+		String content = t.getContent();
+		if (content != null && isNumeric(content)) {
+			t.setIndex(Integer.parseInt(content));
 		}
 		
 	}
@@ -511,11 +589,14 @@ public class Parser {
 		
 		String time = words.get(index);
 		MyStringList s = new MyStringList();
+		LocalTime lt = null;
 		int hrToAdd = 0;
 		boolean noAmPm = true;
+		boolean mayBeTime = false;
 		for (String tw : timeWords) {
 			if (time.toLowerCase().endsWith(tw)) {
 				noAmPm = false;
+				mayBeTime = true;
 				if (tw.equals("pm")) {
 					hrToAdd = 12;
 				}
@@ -526,6 +607,7 @@ public class Parser {
 		if (noAmPm && index + 1 < words.size()) {
 			for (String tw : timeWords) {
 				if (words.get(index + 1).equalsIgnoreCase(tw)) {
+					mayBeTime = true;
 					if (tw.equals("pm")) {
 						hrToAdd = 12;
 					}
@@ -536,14 +618,18 @@ public class Parser {
 		}
 		if (time.contains(":")) {
 			s.addAll(Arrays.asList(time.split(":")));
+			mayBeTime = true;
 		} else if (time.contains(".")) {
 			s.addAll(Arrays.asList(time.split(".")));
-		} else {
+			mayBeTime = true;
+		} else if (mayBeTime) {
 			s.add(time);
 		}
-		LocalTime lt = getTime(s, hrToAdd);
-		if (lt != null) {
-			words.remove(index);
+		if (mayBeTime) {
+			lt = getTime(s, hrToAdd);
+			if (lt != null) {
+				words.remove(index);
+			}
 		}
 		return lt;
 		
@@ -747,7 +833,9 @@ public class Parser {
 		for (String w : words) {
 			sb.append(w + " ");
 		}
-		t.setContent(sb.toString());
+		if (sb.length() != 0) {
+			t.setContent(sb.toString());
+		}
 		
 	}
 	

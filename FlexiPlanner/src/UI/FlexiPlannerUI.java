@@ -105,7 +105,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 			public boolean isCellEditable(int rowIndex, int mColIndex) {
 				return false;
 			}
-		};// get dafault table model for calendar
+		};// get default table model for calendar
 		calendar1 = new JTable(calendar2);// create new table
 		calendarScroll = new JScrollPane(calendar1,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);

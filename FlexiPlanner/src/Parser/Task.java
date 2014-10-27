@@ -2,6 +2,12 @@ package Parser;
 
 import java.time.LocalDateTime;
 
+/**
+ * This class creates a Task object that contains the Task data translated by the Parser class.
+ * 
+ * @author Choo Xin Min (A0111887Y)
+ */
+
 public class Task{
 	
 	private LocalDateTime startDateTime;
@@ -9,6 +15,7 @@ public class Task{
 	private String content;
 	private String category;
 	private String priority;
+	private int index;
 	private boolean isDone;
 	
 	public Task(){
@@ -18,6 +25,7 @@ public class Task{
 		content = null;
 		category = null;
 		priority = null;
+		index = 0;
 		isDone = false;
 	
 	}
@@ -91,6 +99,18 @@ public class Task{
 	
 		return priority;
 	
+	}
+	
+	public void setIndex(int i) {
+		
+		index = i;
+		
+	}
+	
+	public int getIndex() {
+		
+		return index;
+
 	}
 
 	public void setDone(boolean d) {
