@@ -8,6 +8,8 @@ import java.util.ArrayList;
  */
 
 public interface Storage {
+	public boolean setupDatabase(final String filePath);
+	
 	/**
 	 * This method saves a list of data in a specified file.
 	 * @param filePath : path to the file to save into
@@ -16,7 +18,7 @@ public interface Storage {
 	 * 
 	 * @return successful or not : boolean
 	 */
-	public boolean saveTasks(String filePath, ArrayList<TaskData> taskList, boolean isAppendable);
+	public boolean saveTasks(final String filePath, ArrayList<TaskData> taskList);
 	
 	/**
 	 * This method loads data from a specified file.
@@ -25,9 +27,9 @@ public interface Storage {
 	 * 
 	 * @return taskList : ArrayList<TaskData> 
 	 */
-	public ArrayList<TaskData> loadTasks(String filePath, Option loadOption);
+	public ArrayList<TaskData> loadTasks(final String filePath);
 	
-	public boolean saveCategory(String filePath, ArrayList<String> categoryList);
+	public boolean saveCategory(final String filePath, ArrayList<String> categoryList);
 	
-	public ArrayList<String> loadCategory(String filePath);
+	public ArrayList<String> loadCategory(final String filePath);
 }

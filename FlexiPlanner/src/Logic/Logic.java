@@ -23,7 +23,7 @@ public class Logic {
 	private HashMap<String, TaskData> completedTaskIdentifier;
 	private Stack<ActionEntry> actionList; // for undo and redo
 	private Stack<ActionEntry> redoList;
-	private FileStorage storer;
+	private Storage storer; // don't call file storage, call storage. storage is like interface. 
 	private Parser parser;
 	private Action action;
 	private ActionEntry entry;
@@ -32,7 +32,7 @@ public class Logic {
 	private ArrayList<TaskData> currentDisplayedTask;
 
 	private ArrayList<TaskData> completedTask;
-	private FileStorage storerForCompleted;
+	private Storage storerForCompleted; // Don't call to file storage, call storage
 
 	String filePath = "text.json";
 	String completedpath = "completed.json";
@@ -47,6 +47,9 @@ public class Logic {
 		storerForCompleted = new FileStorage(); // For
 												// compeleted
 												// task
+		storer.setupDatabase(filePath); // act upon changes made in storage
+		storerForCompleted.setupDatabase(completedpath); // act upon changes made in storage
+		
 		command = null;
 		task = null;
 		taskList = new ArrayList<TaskData>();
@@ -90,8 +93,7 @@ public class Logic {
 	// load all data saved in the file
 	//@author A0112066U
 	private void loadData() throws IOException, ParseException {
-		taskList = new ArrayList<TaskData>(storer.loadTasks(filePath,
-				new Option(true)));
+		taskList = new ArrayList<TaskData>(storer.loadTasks(filePath));
 		// select all task from the day before onwards
 
 		for (TaskData t : taskList) {
@@ -108,7 +110,7 @@ public class Logic {
 			}
 		}
 		completedTask = new ArrayList<TaskData>(storerForCompleted.loadTasks(
-				completedpath, new Option(true)));
+				completedpath));
 
 	}
 
@@ -214,7 +216,7 @@ public class Logic {
 		taskToBeAdded.add(task);
 		currentDisplayedTask.add(0, task);
 		try {
-			storer.saveTasks(filePath, taskToBeAdded, true);
+			// storer.saveTasks(filePath, taskToBeAdded, true); Please help me change this.
 		} catch (Exception e) {
 			System.out.println("Error while saving data");
 			return false;
@@ -620,11 +622,11 @@ public class Logic {
 
 	// @author A0112066U
 	private void saveData() throws IOException {
-		storer.saveTasks(filePath, taskList, false);
+		storer.saveTasks(filePath, taskList);
 	}
 
 	private void saveCompletedTask() throws IOException {
-		storer.saveTasks(completedpath, completedTask, false);
+		storer.saveTasks(completedpath, completedTask);
 	}
 
 	// return data to show to UI
