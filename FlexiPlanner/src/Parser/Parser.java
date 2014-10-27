@@ -829,11 +829,11 @@ public class Parser {
 	
 	private void setContent(MyStringList words, Task t) {
 		
-		StringBuilder sb = new StringBuilder();
-		for (String w : words) {
-			sb.append(w + " ");
-		}
-		if (sb.length() != 0) {
+		if (words.size() != 0) {
+			StringBuilder sb = new StringBuilder(words.get(0));
+			for (int index = 1; index < words.size(); index++) {
+				sb.append(" " + words.get(index));
+			}
 			t.setContent(sb.toString());
 		}
 		
