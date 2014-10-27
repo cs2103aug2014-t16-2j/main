@@ -324,10 +324,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 						e1.printStackTrace();
 					}
 					inputCommand.setText("");
-					showOverDueTask.setText(logic.getOverdue());
 					showCategory.setText("Update category\n");
 					try {
-						showTodayTask.setText(logic.getTodayTask());
 						showUserExecutedCommand.setText(logic.getData(userCommand));
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
@@ -360,6 +358,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 					}
 					break;
 				case KeyEvent.VK_F3:
+					showOverDueTask.setText(logic.getOverdue());
 					if(overDueCollapsePane.isCollapsed()){
 						overDueCollapsePane.setCollapsed(false);
 						showUserExecutedCommandCollapsePane.setCollapsed(true);
@@ -372,6 +371,15 @@ public class FlexiPlannerUI implements HotKeyListener {
 					}
 					break;
 				case KeyEvent.VK_F4:
+					try {
+						showTodayTask.setText(logic.getTodayTask());
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (ParseException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					if(todayCollapsePane.isCollapsed()){
 						todayCollapsePane.setCollapsed(false);
 						showUserExecutedCommandCollapsePane.setCollapsed(true);
