@@ -65,7 +65,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private JScrollPane showUserExecutedCommandScroll;
 	private JScrollPane showCategoryScroll;
 	private JComboBox selectYear;
-	private JFrame schedulerFrame;
+	private static JFrame schedulerFrame;
 	private JTextField inputCommand;
 	private int actualYear, actualMonth, actualDay, currentDisplayedYear,
 	currentDisplayedMonth;
@@ -640,7 +640,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	 * 
 	 * @author Moe Lwin Hein (A0117989H)
 	 */
-	public JFrame getJFrame() {
+	public static JFrame getJFrame() {
 		return schedulerFrame;
 	}
 
