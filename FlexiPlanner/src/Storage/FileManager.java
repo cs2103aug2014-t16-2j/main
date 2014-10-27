@@ -26,11 +26,17 @@ import org.json.simple.parser.ParseException;
 
 public class FileManager {
 	
-	public void create(String filePath) throws IOException {
+	public boolean create(String filePath) throws IOException {
+		boolean isCreated = false;
 		File file = new File(filePath);
 		if (!file.exists()) {
 			file.createNewFile();
+			isCreated = true;
 		}
+		else {
+			isCreated = false;
+		}
+		return isCreated;
 	}
 	
 	public void writeInJsonFormat(String filePath, JSONObject jsonObj, boolean isAppendable) throws IOException, FileNotFoundException {
@@ -86,6 +92,10 @@ public class FileManager {
 	public boolean delete(String filePath) throws FileNotFoundException {
 		File fileToDelete = new File(filePath);
 		return fileToDelete.delete();
+	}
+	
+	public void clear(String filePath) throws FileNotFoundException, IOException {
+		write(filePath, "", false);
 	}
 	
 	public String[] listFilesIn(String folderPath) throws FileNotFoundException {

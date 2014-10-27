@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import org.json.simple.parser.ParseException;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import Storage.FileManager;
@@ -34,9 +36,26 @@ public class TestFileStorage {
 	TaskData t2 = new TaskData("second", "work", "high", LocalDateTime.of(2014, 10, 25, 0, 0), LocalDateTime.of(2014, 10, 26, 0, 0));
 	TaskData t3 = new TaskData("third", "work", "high", LocalDateTime.of(2014, 10, 27, 0, 0), LocalDateTime.of(2014, 10, 28, 0, 0));
 	
+	final String f1 = "testresources/notinjsonformat.json";
+	final String f2 = "testresources/empty.json";
+	final String f3 = "testresources/threetask.json";
+	final String f4 = "testresources/testingsave.json";
+	final String f5 = "testresources/save.txt";
+	final String f6 = "testresources/onetask.json";
+	
 	final String c1 = "#personal";
 	final String c2 = "#work";
 	final String c3 = "#today";
+	
+	@Before
+	public void setUp() throws Exception {
+		database.setupDatabase(f1);
+		database.setupDatabase(f2);
+		database.setupDatabase(f3);
+		database.setupDatabase(f4);
+		database.setupDatabase(f5);
+		database.setupDatabase(f6);
+	}
 	
 	/** Test Loading Method **/
 	/** ******************* **/
@@ -48,34 +67,30 @@ public class TestFileStorage {
 	public void testLoadFromNullFilePath() throws IOException, ParseException {
 		ArrayList<TaskData> tasks = new ArrayList<TaskData>();
 		System.setOut(new PrintStream(out));
-		tasks = database.loadTasks(null, new Option(true));
+		tasks = database.loadTasks(null);
 		assertTrue(tasks.isEmpty());
-		assertEquals("Invalid file name!\n", out.toString());
-	}
-	
-	@Test (expected = NullPointerException.class)
-	public void testLoadWithNullOption() {
-		database.loadTasks("testresources/onetask.json", null);
+		assertEquals("File record not found! Setup database first!\n", out.toString());
 	}
 	
 	@Test
 	public void testLoadFileNotInJSONFormat() {
 		System.setOut(new PrintStream(out));
-		database.loadTasks("testresources/notinjsonformat.json", new Option(true));
+		database.loadTasks("testresources/notinjsonformat.json");
 		assertEquals("Parse Error!\n", out.toString());
 	}
 	
 	@Test 
 	public void testLoadEmptyFile() {
 		ArrayList<TaskData> tasks = new ArrayList<TaskData>();
-		tasks = database.loadTasks("testresources/empty.json", new Option(true));
+		tasks = database.loadTasks("testresources/empty.json");
 		assertTrue(tasks.isEmpty());
 	}
 	
 	@Test 
 	public void testLoadFileWithOneTask() {
 		ArrayList<TaskData> tasks = new ArrayList<TaskData>();
-		tasks = database.loadTasks("testresources/onetask.json", new Option(true));
+		tasks = database.loadTasks("testresources/onetask.json");
+		System.out.println(tasks.size());
 		assertTrue(tasks.size() == 1);
 		assertTrue(tasks.get(0).equals(t1));
 	}
@@ -83,7 +98,7 @@ public class TestFileStorage {
 	@Test 
 	public void testLoadFileWithThreeTask() {
 		ArrayList<TaskData> tasks = new ArrayList<TaskData>();
-		tasks = database.loadTasks("testresources/threetask.json", new Option(true));
+		tasks = database.loadTasks("testresources/threetask.json");
 		assertTrue(tasks.size() == 3);
 		assertTrue(tasks.get(0).equals(t1) && tasks.get(1).equals(t2) && tasks.get(2).equals(t3));
 	}
@@ -97,92 +112,36 @@ public class TestFileStorage {
 	@Test
 	public void testSaveInNullFilePath() {
 		System.setOut(new PrintStream(out));
-		assertFalse(database.saveTasks(null, new ArrayList<TaskData>(), false));
-		assertEquals("Invalid file name!\n", out.toString());
+		assertFalse(database.saveTasks(null, new ArrayList<TaskData>()));
+		assertEquals("File record not found! Setup database first!\n", out.toString());
 	}
 
 	@Test 
 	public void testSaveNullList() {
 		System.setOut(new PrintStream(out));
-		assertFalse(database.saveTasks("testresources/testingsave.json", null, true));
+		assertFalse(database.saveTasks("testresources/testingsave.json", null));
 		assertEquals("List cannot be null!\n", out.toString());
 	}
 	
 	@Test 
-	public void testSaveInNonJSONFileWithAppend() {
-		assertFalse(database.saveTasks("testresources/notinjsonformat.json", new ArrayList<TaskData>(), true));
-	}
-	
-	@Test 
-	public void testSaveEmptyList() {
+	public void testSaveEmptyList() throws FileNotFoundException, IOException {
 		ArrayList<TaskData> tasks = new ArrayList<TaskData> ();
-		deleteFile("testresources/testingsave.json");
-		assertTrue(database.saveTasks("testresources/testingsave.json", new ArrayList<TaskData>(), false));
-		tasks = database.loadTasks("testresources/testingsave.json", new Option(true));
+		manager.clear("testresources/testingsave.json");
+		assertTrue(database.saveTasks("testresources/testingsave.json", new ArrayList<TaskData>()));
+		tasks = database.loadTasks("testresources/testingsave.json");
 		assertTrue(tasks.isEmpty());
 	}
 	
 	@Test 
-	public void testSaveEmptyListAppend() {
-		ArrayList<TaskData> tasks = new ArrayList<TaskData> ();
-		deleteFile("testresources/testingsave.json");
-		assertTrue(database.saveTasks("testresources/testingsave.json", new ArrayList<TaskData>(), true));
-		tasks = database.loadTasks("testresources/testingsave.json", new Option(true));
-		assertTrue(tasks.isEmpty());
-	}
-	
-	@Test 
-	public void testSaveATaskInEmptyFile() {
+	public void testSaveATaskInEmptyFile() throws FileNotFoundException, IOException {
 		ArrayList<TaskData> oneTask = new ArrayList<TaskData>();
 		ArrayList<TaskData> tasks = new ArrayList<TaskData> ();
 		oneTask.add(t1);
-		deleteFile("testresources/testingsave.json");
-		assertTrue(database.saveTasks("testresources/testingsave.json", oneTask, false));
-		tasks = database.loadTasks("testresources/testingsave.json", new Option(true));
+		manager.clear("testresources/testingsave.json");
+		assertTrue(database.saveTasks("testresources/testingsave.json", oneTask));
+		tasks = database.loadTasks("testresources/testingsave.json");
 		assertTrue(tasks.size() == 1);
 		assertTrue(tasks.get(0).equals(oneTask.get(0)));
-	}
-	
-	@Test 
-	public void testAppendATaskInEmptyFile() {
-		ArrayList<TaskData> oneTask = new ArrayList<TaskData>();
-		ArrayList<TaskData> tasks = new ArrayList<TaskData> ();
-		oneTask.add(t1);
-		deleteFile("testresources/testingsave.json");
-		assertTrue(database.saveTasks("testresources/testingsave.json", oneTask, true));
-		tasks = database.loadTasks("testresources/testingsave.json", new Option(true));
-		assertTrue(tasks.size() == 1);
-		assertTrue(tasks.get(0).equals(oneTask.get(0)));
-	}
-	
-	@Test 
-	public void testAppendATask() throws FileNotFoundException, IOException {
-		ArrayList<TaskData> oneTask = new ArrayList<TaskData>();
-		ArrayList<TaskData> tasks = new ArrayList<TaskData> ();
-		oneTask.add(t2);
-		manager.copy("testresources/onetask.json", "testresources/onetoappend.json");
-		assertTrue(database.saveTasks("testresources/onetoappend.json", oneTask, true));
-		tasks = database.loadTasks("testresources/onetoappend.json", new Option(true));
-		assertTrue(tasks.size() == 2);
-		assertTrue(tasks.get(0).equals(t1) && tasks.get(1).equals(oneTask.get(0)));
-		deleteFile("testresources/onetoappend.json");
-	}
-	
-	@Test 
-	public void testAppendMultiTask() throws FileNotFoundException, IOException  {
-		ArrayList<TaskData> threeTask = new ArrayList<TaskData>();
-		ArrayList<TaskData> tasks = new ArrayList<TaskData> ();
-		threeTask.add(t1);
-		threeTask.add(t2);
-		threeTask.add(t3);
-		manager.copy("testresources/threetask.json", "testresources/threetoappend.json");
-		assertTrue(database.saveTasks("testresources/threetoappend.json", threeTask, true));
-		tasks = database.loadTasks("testresources/threetoappend.json", new Option(true));
-		assertTrue(tasks.size() == 6);
-		assertTrue(tasks.get(0).equals(t1) && tasks.get(1).equals(t2) &&
-				   tasks.get(2).equals(t3) && tasks.get(3).equals(t1) &&
-				   tasks.get(4).equals(t2) && tasks.get(5).equals(t3));
-		deleteFile("testresources/threetoappend.json");
 	}
 	
 	@Test 
@@ -192,8 +151,8 @@ public class TestFileStorage {
 		threeTasks.add(t1);
 		threeTasks.add(t2);
 		threeTasks.add(t2);
-		assertTrue(database.saveTasks("testresources/testingsave.json", threeTasks, false));
-		tasks = database.loadTasks("testresources/testingsave.json", new Option(true));
+		assertTrue(database.saveTasks("testresources/testingsave.json", threeTasks));
+		tasks = database.loadTasks("testresources/testingsave.json");
 		assertTrue(tasks.size() == 3);
 		assertTrue(tasks.get(0).equals(t1) && tasks.get(1).equals(t2) &&
 				   tasks.get(2).equals(t2));
@@ -215,19 +174,5 @@ public class TestFileStorage {
 		load = database.loadCategory("testresources/save.txt");
 		assertTrue(load.size() == 3);
 		assertTrue(load.get(0).equals(c1) && load.get(1).equals(c2) && load.get(2).equals(c3));
-	}
-	
-	/** Assist Methods **/
-	/** ******************* **/
-	/** ******************* **/
-	/** ******************* **/
-	/** ******************* **/
-	
-	private void deleteFile(String filePath) {
-		try {
-			manager.delete(filePath);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
 	}
 }

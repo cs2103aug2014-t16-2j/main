@@ -41,7 +41,8 @@ public class Tray {
 	
 	/** Global Shortcuts **/
 	private Provider keyShortCuts = null;
-	private String openShortCut = "control shift O";
+	private String openShortCut = "control O";
+	private String closeShortCut = "control M";
 	
 	public Tray(FlexiPlannerUI instance, JFrame frame) {
 		this.instance = instance;
@@ -107,6 +108,7 @@ public class Tray {
 				}
 				keyShortCuts.reset();
 				keyShortCuts.register(KeyStroke.getKeyStroke(openShortCut), instance);
+				keyShortCuts.register(KeyStroke.getKeyStroke(closeShortCut), instance);
 			}
 		}).start();
 	}

@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.Dimension;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.GregorianCalendar;
@@ -125,36 +126,41 @@ public class FlexiPlannerUI implements HotKeyListener {
 		currentDisplayedYear = actualYear;
 
 		displayedMonth = new JLabel("January");
-		displayedYear = new JLabel("Select Year:");
-		selectYear = new JComboBox();
-		prevMonth = new JButton("<");
-		nextMonth = new JButton(">");
-
 		displayedMonth.setBounds(
 				160 - displayedMonth.getPreferredSize().width / 2, 5, 100, 25);
-		displayedMonth.setForeground(Color.red);
+		displayedMonth.setForeground(Color.BLUE);
+		displayedMonth.setFont(new Font("Times New Roman", Font.BOLD, 15));
+		
+		displayedYear = new JLabel("Select Year:");
 		displayedYear.setBounds(10, 295, 80, 20);
-		displayedYear.setForeground(Color.red);
+		displayedYear.setForeground(Color.BLUE);
+		
+		selectYear = new JComboBox();
 		selectYear.setBounds(230, 295, 80, 20);
-		selectYear.setForeground(Color.red);
+		selectYear.setForeground(Color.BLUE);
+		
+		prevMonth = new JButton("<");
 		prevMonth.setBounds(10, 5, 50, 25);
-		prevMonth.setForeground(Color.red);
+		prevMonth.setForeground(Color.BLUE);
+		
+		nextMonth = new JButton(">");
 		nextMonth.setBounds(260, 5, 50, 25);
-		nextMonth.setForeground(Color.red);
+		nextMonth.setForeground(Color.BLUE);
+		
 		calendarScroll.setBounds(10, 35, 300, 250);
 
 		border = BorderFactory.createLineBorder(Color.BLACK);
 		overDueTaskLabel = new JLabel();
 		overDueTaskLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		overDueTaskLabel.setForeground(Color.BLACK);		
+		overDueTaskLabel.setForeground(Color.RED);
 		overDueTaskLabel.setBorder(BorderFactory.createCompoundBorder(border, 
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		overDueTaskLabel.setText("Overdue tasks");
 
 		showOverDueTask = new JTextArea();
 		showOverDueTask.setFont(new Font("Times New Roman", Font.BOLD, 14));
-		showOverDueTask.setForeground(Color.BLACK);
-		showOverDueTask.setBackground(Color.LIGHT_GRAY);
+		showOverDueTask.setForeground(Color.WHITE);
+		showOverDueTask.setBackground(Color.RED);
 		showOverDueTask.setLineWrap(true);
 		showOverDueTask.setText(logic.getOverdue());
 		showOverDueTask.setEditable(false);
@@ -164,21 +170,22 @@ public class FlexiPlannerUI implements HotKeyListener {
 		showOverDueTaskScroll.setColumnHeaderView(overDueTaskLabel);
 
 		showOverDueCollapsePane = new JXCollapsiblePane();
-		showOverDueCollapsePane.add(showOverDueTaskScroll);
+		showOverDueCollapsePane.setContentPane(showOverDueTaskScroll);
 		showOverDueCollapsePane.setCollapsed(true);
 		showOverDueCollapsePane.setBounds(320, 4, 570, 0);
+		showOverDueCollapsePane.setPreferredSize(new Dimension(570,495));
 
 		todayTasksLabel = new JLabel();
 		todayTasksLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		todayTasksLabel.setForeground(Color.BLACK);
+		todayTasksLabel.setForeground(Color.MAGENTA);
 		todayTasksLabel.setBorder(BorderFactory.createCompoundBorder(border, 
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		todayTasksLabel.setText("Today tasks");
 
 		showTodayTask = new JTextArea();
 		showTodayTask.setFont(new Font("Times New Roman", Font.BOLD, 14));
-		showTodayTask.setForeground(Color.BLACK);
-		showTodayTask.setBackground(Color.LIGHT_GRAY);
+		showTodayTask.setForeground(Color.WHITE);
+		showTodayTask.setBackground(Color.MAGENTA);
 		showTodayTask.setLineWrap(true);
 		showTodayTask.setText(logic.getTodayTask());
 		showTodayTask.setEditable(false);
@@ -188,33 +195,56 @@ public class FlexiPlannerUI implements HotKeyListener {
 		showTodayTaskScroll.setColumnHeaderView(todayTasksLabel);
 
 		todayCollapsePane = new JXCollapsiblePane();
-		todayCollapsePane.add(showTodayTaskScroll);
+		todayCollapsePane.setContentPane(showTodayTaskScroll);
 		todayCollapsePane.setCollapsed(true);
 		todayCollapsePane.setBounds(320, 4, 570, 0);
-
-		showUserExecutedCommand = new JTextArea();
-		showUserExecutedCommand.setFont(new Font("Times New Roman", Font.BOLD, 14));
-		showUserExecutedCommand.setForeground(Color.BLACK);
-		showUserExecutedCommand.setBackground(Color.LIGHT_GRAY);
-		showUserExecutedCommand.setText("");
-		showUserExecutedCommand.setLineWrap(true);
-		showUserExecutedCommand.setEditable(false);
+		todayCollapsePane.setPreferredSize(new Dimension(570,495));
 
 		showUserExecutedCommandLabel = new JLabel();
 		showUserExecutedCommandLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		showUserExecutedCommandLabel.setForeground(Color.BLACK);
+		showUserExecutedCommandLabel.setForeground(Color.BLUE);
 		showUserExecutedCommandLabel.setBorder(BorderFactory.createCompoundBorder(border, 
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		showUserExecutedCommandLabel.setText("Executed Commands");
 
+		showUserExecutedCommand = new JTextArea();
+		showUserExecutedCommand.setFont(new Font("Times New Roman", Font.BOLD, 14));
+		showUserExecutedCommand.setForeground(Color.CYAN);
+		showUserExecutedCommand.setBackground(Color.BLUE);
+		showUserExecutedCommand.setText("");
+		showUserExecutedCommand.setLineWrap(true);
+		showUserExecutedCommand.setEditable(false);
+		
 		showUserExecutedCommandScroll = new JScrollPane (showUserExecutedCommand, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		showUserExecutedCommandScroll.setColumnHeaderView(showUserExecutedCommandLabel);
+	
 		showUserExecutedCommandCollapsePane = new JXCollapsiblePane();
-		showUserExecutedCommandCollapsePane.add(showUserExecutedCommandScroll);
+		showUserExecutedCommandCollapsePane.setContentPane(showUserExecutedCommandScroll);
+		showUserExecutedCommandCollapsePane.setBounds(320, 4, 570, 0);
+		showUserExecutedCommandCollapsePane.setPreferredSize(new Dimension(570,495));			
 		showUserExecutedCommandCollapsePane.setCollapsed(true);
 		showUserExecutedCommandCollapsePane.setCollapsed(false);
-		showUserExecutedCommandCollapsePane.setBounds(320, 4, 570, 0);
+
+		showCategoryLabel = new JLabel();
+		showCategoryLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
+		showCategoryLabel.setForeground(Color.BLUE);
+		showCategoryLabel.setBorder(BorderFactory.createCompoundBorder(border, 
+				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+		showCategoryLabel.setText("Categories");
+
+		showCategory = new JTextArea();
+		showCategory.setFont(new Font("Times New Roman", Font.BOLD, 14));
+		showCategory.setForeground(Color.CYAN);
+		showCategory.setBackground(Color.BLUE);
+		showCategory.setLineWrap(true);
+		showCategory.setText("Get category to display from logic");
+		showCategory.setEditable(false);
+		
+		showCategoryScroll = new JScrollPane (showCategory, 
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		showCategoryScroll.setColumnHeaderView(showCategoryLabel);
+		showCategoryScroll.setBounds(10, 325, 300, 175);
 
 		commandFeedback = new JTextArea("");
 		commandFeedback.setBackground(new Color(240, 240, 240));
@@ -224,30 +254,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 		commandFeedback.setBounds(11, 500, 870, 40);
 
 		inputCommand = new JTextField();
-		inputCommand.setBackground(Color.LIGHT_GRAY);
-		inputCommand.setForeground(Color.RED);
+		inputCommand.setForeground(Color.BLUE);
+		inputCommand.setBackground(Color.WHITE);
 		inputCommand.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		inputCommand.setBounds(10, 540, 880, 46);
-
-		showCategory = new JTextArea();
-		showCategory.setFont(new Font("Times New Roman", Font.BOLD, 14));
-		showCategory.setForeground(Color.BLACK);
-		showCategory.setBackground(Color.LIGHT_GRAY);
-		showCategory.setLineWrap(true);
-		showCategory.setText("Get category to display from logic");
-		showCategory.setEditable(false);
-
-		showCategoryLabel = new JLabel();
-		showCategoryLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		showCategoryLabel.setForeground(Color.BLACK);
-		showCategoryLabel.setBorder(BorderFactory.createCompoundBorder(border, 
-				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-		showCategoryLabel.setText("Categories");
-
-		showCategoryScroll = new JScrollPane (showCategory, 
-				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		showCategoryScroll.setColumnHeaderView(showCategoryLabel);
-		showCategoryScroll.setBounds(10, 325, 300, 175);
 
 		schedulerPanel.add(displayedMonth);
 		schedulerPanel.add(displayedYear);
@@ -330,7 +340,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 					todayCollapsePane.setCollapsed(true);
 					showUserExecutedCommandCollapsePane.setCollapsed(true);
 					showUserExecutedCommandCollapsePane.setCollapsed(false);
-					refreshCalendar(actualMonth, actualYear);
+					refreshCalendar(currentDisplayedMonth, currentDisplayedYear);
 					break;
 				case KeyEvent.VK_F1:
 					showUserExecutedCommand.setText(getguide());
@@ -452,21 +462,22 @@ public class FlexiPlannerUI implements HotKeyListener {
 	}
 	private String getguide(){
 		String guide="Guide:\nHotKeys:"
-				+ "\n1: 'shift+crtrl+o':Execute FlexiPlanner"
-				+ "\n2: 'f1': Guide"
-				+ "\n3: 'f2': Over due tasks"
-				+ "\n4: 'f3': Today task"
-				+ "\n5: 'f4': Executed commands"
-				+ "\n6: 'f5': Scroll up over due tasks"
-				+ "\n7: 'f6': Scroll down over due tasks"
-				+ "\n8: 'f7': Scroll up today tasks"
-				+ "\n9: 'f8': Scroll down today tasks"
-				+ "\n10: 'f9': Scroll up Executed commands"
-				+ "\n11: 'f10': Scroll down Executed commands"
-				+ "\n12: 'f11': Scroll up category"
-				+ "\n13: 'f12': Scroll down category"
-				+ "\n14: 'pgup': Previous month"
-				+ "\n15: 'pgdw': Next month";
+				+ "\n1: 'ctrl+o':Execute FlexiPlanner from system tray"
+				+ "\n2: 'ctrl+m': Minimise FlexiPlanner to system tray"
+				+ "\n3: 'f1': Guide"
+				+ "\n4: 'f2': Executed commands"
+				+ "\n5: 'f3': Over due tasks"
+				+ "\n7: 'f4': Today task"
+				+ "\n8: 'f5': Scroll up over due tasks"
+				+ "\n9: 'f6': Scroll down over due tasks"
+				+ "\n10: 'f7': Scroll up today tasks"
+				+ "\n11: 'f8': Scroll down today tasks"
+				+ "\n12: 'f9': Scroll up Executed commands"
+				+ "\n13: 'f10': Scroll down Executed commands"
+				+ "\n14: 'f11': Scroll up category"
+				+ "\n15: 'f12': Scroll down category"
+				+ "\n16: 'pgup': Previous month"
+				+ "\n17: 'pgdw': Next month";
 		return guide;
 	}
 
@@ -522,7 +533,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 			super.getTableCellRendererComponent(table, value, selected,
 					focused, row, column);
 			if (column == 0 || column == 6) { // Week-end
-				setBackground(Color.MAGENTA);
+				setBackground(Color.PINK);
 
 			} else { // Weekday
 				setBackground(Color.WHITE);
@@ -538,21 +549,33 @@ public class FlexiPlannerUI implements HotKeyListener {
 						&& currentDisplayedYear == actualYear) { // Today
 					try {
 						if (logic.hasTask(date)) {
-							setBackground(Color.RED);// set colour for current day
+							setBackground(Color.MAGENTA);// set colour for current day
 							// with task
 						} else {
-							setBackground(Color.LIGHT_GRAY);// set colour current
+							setBackground(Color.GRAY);// set colour current
 							// day
 						}
 					} catch (IOException | ParseException e) {
 						// TODO Auto-generated catch block
-						setBackground(Color.LIGHT_GRAY);
+						setBackground(Color.GRAY);
 						e.printStackTrace();
 					}
 				} else
 					try {
-						if (logic.hasTask(date)) {
-							setBackground(Color.ORANGE);// set colour for days with task
+						if (logic.hasTask(date) 
+								&& (Integer.parseInt(value.toString()) < actualDay)
+								&& (currentDisplayedMonth == actualMonth)
+								&& (currentDisplayedYear == actualYear)) {
+							setBackground(Color.RED);
+						}else if(logic.hasTask(date) 
+								&& (currentDisplayedMonth < actualMonth)
+								&& (currentDisplayedYear == actualYear)){
+							setBackground(Color.RED);
+						}else if(logic.hasTask(date) 
+								&& (currentDisplayedYear < actualYear)){
+							setBackground(Color.RED);
+						}else if(logic.hasTask(date)){
+							setBackground(Color.ORANGE);
 						}
 					} catch (IOException | ParseException e) {
 						// TODO Auto-generated catch block
@@ -624,6 +647,9 @@ public class FlexiPlannerUI implements HotKeyListener {
 		case KeyEvent.VK_O : 
 			schedulerFrame.setVisible(true);
 			schedulerFrame.setExtendedState(JFrame.NORMAL);
+			break;
+		case KeyEvent.VK_M :
+			schedulerFrame.setVisible(false);
 			break;
 		}
 	}
