@@ -807,6 +807,23 @@ public class Logic {
 		}
 		return overdue;
 	}
+	
+	// return category 
+	// @author A0112066U
+	
+	public String getCategory() {
+		ArrayList<String> category = new ArrayList<String>();
+		for (TaskData _task : taskList) {
+			String cat = _task.getCategory();
+			if (!category.contains(cat))
+				category.add(cat);
+		}
+		String res = "";
+		for (String cat : category) {
+			res += cat + "\n";
+		}
+		return res;
+	}
 
 	// @author A0112066U
 	public String getData(String s) throws IOException, ParseException {
