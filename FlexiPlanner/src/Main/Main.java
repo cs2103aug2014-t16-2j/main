@@ -2,6 +2,8 @@ package Main;
 
 import java.io.IOException;
 
+import javax.swing.SwingUtilities;
+
 import org.json.simple.parser.ParseException;
 
 import UI.*;

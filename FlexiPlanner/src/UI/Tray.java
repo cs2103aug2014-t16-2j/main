@@ -40,9 +40,10 @@ public class Tray {
 	private JFrame frame;
 	
 	/** Global Shortcuts **/
-	private Provider keyShortCuts = null;
+	private static Provider keyShortCuts = null;
 	private String openShortCut = "control O";
-	private String closeShortCut = "control M";
+	private String closeShortCut = "control C";
+	private String exitShortCut = "control E";
 	
 	public Tray(FlexiPlannerUI instance, JFrame frame) {
 		this.instance = instance;
@@ -109,6 +110,7 @@ public class Tray {
 				keyShortCuts.reset();
 				keyShortCuts.register(KeyStroke.getKeyStroke(openShortCut), instance);
 				keyShortCuts.register(KeyStroke.getKeyStroke(closeShortCut), instance);
+				keyShortCuts.register(KeyStroke.getKeyStroke(exitShortCut), instance);
 			}
 		}).start();
 	}
@@ -116,7 +118,7 @@ public class Tray {
 	/**
 	 * This method removes the shortcuts created.
 	 */
-	private void stopShortCuts() {
+	public static void stopShortCuts() {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
