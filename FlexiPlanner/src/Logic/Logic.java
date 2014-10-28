@@ -18,12 +18,12 @@ public class Logic {
 	private String command;
 	private Task task;
 	private ArrayList<TaskData> taskList;
-	private ArrayList<TaskData> taskToBeAdded;
 	private HashMap<String, HashMap<DateInfo, TaskData>> taskIdentifier;
 	private HashMap<String, TaskData> completedTaskIdentifier;
 	private Stack<ActionEntry> actionList; // for undo and redo
 	private Stack<ActionEntry> redoList;
-	private Storage storer; // don't call file storage, call storage. storage is like interface. 
+	private Storage storer; // don't call file storage, call storage. storage is
+							// like interface.
 	private Parser parser;
 	private Action action;
 	private ActionEntry entry;
@@ -32,7 +32,8 @@ public class Logic {
 	private ArrayList<TaskData> currentDisplayedTask;
 
 	private ArrayList<TaskData> completedTask;
-	private Storage storerForCompleted; // Don't call to file storage, call storage
+	private Storage storerForCompleted; // Don't call to file storage, call
+										// storage
 
 	String filePath = "text.json";
 	String completedpath = "completed.json";
@@ -48,12 +49,12 @@ public class Logic {
 												// compeleted
 												// task
 		storer.setupDatabase(filePath); // act upon changes made in storage
-		storerForCompleted.setupDatabase(completedpath); // act upon changes made in storage
-		
+		storerForCompleted.setupDatabase(completedpath); // act upon changes
+															// made in storage
+
 		command = null;
 		task = null;
 		taskList = new ArrayList<TaskData>();
-		taskToBeAdded = new ArrayList<TaskData>();
 		taskIdentifier = new HashMap<String, HashMap<DateInfo, TaskData>>();
 		completedTaskIdentifier = new HashMap<String, TaskData>();
 		actionList = new Stack<ActionEntry>();
@@ -91,7 +92,7 @@ public class Logic {
 	// ---------------------------------Method-----------------------------//
 
 	// load all data saved in the file
-	//@author A0112066U
+	// @author A0112066U
 	private void loadData() throws IOException, ParseException {
 		taskList = new ArrayList<TaskData>(storer.loadTasks(filePath));
 		// select all task from the day before onwards
@@ -109,28 +110,28 @@ public class Logic {
 						t);
 			}
 		}
-		completedTask = new ArrayList<TaskData>(storerForCompleted.loadTasks(
-				completedpath));
+		completedTask = new ArrayList<TaskData>(
+				storerForCompleted.loadTasks(completedpath));
 
 	}
 
 	// this method is to execute a command
-	//@author A0112066U
+	// @author A0112066U
 	public String executeInputCommand(String _command) throws IOException,
 			ParseException {
 		if (_command == null || _command.isEmpty()) {
-			return "Please try with an input";
-		} else {
-			extractCommandandTask(_command);
-			boolean isSuccessful;
-			isSuccessful = executeCommand(command, task);
-			if (isSuccessful)
-				return "Successful";
-			else if (isSuspendedAction)
-				return "Please provide start and end time";
-			else
-				return "Error";
+			_command = " ";
 		}
+		extractCommandandTask(_command);
+		boolean isSuccessful;
+		isSuccessful = executeCommand(command, task);
+		if (isSuccessful)
+			return "Successful";
+		else if (isSuspendedAction)
+			return "Please provide start and end time";
+		else
+			return "Error. ";
+
 	}
 
 	// this method is to extract command and task from input command
@@ -195,9 +196,13 @@ public class Logic {
 	private boolean addTask(TaskData task) {
 
 		String content = task.getContent();
+		if (content == null || content.isEmpty()) {
+			System.out.println("Empty input");
+			return false;
+		}
 		if (taskIdentifier.containsKey(content)) {
 			HashMap<DateInfo, TaskData> map = taskIdentifier.get(content);
-			TaskData t = searchTool.findTaskByContentandDate(task, map);
+			TaskData t = searchTool.findExactTask(task, map);
 			// this is to determine whether the task has been added
 			if (t != null) {
 				System.out.println("Task has been created");
@@ -213,15 +218,13 @@ public class Logic {
 					task);
 		}
 		taskList.add(task);
-		taskToBeAdded.add(task);
 		currentDisplayedTask.add(0, task);
 		try {
-			// storer.saveTasks(filePath, taskToBeAdded, true); Please help me change this.
+			storer.saveTasks(filePath, taskList);
 		} catch (Exception e) {
 			System.out.println("Error while saving data");
 			return false;
 		}
-		taskToBeAdded.clear();
 		return true;
 
 	}
@@ -233,9 +236,13 @@ public class Logic {
 		String content = task.getContent();
 		if (isInteger(content))
 			deleteIndex(Integer.parseInt(content));
+		if (content == null || content.isEmpty()) {
+			return false;
+		}
 		if (taskIdentifier.containsKey(content)) {
 			HashMap<DateInfo, TaskData> toDeleteList = taskIdentifier
 					.get(content);
+
 			TaskData toDelete = null;
 			LocalDateTime st = task.getStartDateTime();
 			LocalDateTime et = task.getEndDateTime();
@@ -247,15 +254,30 @@ public class Logic {
 					isSuspendedAction = false;
 				}
 			} else {
-				toDelete = searchTool.findTaskByContentandDate(task,
-						toDeleteList);
-				if (toDelete.getContent().equals("xxxxxxxxxxxxxxxxxxxx")) {
-					suspendingAction = action;
-					isSuspendedAction = true;
-					return false;
+
+				if (isSuspendedAction) {
+					DateInfo d = new DateInfo(st, et);
+					toDelete = toDeleteList.get(d);
+					suspendingAction = null;
+					isSuspendedAction = false;
+				} else {
+					toDelete = searchTool.findTaskByContentandDate(task,
+							toDeleteList);
+					if (toDelete.getContent().equals("xxxxxxxxxxxxxxxxxxxx")) {
+						if (isSuspendedAction) {
+							suspendingAction = null;
+							isSuspendedAction = false;
+						} else {
+							suspendingAction = action;
+							isSuspendedAction = true;
+						}
+						return false;
+
+					}
 				}
 
 			}
+
 			if (toDelete != null) {
 				if (toDeleteList.size() == 1)
 					taskIdentifier.remove(content);
@@ -314,7 +336,7 @@ public class Logic {
 		Action done = ae.getAction();
 		Task t = ae.getTask();
 		actionList.push(ae);
-		
+
 		String command = done.getCommand();
 		Task task = done.getTask();
 		TaskData _task = toTaskData(task);
@@ -324,7 +346,7 @@ public class Logic {
 		case "delete":
 			return deleteTask(_task);
 		case "modify":
-			return modifyTask(task, ae.getTask());
+			return modifyTask(task, t);
 		case "mark":
 			return markAsDone(task);
 		}
@@ -371,7 +393,7 @@ public class Logic {
 	// @author A0112066U
 	private boolean undoAdd(Action done) {
 		boolean isSuccessful = deleteTask(toTaskData(done.getTask()));
-		if (isSuccessful) 
+		if (isSuccessful)
 			redoList.push(new ActionEntry(done, null));
 		else
 			actionList.push(new ActionEntry(done, null));
@@ -380,7 +402,7 @@ public class Logic {
 
 	// @author A0112066U
 	private boolean undoModify(Action done, Task t) {
-		boolean isSuccessful = modifyTask(done.getTask(), t);		
+		boolean isSuccessful = modifyTask(done.getTask(), t);
 		if (isSuccessful)
 			redoList.push(entry);
 		else
@@ -416,6 +438,10 @@ public class Logic {
 	// @author A0112066U
 	private boolean modifyTask(Task task, Task t) {
 		String content = task.getContent();
+		if (content == null || content.isEmpty()) {
+			System.out.print("No task to modify.");
+			return false;
+		}
 		if (!isInteger(content)) {
 			return modifyTask(task, t, content);
 		} else {
@@ -433,27 +459,30 @@ public class Logic {
 		if (taskIdentifier.containsKey(content))
 			_listTaskToEdit = taskIdentifier.get(content);
 
-		
+		LocalDateTime st = _task.getStartDateTime();
+		LocalDateTime et = _task.getEndDateTime();
 
-			LocalDateTime st = _task.getStartDateTime();
-			LocalDateTime et = _task.getEndDateTime();
+		TaskData toFind = new TaskData(content, null, null, null, null);
+		TaskData taskToModify = null;
 
-			TaskData toFind = new TaskData(content, null, null, null, null);
-			TaskData taskToModify = null;
-			if (isSuspendedAction) {
-				toFind.setStartDateTime(newStartTime);
-				toFind.setEndDateTime(newEndTime);
-				Task itask = suspendingAction.getTask();
-				newStartTime = itask.getStartDateTime();
-				newEndTime = itask.getEndDateTime();
-				suspendingAction = null;
-			}
-			if (t != null) {
-				st = t.getStartDateTime();
-				et = t.getEndDateTime();
-				toFind.setStartDateTime(st);
-				toFind.setEndDateTime(et);
-			}
+		if (isSuspendedAction) {
+			DateInfo d = new DateInfo(st, et);
+			taskToModify = _listTaskToEdit.get(d);
+			Task itask = suspendingAction.getTask();
+			newStartTime = itask.getStartDateTime();
+			newEndTime = itask.getEndDateTime();
+			newCategory = itask.getCategory();
+			newPriority = itask.getPriority();
+			suspendingAction = null;
+
+		}
+		if (t != null) {
+			st = t.getStartDateTime();
+			et = t.getEndDateTime();
+			toFind.setStartDateTime(st);
+			toFind.setEndDateTime(et);
+		}
+		if (!isSuspendedAction) {
 
 			taskToModify = searchTool.findTaskByContentandDate(toFind,
 					_listTaskToEdit);
@@ -464,56 +493,73 @@ public class Logic {
 				isSuspendedAction = true;
 				return false;
 			}
-			isSuspendedAction = false;
-			if (taskToModify != null) {
-				LocalDateTime oldStartTime = taskToModify.getStartDateTime();
-				LocalDateTime oldEndTime = taskToModify.getEndDateTime();
-				String oldCategory = taskToModify.getCategory();
-				String oldPriority = taskToModify.getPriority();
-				if (t == null) {
-					t = new Task();
-					t.setContent(content);
-				}
-				toFind.setCategory(newCategory);
-				toFind.setPriority(newPriority);
-				toFind.setStartDateTime(newStartTime);
-				toFind.setEndDateTime(newEndTime);
-				
-				toFind = searchTool.findTaskByContentandDate(toFind, _listTaskToEdit);
-				if (toFind != null) {
-					return false;
-				}
-				if (newStartTime != null) {
-					taskToModify.setStartDateTime(newStartTime);
-					t.setStartDateTime(newStartTime);
-					_task.setStartDateTime(oldStartTime);
-				}
-				if (newEndTime != null) {
-					taskToModify.setEndDateTime(newEndTime);
-					t.setEndDateTime(newEndTime);
-					_task.setEndDateTime(oldEndTime);
-				}
-				if (newCategory != null) {
-					taskToModify.setCategory(newCategory);
-					t.setCategory(newCategory);
-					_task.setCategory(oldCategory);
-				}
-				if (newPriority != null) {
-					taskToModify.setPriority(newPriority);
-					t.setPriority(newPriority);
-					_task.setCategory(oldPriority);
-				}
-				_listTaskToEdit.remove(new DateInfo(oldStartTime, oldEndTime));
-				_listTaskToEdit.put(new DateInfo(newStartTime, newEndTime),
-						taskToModify);
-				action = new Action("modify", _task);
-				entry = new ActionEntry(action, t);
+		}
+		isSuspendedAction = false;
 
-			} else {
-				
+		if (taskToModify != null) {
+
+			LocalDateTime oldStartTime = taskToModify.getStartDateTime();
+			LocalDateTime oldEndTime = taskToModify.getEndDateTime();
+			String oldCategory = taskToModify.getCategory();
+			String oldPriority = taskToModify.getPriority();
+			if (t == null) {
+				t = new Task();
+				t.setContent(content);
+			}
+
+			toFind.setContent(content);
+			if (newCategory != null)
+				toFind.setCategory(newCategory);
+			else
+				toFind.setCategory(oldCategory);
+			if (newPriority != null)
+				toFind.setPriority(newPriority);
+			else
+				toFind.setPriority(oldPriority);
+			if (newStartTime != null)
+				toFind.setStartDateTime(newStartTime);
+			else
+				toFind.setStartDateTime(oldEndTime);
+			if (newEndTime != null)
+				toFind.setEndDateTime(newEndTime);
+			else
+				toFind.setEndDateTime(oldEndTime);
+
+			toFind = searchTool.findExactTask(toFind, _listTaskToEdit);
+			if (toFind != null) {
+				System.out.print("A same task already exists");
 				return false;
 			}
-		
+			if (newStartTime != null) {
+				taskToModify.setStartDateTime(newStartTime);
+				t.setStartDateTime(newStartTime);
+				_task.setStartDateTime(oldStartTime);
+			}
+			if (newEndTime != null) {
+				taskToModify.setEndDateTime(newEndTime);
+				t.setEndDateTime(newEndTime);
+				_task.setEndDateTime(oldEndTime);
+			}
+			if (newCategory != null) {
+				taskToModify.setCategory(newCategory);
+				t.setCategory(newCategory);
+				_task.setCategory(oldCategory);
+			}
+			if (newPriority != null) {
+				taskToModify.setPriority(newPriority);
+				t.setPriority(newPriority);
+				_task.setPriority(oldPriority);
+			}
+			_listTaskToEdit.remove(new DateInfo(oldStartTime, oldEndTime));
+			_listTaskToEdit.put(new DateInfo(newStartTime, newEndTime),
+					taskToModify);
+			action = new Action("modify", _task);
+			entry = new ActionEntry(action, t);
+
+		} else {
+
+			return false;
+		}
 
 		try {
 			saveData();
@@ -583,7 +629,7 @@ public class Logic {
 		}
 		if (task != null) {
 			deleteTask(task);
-			String s = task.getStartDateTime() + "" +task.getEndDateTime() ;
+			String s = task.getStartDateTime() + "" + task.getEndDateTime();
 			completedTaskIdentifier.put(s, task);
 			completedTask.add(task);
 			_task.setCategory(task.getCategory());
@@ -618,6 +664,7 @@ public class Logic {
 			System.out.println("Error while saving data");
 		}
 		System.exit(0);
+
 	}
 
 	// @author A0112066U
@@ -631,7 +678,7 @@ public class Logic {
 
 	// return data to show to UI
 	// @author A0112066U
-	public String getTodayTask() throws IOException, ParseException {
+	public ArrayList<DisplayedEntry> getTodayTask() throws IOException, ParseException {
 		LocalDateTime now = LocalDateTime.now();
 		int dateToday = now.getDayOfMonth();
 		int monthToday = now.getMonthValue();
@@ -639,20 +686,20 @@ public class Logic {
 		LocalDateTime today = LocalDateTime.of(yearToday, monthToday,
 				dateToday, 0, 0, 0).minusSeconds(1);
 		LocalDateTime tomorrow = today.plusSeconds(86402);
-		ArrayList<TaskData> taskToShow = new ArrayList<TaskData>();
+		ArrayList<DisplayedEntry> taskToShow = new ArrayList<DisplayedEntry>();
 
 		for (TaskData _task : taskList) {
 
 			LocalDateTime st = _task.getStartDateTime();
 			LocalDateTime et = _task.getEndDateTime();
 			if (st != null && st.isAfter(today) && st.isBefore(tomorrow)) {
-				taskToShow.add(_task);
+				taskToShow.add(new DisplayedEntry(_task));
 			} else if (et != null && et.isAfter(today) && et.isBefore(tomorrow)) {
-				taskToShow.add(_task);
+				taskToShow.add(new DisplayedEntry(_task));
 			}
 		}
-
-		return showToUser(taskToShow);
+		return taskToShow;
+		
 	}
 
 	// @author A0112066U
@@ -749,18 +796,16 @@ public class Logic {
 
 	// return overdue task
 	// @author A0112066U
-	public String getOverdue() {
-		ArrayList<TaskData> overdue = new ArrayList<TaskData>();
+	public ArrayList<DisplayedEntry> getOverdue() {
+		ArrayList<DisplayedEntry> overdue = new ArrayList<DisplayedEntry>();
 		LocalDateTime now = LocalDateTime.now();
 		for (TaskData _task : taskList) {
 			LocalDateTime endTime = _task.getEndDateTime();
 			if (endTime != null && endTime.isBefore(now)) {
-				overdue.add(_task);
+				overdue.add(new DisplayedEntry(_task));
 			}
 		}
-		if (overdue.isEmpty())
-			return "Great, You have completed every task!";
-		return showToUser(overdue);
+		return overdue;
 	}
 
 	// @author A0112066U
@@ -843,6 +888,60 @@ public class Logic {
 
 		private Task getTask() {
 			return task;
+		}
+	}
+	
+	public static class DisplayedEntry {
+		private String content; 
+		private String category;
+		private String priority;
+		private LocalDateTime startDateTime;
+		private LocalDateTime endDateTime;
+		public DisplayedEntry(TaskData t) {
+			this.setContent(t.getContent());
+			this.setCategory(t.getCategory());
+			this.setPriority(t.getPriority());
+			this.setStartDateTime(t.getStartDateTime());
+			this.setEndDateTime(t.getEndDateTime());
+		}
+		public String getContent() {
+			return content;
+		}
+		
+		public String getCategory() {
+			return category;
+		}
+		
+		public String getPriority() {
+			return priority;
+		}
+		
+		public LocalDateTime getStartDateTime() {
+			return startDateTime;
+		}
+		
+		public LocalDateTime getEndDateTime() {
+			return endDateTime;
+		}
+		
+		public void setContent(String content) {
+			this.content = content;
+		}
+
+		public void setCategory(String category) {
+			this.category = category;
+		}
+
+		public void setPriority(String priority) {
+			this.priority = priority;
+		}
+
+		public void setStartDateTime(LocalDateTime startDateTime) {
+			this.startDateTime = startDateTime;
+		}
+
+		public void setEndDateTime(LocalDateTime endDateTime) {
+			this.endDateTime = endDateTime;
 		}
 	}
 }

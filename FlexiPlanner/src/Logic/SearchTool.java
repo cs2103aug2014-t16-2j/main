@@ -14,18 +14,16 @@ import Parser.*;
 import Storage.*;
 
 public class SearchTool {
-	
+
 	private final String message = "xxxxxxxxxxxxxxxxxxxx";
 
-	
 	public TaskData findTaskByContentandDate(TaskData task,
 			HashMap<DateInfo, TaskData> toFindList) {
-		
 
 		TaskData taskFound = null;
 		LocalDateTime st = task.getStartDateTime();
 		LocalDateTime et = task.getEndDateTime();
-		
+
 		if (toFindList.size() == 1) {
 			for (TaskData _task : toFindList.values()) {
 				taskFound = _task;
@@ -37,31 +35,86 @@ public class SearchTool {
 				taskFound = null;
 			if (et != null && !et.equals(e))
 				taskFound = null;
+
 		} else if (toFindList.size() > 1) {
 			if (st == null && et == null) {
 				taskFound = new TaskData();
 				taskFound.setContent(message);
 				return taskFound;
 			}
-			DateInfo d = new DateInfo(st, et);	
+			DateInfo d = new DateInfo(st, et);
 			if (toFindList.containsKey(d)) {
 				taskFound = toFindList.get(d);
 			}
-			
 
 		}
 		return taskFound;
 	}
 
+	public TaskData findExactTask(TaskData task,
+			HashMap<DateInfo, TaskData> toFindList) {
+		TaskData taskFound = null;
+		LocalDateTime st = task.getStartDateTime();
+		LocalDateTime et = task.getEndDateTime();
+		DateInfo d = new DateInfo(st, et);
+		if (toFindList.containsKey(d)) {
+			taskFound = toFindList.get(d);
+		}
+		if (taskFound == null)
+			return null;
+		System.out.println("here" + taskFound.toString());
+		if (!hasSameCategory(task, taskFound))
+			return null;
+		if (!hasSamePriority(task, taskFound))
+			return null;
+		if (!hasSameDateTime(task, taskFound))
+			return null;
+		return taskFound;
+	}
+
+	private boolean hasSameCategory(TaskData t1, TaskData t2) {
+		String cat1 = t1.getCategory();
+		String cat2 = t2.getCategory();
+		if (cat1 == null && cat2 != null)
+			return false;
+		if (cat1 != null && cat2 == null)
+			return false;
+		if (cat1 != null && !cat1.equals(cat2))
+			return false;
+		return true;
+	}
+
+	private boolean hasSamePriority(TaskData t1, TaskData t2) {
+		String p1 = t1.getPriority();
+		String p2 = t2.getPriority();
+		if (!p1.equals(p2))
+			return false;
+		return true;
+	}
+
+	private boolean hasSameDateTime(TaskData t1, TaskData t2) {
+		DateInfo d1 = new DateInfo(t1.getStartDateTime(), t1.getEndDateTime());
+		DateInfo d2 = new DateInfo(t2.getStartDateTime(), t2.getEndDateTime());
+		return d1.hashCode() == d2.hashCode();
+	}
+
 	public String search(ArrayList<TaskData> taskList, Task task)
 			throws IOException, ParseException {
+		if (taskList.isEmpty()) {
+			return "";
+		}
+
 		String content = task.getContent();
-		String[] words = content.split(" "); // keyword for searching
+		String[] words;
+		if (content != null)
+			words = content.split(" "); // keyword for searching
+		else words = new String[] {""};
 		LocalDateTime startTime = task.getStartDateTime();
 		LocalDateTime endTime = task.getEndDateTime(); // search in between
 														// startTime and endTime
 		String category = task.getCategory(); // search in category
 		String priority = task.getPriority(); // search by priority
+
 		ArrayList<TaskData> searchResult = new ArrayList<TaskData>();
 		searchResult = filterByTime(taskList, startTime, endTime);
 		if (category != null)
