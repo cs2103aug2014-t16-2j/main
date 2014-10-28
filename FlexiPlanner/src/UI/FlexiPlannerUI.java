@@ -114,13 +114,12 @@ public class FlexiPlannerUI implements HotKeyListener {
 		calendar1 = new JTable(calendar2);// create new table
 		calendarScroll = new JScrollPane(calendar1,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		schedulerPanel = new JPanel(null);// this is needed in order to show
-		// table
-
+		schedulerPanel = new JPanel(null);
+		
 		schedulerFrame.getContentPane().add(schedulerPanel);// add panel to
 		// frame(add table
 		// to frame)
-
+		
 		// get calendar format
 		GregorianCalendar cal = new GregorianCalendar();
 		actualDay = cal.get(GregorianCalendar.DAY_OF_MONTH);
@@ -514,6 +513,23 @@ public class FlexiPlannerUI implements HotKeyListener {
 		return guide;
 	}
 
+	private void refreshTableForDisplay(String displayTable) {
+
+		// Clear table
+		;/*for (int i = 0; i < testTable.getRowCount(); i++) {
+			for (int j = 0; j < testTable.getColumnCount(); j++) {
+				testTable.setValueAt(null, i, j);
+			}
+		}
+
+		for(int i = 0; i < testTable.getRowCount(); i++){
+			for(int j = 0; j <testTable.getColumnCount(); j++){
+				testTable.setValueAt("1", i, j);
+			}
+		};*/
+	}
+
+	
 	private void refreshCalendar(int month, int year) {
 
 		int nod, som; // Number Of Days, Start Of Month
