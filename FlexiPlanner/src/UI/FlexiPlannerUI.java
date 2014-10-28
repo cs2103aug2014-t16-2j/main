@@ -61,8 +61,6 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private JXCollapsiblePane showOverDueCollapsePane;
 	private JXCollapsiblePane todayCollapsePane;
 	private JXCollapsiblePane showUserExecutedCommandCollapsePane;
-	private JTextArea showOverDueTask;
-	private JTextArea showTodayTask;
 	private JTextArea showUserExecutedCommand;
 	private JTextArea commandFeedback;
 	private JTextArea showCategory;
