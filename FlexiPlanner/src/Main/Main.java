@@ -8,11 +8,12 @@ import UI.*;
 
 public class Main {
 	public static void main(String args[]) {
-		
+
 		FlexiPlannerUI userInterface = new FlexiPlannerUI();
 		
 		try {
 			userInterface.loadInterfaceandData();
+			//userInterface.redirectSystemStreams();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ParseException e) {
