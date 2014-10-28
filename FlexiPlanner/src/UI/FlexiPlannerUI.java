@@ -560,20 +560,27 @@ public class FlexiPlannerUI implements HotKeyListener {
 	}
 
 	private void refreshOverDueTableForDisplay() {
-		
+
 		// Clear table
 		for (int i = 0; i < displayOverDueTableDTM.getRowCount(); i++) {
 			for (int j = 1; j < displayOverDueTableDTM.getColumnCount(); j++) {
-				displayOverDueTableDTM.setValueAt("test1", i, j);
+				displayOverDueTableDTM.setValueAt("", i, j);
 			}
 		}
-		//DUY: I should get the data here but i tired to no avail
-		/*
-		 	for(int i = 0; i < displayTableDTM.getRowCount(); i++){
-			for(int j = 0; j < displayTableDTM.getRowCount(); j++){
-				testTable.setValueAt("1", i, j);
-			}
-		};*/
+		int row=0;		
+		for (Logic.DisplayedEntry t : logic.getOverdue()) {
+			if (t.getPriority() != null)
+				displayOverDueTableDTM.setValueAt(t.getPriority(),row,1);
+			if (t.getCategory() != null)
+				displayOverDueTableDTM.setValueAt(t.getCategory(),row,2);
+			displayOverDueTableDTM.setValueAt(t.getContent(),row,3);
+			if (t.getStartDateTime() != null)
+				displayOverDueTableDTM.setValueAt(t.getStartDateTime(),row,4);
+			if (t.getEndDateTime() != null)
+				displayOverDueTableDTM.setValueAt(t.getStartDateTime(),row,5);
+			row++;
+			if(row==50){break;}
+		}
 	}
 
 	private void refreshTodayTableForDisplay() {
@@ -581,24 +588,32 @@ public class FlexiPlannerUI implements HotKeyListener {
 		// Clear table
 		for (int i = 0; i < displayTodayTableDTM.getRowCount(); i++) {
 			for (int j = 1; j < displayTodayTableDTM.getColumnCount(); j++) {
-				displayTodayTableDTM.setValueAt("test2", i, j);
+				displayTodayTableDTM.setValueAt("", i, j);
 			}
 		}
-		/*
-		 	try {
-						showTodayTask.setText(logic.getTodayTask());
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (ParseException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-		for(int i = 0; i < displayTableDTM.getRowCount(); i++){
-			for(int j = 0; j < displayTableDTM.getRowCount(); j++){
-				testTable.setValueAt("1", i, j);
+		try {
+			int row=0;		
+			for (Logic.DisplayedEntry t : logic.getTodayTask()) {
+				if (t.getPriority() != null)
+					displayTodayTableDTM.setValueAt(t.getPriority(),row,1);
+				if (t.getCategory() != null)
+					displayTodayTableDTM.setValueAt(t.getCategory(),row,2);
+				displayTodayTableDTM.setValueAt(t.getContent(),row,3);
+				if (t.getStartDateTime() != null)
+					displayTodayTableDTM.setValueAt(t.getStartDateTime(),row,4);
+				if (t.getEndDateTime() != null)
+					displayTodayTableDTM.setValueAt(t.getStartDateTime(),row,5);
+				row++;
+				if(row==50){break;}
 			}
-		};*/
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (ParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
 	}
 
 	private void refreshCalendar(int month, int year) {
@@ -784,7 +799,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 			}
 		});
 	}
-	
+
 
 	public void redirectSystemStreams() {
 		OutputStream out = new OutputStream() {
@@ -803,8 +818,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 				write(b, 0, b.length);
 			}
 		};
-		
-		
+
+
 		System.setOut(new PrintStream(out, true));
 		System.setErr(new PrintStream(out, true));
 	}
