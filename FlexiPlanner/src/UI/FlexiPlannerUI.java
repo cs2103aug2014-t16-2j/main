@@ -634,7 +634,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		}
 	}// end of class Prev_Action
 	// Next_Action points to the next year
-//ttest
+
 	class Next_Action implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if (currentDisplayedMonth == 11) { // Foward one year
