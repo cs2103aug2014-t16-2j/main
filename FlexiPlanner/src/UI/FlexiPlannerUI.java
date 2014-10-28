@@ -283,7 +283,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		showCategory.setForeground(Color.CYAN);
 		showCategory.setBackground(Color.BLUE);
 		showCategory.setLineWrap(true);
-		showCategory.setText("Get category to display from logic");
+		showCategory.setText(logic.getCategory());
 		showCategory.setEditable(false);
 
 		showCategoryScroll = new JScrollPane (showCategory, 
@@ -370,7 +370,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 						e1.printStackTrace();
 					}
 					inputCommand.setText("");
-					showCategory.setText("Update category\n");
+					showCategory.setText(logic.getCategory());
 					try {
 						showUserExecutedCommand.setText(logic.getData(userCommand));
 					} catch (IOException e1) {
