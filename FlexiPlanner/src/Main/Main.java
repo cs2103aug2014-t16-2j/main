@@ -2,6 +2,8 @@ package Main;
 
 import java.io.IOException;
 
+//import javax.swing.SwingUtilities;
+
 import org.json.simple.parser.ParseException;
 
 import UI.*;
@@ -20,7 +22,7 @@ public class Main {
 			e.printStackTrace();
 		}
 		
-		Tray systemTray = new Tray(userInterface, userInterface.getJFrame());
+		Tray systemTray = new Tray(userInterface, FlexiPlannerUI.getJFrame());
 		systemTray.createSystemTray();
 	}
 }
