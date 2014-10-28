@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.GregorianCalendar;
 
+import javax.swing.SwingUtilities;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -50,9 +51,11 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private JPanel schedulerPanel;
 	private JButton prevMonth, nextMonth;
 	private JTable calendar1;
-	private JTable displayTable;
+	private JTable displayOverDueTable;
+	private JTable displayTodayTable;
 	private DefaultTableModel calendar2;
-	private DefaultTableModel displayTableDTM;
+	private DefaultTableModel displayOverDueTableDTM;
+	private DefaultTableModel displayTodayTableDTM;
 	private Border border;
 	private JXCollapsiblePane showUserGuidePane;
 	private JXCollapsiblePane showOverDueCollapsePane;
@@ -66,8 +69,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private JTextArea showUserGuide;
 	private JScrollPane calendarScroll;
 	private JScrollPane showUserGuideScroll;
-	private JScrollPane showTodayTaskScroll;
-	private JScrollPane showOverDueTaskScroll;
+	private JScrollPane showTodayTasksScroll;
+	private JScrollPane showOverDueTasksScroll;
 	private JScrollPane showUserExecutedCommandScroll;
 	private JScrollPane showCategoryScroll;
 	private JComboBox selectYear;
@@ -78,7 +81,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private String[] months = { "January", "February", "March", "April", "May",
 			"June", "July", "August", "September", "October", "November",
 	"December" };
-	private String[] columnNames = {"Index","Priority","Catogery","Task","From","To"};
+	private String[] columnNames = {"No:","Priority","Catogery","Task","From","To"};
 	private Object[][] dummyData = {{"","", "","", "", ""},};
 	private String day;
 
@@ -119,23 +122,34 @@ public class FlexiPlannerUI implements HotKeyListener {
 		calendarScroll = new JScrollPane(calendar1,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		schedulerPanel = new JPanel(null);
-		
+
 		schedulerFrame.getContentPane().add(schedulerPanel);// add panel to
 		// frame(add table
 		// to frame)
-		
-		displayTable=new JTable(new DefaultTableModel(dummyData, columnNames){
+
+		displayOverDueTable=new JTable(new DefaultTableModel(dummyData, columnNames){
 			public boolean isCellEditable(int rowIndex, int mColIndex) {
 				return false;
 			}});
-				
-		displayTableDTM = (DefaultTableModel) displayTable.getModel();
-		displayTableDTM.setRowCount(100);
-		setDisplayTableProperties();//Set table restrictions
-		
-		for (int i = 0; i < displayTableDTM.getRowCount(); i++) {//set index
-			displayTableDTM.setValueAt(i+1, i, 0);			
+		displayOverDueTableDTM = (DefaultTableModel) displayOverDueTable.getModel();
+		displayOverDueTableDTM.setRowCount(100);
+		setDisplayOverDueTableProperties();//Set table restrictions
+		for (int i = 0; i < displayOverDueTableDTM.getRowCount(); i++) {//set index
+			displayOverDueTableDTM.setValueAt(i+1, i, 0);			
 		}
+
+		displayTodayTable=new JTable(new DefaultTableModel(dummyData, columnNames){
+			public boolean isCellEditable(int rowIndex, int mColIndex) {
+				return false;
+			}});		
+		displayTodayTableDTM = (DefaultTableModel) displayTodayTable.getModel();
+		displayTodayTableDTM.setRowCount(100);
+		setDisplayTodayTableProperties();//Set table restrictions
+		for (int i = 0; i < displayTodayTableDTM.getRowCount(); i++) {//set index
+			displayTodayTableDTM.setValueAt(i+1, i, 0);			
+		}
+
+
 		// get calendar format
 		GregorianCalendar cal = new GregorianCalendar();
 		actualDay = cal.get(GregorianCalendar.DAY_OF_MONTH);
@@ -203,20 +217,13 @@ public class FlexiPlannerUI implements HotKeyListener {
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		overDueTaskLabel.setText("Overdue tasks");
 
-		showOverDueTask = new JTextArea();
-		showOverDueTask.setFont(new Font("Times New Roman", Font.BOLD, 14));
-		showOverDueTask.setForeground(Color.WHITE);
-		showOverDueTask.setBackground(Color.RED);
-		showOverDueTask.setLineWrap(true);
-		showOverDueTask.setText(logic.getOverdue());
-		showOverDueTask.setEditable(false);
-
-		showOverDueTaskScroll = new JScrollPane (showOverDueTask, 
+		showOverDueTasksScroll = new JScrollPane (displayOverDueTable, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		showOverDueTaskScroll.setColumnHeaderView(overDueTaskLabel);
+		showOverDueTasksScroll.setPreferredSize(new Dimension(570,460));
 
 		showOverDueCollapsePane = new JXCollapsiblePane();
-		showOverDueCollapsePane.setContentPane(showOverDueTaskScroll);
+		showOverDueCollapsePane.add(overDueTaskLabel);
+		showOverDueCollapsePane.add(showOverDueTasksScroll);
 		showOverDueCollapsePane.setCollapsed(true);
 		showOverDueCollapsePane.setBounds(320, 4, 570, 0);
 		showOverDueCollapsePane.setPreferredSize(new Dimension(570,495));
@@ -228,20 +235,13 @@ public class FlexiPlannerUI implements HotKeyListener {
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		todayTasksLabel.setText("Today tasks");
 
-		showTodayTask = new JTextArea();
-		showTodayTask.setFont(new Font("Times New Roman", Font.BOLD, 14));
-		showTodayTask.setForeground(Color.WHITE);
-		showTodayTask.setBackground(Color.MAGENTA);
-		showTodayTask.setLineWrap(true);
-		showTodayTask.setText(logic.getTodayTask());
-		showTodayTask.setEditable(false);
-
-		showTodayTaskScroll = new JScrollPane (showTodayTask, 
+		showTodayTasksScroll = new JScrollPane (displayTodayTable, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		showTodayTaskScroll.setColumnHeaderView(todayTasksLabel);
+		showTodayTasksScroll.setPreferredSize(new Dimension(570,460));
 
 		todayCollapsePane = new JXCollapsiblePane();
-		todayCollapsePane.setContentPane(showTodayTaskScroll);
+		todayCollapsePane.add(todayTasksLabel);
+		todayCollapsePane.add(showTodayTasksScroll);
 		todayCollapsePane.setCollapsed(true);
 		todayCollapsePane.setBounds(320, 4, 570, 0);
 		todayCollapsePane.setPreferredSize(new Dimension(570,495));
@@ -340,20 +340,20 @@ public class FlexiPlannerUI implements HotKeyListener {
 		nextMonth.addActionListener(new Next_Action());
 		selectYear.addActionListener(new Years_Action());
 		inputCommand.requestFocusInWindow();
-		executeKeyAction(commandFeedback,showOverDueTask,showTodayTask,showUserExecutedCommand,showCategory,
-				showOverDueTaskScroll,showTodayTaskScroll,showUserExecutedCommandScroll,showCategoryScroll
+		executeKeyAction(commandFeedback,showUserExecutedCommand,showCategory,
+				showOverDueTasksScroll,showTodayTasksScroll,showUserExecutedCommandScroll,showCategoryScroll
 				,showUserGuidePane,showOverDueCollapsePane,todayCollapsePane,showUserExecutedCommandCollapsePane);
 	}
 
-	private void executeKeyAction(final JTextArea commandFeedback,final JTextArea showOverDueTask,
-			final JTextArea showTodayTask,final JTextArea showUserExecutedCommand,final JTextArea showCategory, 
-			final JScrollPane showOverDueTaskScroll, final JScrollPane showTodayTaskScroll ,final JScrollPane showUserExecutedCommandScroll,final JScrollPane showCategoryScroll
-			,final JXCollapsiblePane showUserGuidePane,final JXCollapsiblePane overDueCollapsePane,final JXCollapsiblePane todayCollapsePane,final JXCollapsiblePane showUserExecutedCommandCollapsePane) {
+	private void executeKeyAction(final JTextArea commandFeedback,
+			final JTextArea showUserExecutedCommand,final JTextArea showCategory, 
+			final JScrollPane showOverDueTasksScroll, final JScrollPane showTodayTasksScroll ,final JScrollPane showUserExecutedCommandScroll,final JScrollPane showCategoryScroll
+			,final JXCollapsiblePane showUserGuidePane,final JXCollapsiblePane showOverDueCollapsePane,final JXCollapsiblePane todayCollapsePane,final JXCollapsiblePane showUserExecutedCommandCollapsePane) {
 		inputCommand.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				int key = e.getKeyCode();
-				int overDueScrollPane = showOverDueTaskScroll.getVerticalScrollBar().getModel().getValue();
-				int valueTodayScrollPane = showTodayTaskScroll.getVerticalScrollBar().getModel().getValue();
+				int overDueScrollPane = showOverDueTasksScroll.getVerticalScrollBar().getModel().getValue();
+				int valueTodayScrollPane = showTodayTasksScroll.getVerticalScrollBar().getModel().getValue();
 				int valueCustomTextArea=showUserExecutedCommandScroll.getVerticalScrollBar().getModel().getValue();
 				int valueCategoryScrollPane = showCategoryScroll.getVerticalScrollBar().getModel().getValue();
 				switch (key){
@@ -381,7 +381,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 						e1.printStackTrace();
 					}
 					showUserGuidePane.setCollapsed(true);
-					overDueCollapsePane.setCollapsed(true);
+					showOverDueCollapsePane.setCollapsed(true);
 					todayCollapsePane.setCollapsed(true);
 					showUserExecutedCommandCollapsePane.setCollapsed(true);
 					showUserExecutedCommandCollapsePane.setCollapsed(false);
@@ -390,7 +390,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 				case KeyEvent.VK_F1:
 					showUserGuidePane.setCollapsed(false);						
 					showUserExecutedCommandCollapsePane.setCollapsed(true);
-					overDueCollapsePane.setCollapsed(true);
+					showOverDueCollapsePane.setCollapsed(true);
 					todayCollapsePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F2:
@@ -407,41 +407,33 @@ public class FlexiPlannerUI implements HotKeyListener {
 					showUserExecutedCommandCollapsePane.setCollapsed(false);
 					showUserGuidePane.setCollapsed(true);
 					todayCollapsePane.setCollapsed(true);
-					overDueCollapsePane.setCollapsed(true);
+					showOverDueCollapsePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F3:
-					showOverDueTask.setText(logic.getOverdue());
-					overDueCollapsePane.setCollapsed(false);
+
+					showOverDueCollapsePane.setCollapsed(false);
 					showUserExecutedCommandCollapsePane.setCollapsed(true);
 					todayCollapsePane.setCollapsed(true);
 					showUserGuidePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F4:
-					try {
-						showTodayTask.setText(logic.getTodayTask());
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (ParseException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+
 					todayCollapsePane.setCollapsed(false);
 					showUserExecutedCommandCollapsePane.setCollapsed(true);
-					overDueCollapsePane.setCollapsed(true);
+					showOverDueCollapsePane.setCollapsed(true);
 					showUserGuidePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F5:
-					showOverDueTaskScroll.getVerticalScrollBar().getModel().setValue(overDueScrollPane-5);
+					showOverDueTasksScroll.getVerticalScrollBar().getModel().setValue(overDueScrollPane-5);
 					break;
 				case KeyEvent.VK_F6:
-					showOverDueTaskScroll.getVerticalScrollBar().getModel().setValue(overDueScrollPane+5);
+					showOverDueTasksScroll.getVerticalScrollBar().getModel().setValue(overDueScrollPane+5);
 					break;
 				case KeyEvent.VK_F7:
-					showTodayTaskScroll.getVerticalScrollBar().getModel().setValue(valueTodayScrollPane-5);
+					showTodayTasksScroll.getVerticalScrollBar().getModel().setValue(valueTodayScrollPane-5);
 					break;
 				case KeyEvent.VK_F8:
-					showTodayTaskScroll.getVerticalScrollBar().getModel().setValue(valueTodayScrollPane+5);
+					showTodayTasksScroll.getVerticalScrollBar().getModel().setValue(valueTodayScrollPane+5);
 					break;
 				case KeyEvent.VK_F9:
 					showUserExecutedCommandScroll.getVerticalScrollBar().getModel().setValue(valueCustomTextArea-5);
@@ -529,33 +521,78 @@ public class FlexiPlannerUI implements HotKeyListener {
 		return guide;
 	}
 
-	private void setDisplayTableProperties() {
-		displayTable.setModel(displayTableDTM);
-		displayTable.setCellSelectionEnabled(false);
-		displayTable.getColumnModel().getColumn(0).setPreferredWidth(30);
-		displayTable.getColumnModel().getColumn(1).setPreferredWidth(55);
-		displayTable.getColumnModel().getColumn(2).setPreferredWidth(65);
-		displayTable.getColumnModel().getColumn(3).setPreferredWidth(210);
-		displayTable.getColumnModel().getColumn(3).setMaxWidth(210);
-		displayTable.getColumnModel().getColumn(4).setPreferredWidth(100);
-		displayTable.getColumnModel().getColumn(5).setPreferredWidth(100);
-		displayTable.getColumnModel().getColumn(5).setMaxWidth(100);
-		displayTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-		displayTable.getTableHeader().setResizingAllowed(false);
-		displayTable.getTableHeader().setReorderingAllowed(false);
-		displayTable.setColumnSelectionAllowed(false);
-		displayTable.setRowSelectionAllowed(false);
+	private void setDisplayOverDueTableProperties() {
+		displayOverDueTable.setModel(displayOverDueTableDTM);
+		displayOverDueTable.setCellSelectionEnabled(false);
+		displayOverDueTable.setRowHeight(20);
+		displayOverDueTable.getColumnModel().getColumn(0).setPreferredWidth(30);
+		displayOverDueTable.getColumnModel().getColumn(1).setPreferredWidth(55);
+		displayOverDueTable.getColumnModel().getColumn(2).setPreferredWidth(65);
+		displayOverDueTable.getColumnModel().getColumn(3).setPreferredWidth(210);
+		displayOverDueTable.getColumnModel().getColumn(3).setMaxWidth(210);
+		displayOverDueTable.getColumnModel().getColumn(4).setPreferredWidth(100);
+		displayOverDueTable.getColumnModel().getColumn(5).setPreferredWidth(100);
+		displayOverDueTable.getColumnModel().getColumn(5).setMaxWidth(100);
+		displayOverDueTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+		displayOverDueTable.getTableHeader().setResizingAllowed(false);
+		displayOverDueTable.getTableHeader().setReorderingAllowed(false);
+		displayOverDueTable.setColumnSelectionAllowed(false);
+		displayOverDueTable.setRowSelectionAllowed(false);
 	}
-	
-	private void refreshTableForDisplay() {
+
+	private void setDisplayTodayTableProperties(){
+		displayTodayTable.setModel(displayOverDueTableDTM);
+		displayTodayTable.setCellSelectionEnabled(false);
+		displayTodayTable.setRowHeight(20);
+		displayTodayTable.getColumnModel().getColumn(0).setPreferredWidth(30);
+		displayTodayTable.getColumnModel().getColumn(1).setPreferredWidth(55);
+		displayTodayTable.getColumnModel().getColumn(2).setPreferredWidth(65);
+		displayTodayTable.getColumnModel().getColumn(3).setPreferredWidth(210);
+		displayTodayTable.getColumnModel().getColumn(3).setMaxWidth(210);
+		displayTodayTable.getColumnModel().getColumn(4).setPreferredWidth(100);
+		displayTodayTable.getColumnModel().getColumn(5).setPreferredWidth(100);
+		displayTodayTable.getColumnModel().getColumn(5).setMaxWidth(100);
+		displayTodayTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+		displayTodayTable.getTableHeader().setResizingAllowed(false);
+		displayTodayTable.getTableHeader().setReorderingAllowed(false);
+		displayTodayTable.setColumnSelectionAllowed(false);
+		displayTodayTable.setRowSelectionAllowed(false);
+	}
+
+	private void refreshOverDueTableForDisplay() {
 
 		// Clear table
-		for (int i = 0; i < displayTableDTM.getRowCount(); i++) {
-			for (int j = 1; j < displayTableDTM.getColumnCount(); j++) {
-				displayTableDTM.setValueAt("1", i, j);
+		for (int i = 0; i < displayOverDueTableDTM.getRowCount(); i++) {
+			for (int j = 1; j < displayOverDueTableDTM.getColumnCount(); j++) {
+				displayOverDueTableDTM.setValueAt("1", i, j);
 			}
 		}
 		/*
+		 	for(int i = 0; i < displayTableDTM.getRowCount(); i++){
+			for(int j = 0; j < displayTableDTM.getRowCount(); j++){
+				testTable.setValueAt("1", i, j);
+			}
+		};*/
+	}
+
+	private void refreshTodayTableForDisplay() {
+
+		// Clear table
+		for (int i = 0; i < displayTodayTableDTM.getRowCount(); i++) {
+			for (int j = 1; j < displayTodayTableDTM.getColumnCount(); j++) {
+				displayTodayTableDTM.setValueAt("1", i, j);
+			}
+		}
+		/*
+		 	try {
+						showTodayTask.setText(logic.getTodayTask());
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (ParseException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 		for(int i = 0; i < displayTableDTM.getRowCount(); i++){
 			for(int j = 0; j < displayTableDTM.getRowCount(); j++){
 				testTable.setValueAt("1", i, j);
@@ -563,7 +600,6 @@ public class FlexiPlannerUI implements HotKeyListener {
 		};*/
 	}
 
-	
 	private void refreshCalendar(int month, int year) {
 
 		int nod, som; // Number Of Days, Start Of Month
@@ -712,14 +748,17 @@ public class FlexiPlannerUI implements HotKeyListener {
 	 * Implemented for global shortcuts.
 	 * 
 	 * @return JFrame
+	 * 
+	 * @author Moe Lwin Hein (A0117989H)
 	 */
 	public static JFrame getJFrame() {
- 		return schedulerFrame;
- 	}
+		return schedulerFrame;
+	}
 
 	/**
 	 * This method execute when a hotKey is pressed.
 	 * 
+	 * @author Moe Lwin Hein (A0117989H)
 	 */
 	@Override
 	public void onHotKey(HotKey hotKey) {
