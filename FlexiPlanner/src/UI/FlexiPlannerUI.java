@@ -712,8 +712,6 @@ public class FlexiPlannerUI implements HotKeyListener {
 	 * Implemented for global shortcuts.
 	 * 
 	 * @return JFrame
-	 * 
-	 * @author Moe Lwin Hein (A0117989H)
 	 */
 	public static JFrame getJFrame() {
  		return schedulerFrame;
@@ -722,7 +720,6 @@ public class FlexiPlannerUI implements HotKeyListener {
 	/**
 	 * This method execute when a hotKey is pressed.
 	 * 
-	 * @author Moe Lwin Hein (A0117989H)
 	 */
 	@Override
 	public void onHotKey(HotKey hotKey) {

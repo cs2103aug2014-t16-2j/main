@@ -28,7 +28,7 @@ public class FileStorage implements Storage {
 	private final String ERROR_NULL_LIST = "List cannot be null!";
 	private final String ERROR_NOT_SETUP_YET = "File record not found! Setup database first!";
 	
-	private final String WARNING_FILE_ALD_EXISTS = "File exists!";
+	private final String INFO_FILE_ALD_EXISTS = "File exists!";
 	
 	private final String FILE_NAME_PATTERN = "^[\\w,\\s-]+$";
 	private final String VALID_EXTENSION_TASKS_FILE = "json";
@@ -51,6 +51,7 @@ public class FileStorage implements Storage {
 	@Override
 	public boolean setupDatabase(final String filePath) {
 		boolean isSetup = false;
+		
 		if (isValidFileName(filePath)) {
 			try {
 				isSetup = manager.create(filePath);
@@ -58,7 +59,7 @@ public class FileStorage implements Storage {
 					path.add(filePath);
 				}
 				else {
-					reportError(WARNING_FILE_ALD_EXISTS);
+					reportError(INFO_FILE_ALD_EXISTS);
 					path.add(filePath);
 				}
 			} catch (IOException e) {
