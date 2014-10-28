@@ -541,7 +541,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	}
 
 	private void setDisplayTodayTableProperties(){
-		displayTodayTable.setModel(displayOverDueTableDTM);
+		displayTodayTable.setModel(displayTodayTableDTM);
 		displayTodayTable.setCellSelectionEnabled(false);
 		displayTodayTable.setRowHeight(20);
 		displayTodayTable.getColumnModel().getColumn(0).setPreferredWidth(30);
@@ -564,7 +564,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		// Clear table
 		for (int i = 0; i < displayOverDueTableDTM.getRowCount(); i++) {
 			for (int j = 1; j < displayOverDueTableDTM.getColumnCount(); j++) {
-				displayOverDueTableDTM.setValueAt("1", i, j);
+				displayOverDueTableDTM.setValueAt("test1", i, j);
 			}
 		}
 		/*
@@ -580,7 +580,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		// Clear table
 		for (int i = 0; i < displayTodayTableDTM.getRowCount(); i++) {
 			for (int j = 1; j < displayTodayTableDTM.getColumnCount(); j++) {
-				displayTodayTableDTM.setValueAt("1", i, j);
+				displayTodayTableDTM.setValueAt("test2", i, j);
 			}
 		}
 		/*
