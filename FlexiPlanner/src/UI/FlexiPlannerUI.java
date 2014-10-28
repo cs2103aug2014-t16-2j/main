@@ -567,6 +567,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 				displayOverDueTableDTM.setValueAt("test1", i, j);
 			}
 		}
+		//DUY: I should get the data here but i tired to no avail
 		/*
 		 	for(int i = 0; i < displayTableDTM.getRowCount(); i++){
 			for(int j = 0; j < displayTableDTM.getRowCount(); j++){
