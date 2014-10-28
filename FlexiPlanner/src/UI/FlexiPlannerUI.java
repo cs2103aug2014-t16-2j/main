@@ -50,7 +50,9 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private JPanel schedulerPanel;
 	private JButton prevMonth, nextMonth;
 	private JTable calendar1;
+	private JTable displayTable;
 	private DefaultTableModel calendar2;
+	private DefaultTableModel displayTableDTM;
 	private Border border;
 	private JXCollapsiblePane showUserGuidePane;
 	private JXCollapsiblePane showOverDueCollapsePane;
@@ -76,6 +78,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private String[] months = { "January", "February", "March", "April", "May",
 			"June", "July", "August", "September", "October", "November",
 	"December" };
+	private String[] columnNames = {"Index","Priority","Catogery","Task","From","To"};
+	private Object[][] dummyData = {{"","", "","", "", ""},};
 	private String day;
 
 	private static Logic logic;
@@ -119,6 +123,15 @@ public class FlexiPlannerUI implements HotKeyListener {
 		schedulerFrame.getContentPane().add(schedulerPanel);// add panel to
 		// frame(add table
 		// to frame)
+		
+		displayTable=new JTable(new DefaultTableModel(dummyData, columnNames){
+			public boolean isCellEditable(int rowIndex, int mColIndex) {
+				return false;
+			}});
+				
+		displayTableDTM = (DefaultTableModel) displayTable.getModel();
+		displayTableDTM.setRowCount(100);
+		setDisplayTableProperties();//Set table restrictions
 		
 		// get calendar format
 		GregorianCalendar cal = new GregorianCalendar();
@@ -513,17 +526,35 @@ public class FlexiPlannerUI implements HotKeyListener {
 		return guide;
 	}
 
-	private void refreshTableForDisplay(String displayTable) {
+	private void setDisplayTableProperties() {
+		displayTable.setModel(displayTableDTM);
+		displayTable.setCellSelectionEnabled(false);
+		displayTable.getColumnModel().getColumn(0).setPreferredWidth(30);
+		displayTable.getColumnModel().getColumn(1).setPreferredWidth(55);
+		displayTable.getColumnModel().getColumn(2).setPreferredWidth(65);
+		displayTable.getColumnModel().getColumn(3).setPreferredWidth(210);
+		displayTable.getColumnModel().getColumn(3).setMaxWidth(210);
+		displayTable.getColumnModel().getColumn(4).setPreferredWidth(100);
+		displayTable.getColumnModel().getColumn(5).setPreferredWidth(100);
+		displayTable.getColumnModel().getColumn(5).setMaxWidth(100);
+		displayTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+		displayTable.getTableHeader().setResizingAllowed(false);
+		displayTable.getTableHeader().setReorderingAllowed(false);
+		displayTable.setColumnSelectionAllowed(false);
+		displayTable.setRowSelectionAllowed(false);
+	}
+	
+	private void refreshTableForDisplay() {
 
 		// Clear table
-		;/*for (int i = 0; i < testTable.getRowCount(); i++) {
-			for (int j = 0; j < testTable.getColumnCount(); j++) {
-				testTable.setValueAt(null, i, j);
+		for (int i = 0; i < displayTableDTM.getRowCount(); i++) {
+			for (int j = 0; j < displayTableDTM.getColumnCount(); j++) {
+				displayTableDTM.setValueAt("1", i, j);
 			}
 		}
-
-		for(int i = 0; i < testTable.getRowCount(); i++){
-			for(int j = 0; j <testTable.getColumnCount(); j++){
+		/*
+		for(int i = 0; i < displayTableDTM.getRowCount(); i++){
+			for(int j = 0; j < displayTableDTM.getRowCount(); j++){
 				testTable.setValueAt("1", i, j);
 			}
 		};*/
