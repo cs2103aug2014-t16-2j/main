@@ -36,7 +36,7 @@ public class flexiPlannerIT {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		logic = new Logic();
-		storage = new FileStorage();
+		storage = FileStorage.getInstance();
 		storage.setupDatabase(TASK_FILE);
 		storage.setupDatabase(COMPLETED_TASK_FILE);
 		tasks = new ArrayList<TaskData>();
@@ -209,4 +209,13 @@ public class flexiPlannerIT {
 		assertTrue(equals(tasks, storage.loadTasks(TASK_FILE)));
 	}
 	
+	/**
+	 * test add the same task with one of the tasks
+	 */
+	@Test
+	public void tc15() throws IOException, ParseException {
+		String input = "add watch webcast tomorrow";
+		assertTrue(logic.executeInputCommand(input).equals(ERROR));
+		assertTrue(equals(tasks, storage.loadTasks(TASK_FILE)));
+	}	
 }

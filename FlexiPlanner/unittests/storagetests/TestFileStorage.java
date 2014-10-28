@@ -27,7 +27,7 @@ import Storage.TaskData;
  *
  */
 public class TestFileStorage {
-	Storage database = new FileStorage();
+	Storage database = FileStorage.getInstance();
 	FileManager manager = new FileManager();
 	
 	private final ByteArrayOutputStream out = new ByteArrayOutputStream();
