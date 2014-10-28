@@ -410,14 +410,14 @@ public class FlexiPlannerUI implements HotKeyListener {
 					showOverDueCollapsePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F3:
-
+					refreshOverDueTableForDisplay();
 					showOverDueCollapsePane.setCollapsed(false);
 					showUserExecutedCommandCollapsePane.setCollapsed(true);
 					todayCollapsePane.setCollapsed(true);
 					showUserGuidePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F4:
-
+					refreshTodayTableForDisplay();	
 					todayCollapsePane.setCollapsed(false);
 					showUserExecutedCommandCollapsePane.setCollapsed(true);
 					showOverDueCollapsePane.setCollapsed(true);
@@ -560,7 +560,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	}
 
 	private void refreshOverDueTableForDisplay() {
-
+		
 		// Clear table
 		for (int i = 0; i < displayOverDueTableDTM.getRowCount(); i++) {
 			for (int j = 1; j < displayOverDueTableDTM.getColumnCount(); j++) {
