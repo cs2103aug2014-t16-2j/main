@@ -133,6 +133,9 @@ public class FlexiPlannerUI implements HotKeyListener {
 		displayTableDTM.setRowCount(100);
 		setDisplayTableProperties();//Set table restrictions
 		
+		for (int i = 0; i < displayTableDTM.getRowCount(); i++) {//set index
+			displayTableDTM.setValueAt(i+1, i, 0);			
+		}
 		// get calendar format
 		GregorianCalendar cal = new GregorianCalendar();
 		actualDay = cal.get(GregorianCalendar.DAY_OF_MONTH);
@@ -548,7 +551,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 
 		// Clear table
 		for (int i = 0; i < displayTableDTM.getRowCount(); i++) {
-			for (int j = 0; j < displayTableDTM.getColumnCount(); j++) {
+			for (int j = 1; j < displayTableDTM.getColumnCount(); j++) {
 				displayTableDTM.setValueAt("1", i, j);
 			}
 		}
