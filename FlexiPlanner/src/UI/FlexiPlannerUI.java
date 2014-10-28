@@ -10,6 +10,8 @@ import java.awt.event.KeyEvent;
 import java.awt.Dimension;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.GregorianCalendar;
 
 import javax.swing.SwingUtilities;
@@ -773,5 +775,36 @@ public class FlexiPlannerUI implements HotKeyListener {
 			System.exit(0);
 		default : break;
 		}
+	}
+	private void updateTextArea(final String text) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				commandFeedback.append(text);
+			}
+		});
+	}
+	
+
+	public void redirectSystemStreams() {
+		OutputStream out = new OutputStream() {
+			@Override
+			public void write(int b) throws IOException {
+				updateTextArea(String.valueOf((char) b));
+			}
+
+			@Override
+			public void write(byte[] b, int off, int len) throws IOException {
+				updateTextArea(new String(b, off, len));
+			}
+
+			@Override
+			public void write(byte[] b) throws IOException {
+				write(b, 0, b.length);
+			}
+		};
+		
+		
+		System.setOut(new PrintStream(out, true));
+		System.setErr(new PrintStream(out, true));
 	}
 }// end of class FlexiPlannerUI
