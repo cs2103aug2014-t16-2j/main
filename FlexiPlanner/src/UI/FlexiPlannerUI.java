@@ -54,10 +54,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private JButton prevMonth, nextMonth;
 	private JTable calendar1;
 	private JTable displayOverDueTable;
-	private JTable displayTodayTable;
+	private JTable displayTasksToComeTable;
 	private DefaultTableModel calendar2;
 	private DefaultTableModel displayOverDueTableDTM;
-	private DefaultTableModel displayTodayTableDTM;
+	private DefaultTableModel displayTaskToComeTableDTM;
 	private Border border;
 	private JXCollapsiblePane showUserGuidePane;
 	private JXCollapsiblePane showOverDueCollapsePane;
@@ -86,7 +86,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private String day;
 
 	private static Logic logic;
-
+	//@author A0111770R
 	public FlexiPlannerUI() {
 		try {
 			logic  = new Logic();
@@ -99,10 +99,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 			e.printStackTrace();
 		}
 	}
-
+	//@author A0111770R
 	public void loadInterfaceandData() throws IOException, ParseException {
 		JFrame.setDefaultLookAndFeelDecorated(false);
-		schedulerFrame.setUndecorated(false);// the frame is changed
+		schedulerFrame.setUndecorated(false);
 		/** ICONIFIED so as to still run the application although close button is pressed. **/
 		schedulerFrame.setDefaultCloseOperation(JFrame.ICONIFIED);
 		ImageIcon img = new ImageIcon("logo.png");
@@ -123,10 +123,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		schedulerPanel = new JPanel(null);
 
-		schedulerFrame.getContentPane().add(schedulerPanel);// add panel to
-		// frame(add table
-		// to frame)
-
+		schedulerFrame.getContentPane().add(schedulerPanel);// add panel to frame
+		
 		displayOverDueTable=new JTable(new DefaultTableModel(dummyData, columnNames){
 			public boolean isCellEditable(int rowIndex, int mColIndex) {
 				return false;
@@ -138,15 +136,15 @@ public class FlexiPlannerUI implements HotKeyListener {
 			displayOverDueTableDTM.setValueAt(i+1, i, 0);			
 		}
 
-		displayTodayTable=new JTable(new DefaultTableModel(dummyData, columnNames){
+		displayTasksToComeTable=new JTable(new DefaultTableModel(dummyData, columnNames){
 			public boolean isCellEditable(int rowIndex, int mColIndex) {
 				return false;
 			}});		
-		displayTodayTableDTM = (DefaultTableModel) displayTodayTable.getModel();
-		displayTodayTableDTM.setRowCount(100);
-		setDisplayTodayTableProperties();//Set table restrictions
-		for (int i = 0; i < displayTodayTableDTM.getRowCount(); i++) {//set index
-			displayTodayTableDTM.setValueAt(i+1, i, 0);			
+		displayTaskToComeTableDTM = (DefaultTableModel) displayTasksToComeTable.getModel();
+		displayTaskToComeTableDTM.setRowCount(100);
+		setDisplayTaskToComeTableProperties();//Set table restrictions
+		for (int i = 0; i < displayTaskToComeTableDTM.getRowCount(); i++) {//set index
+			displayTaskToComeTableDTM.setValueAt(i+1, i, 0);			
 		}
 
 
@@ -235,7 +233,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		tasksToComeLabel.setText("Tasks To Come");
 
-		showTasksToComeScroll = new JScrollPane (displayTodayTable, 
+		showTasksToComeScroll = new JScrollPane (displayTasksToComeTable, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		showTasksToComeScroll.setPreferredSize(new Dimension(570,460));
 
@@ -303,7 +301,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 		inputCommand.setBackground(Color.WHITE);
 		inputCommand.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		inputCommand.setBounds(10, 540, 880, 46);
-
+		
+		//add components to panel
 		schedulerPanel.add(displayedMonth);
 		schedulerPanel.add(displayedYear);
 		schedulerPanel.add(selectYear);
@@ -344,7 +343,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 				showOverDueTasksScroll,showTasksToComeScroll,showUserExecutedCommandScroll,showCategoryScroll
 				,showUserGuidePane,showOverDueCollapsePane,taskToComeCollapsePane,showUserExecutedCommandCollapsePane);
 	}
-
+	//@author A0111770R
 	private void executeKeyAction(final JTextArea commandFeedback,
 			final JTextArea showUserExecutedCommand,final JTextArea showCategory, 
 			final JScrollPane showOverDueTasksScroll, final JScrollPane showTasksToComeScroll ,final JScrollPane showUserExecutedCommandScroll,final JScrollPane showCategoryScroll
@@ -353,7 +352,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 			public void keyPressed(KeyEvent e) {
 				int key = e.getKeyCode();
 				int overDueScrollPane = showOverDueTasksScroll.getVerticalScrollBar().getModel().getValue();
-				int valueTodayScrollPane = showTasksToComeScroll.getVerticalScrollBar().getModel().getValue();
+				int valueTaskToComeScrollPane = showTasksToComeScroll.getVerticalScrollBar().getModel().getValue();
 				int valueCustomTextArea=showUserExecutedCommandScroll.getVerticalScrollBar().getModel().getValue();
 				int valueCategoryScrollPane = showCategoryScroll.getVerticalScrollBar().getModel().getValue();
 				switch (key){
@@ -410,14 +409,14 @@ public class FlexiPlannerUI implements HotKeyListener {
 					showOverDueCollapsePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F3:
-					refreshOverDueTableForDisplay();
+					refreshOverDueTableForDisplay();//refresh displayOverDueTable
 					showOverDueCollapsePane.setCollapsed(false);
 					showUserExecutedCommandCollapsePane.setCollapsed(true);
 					taskToComeCollapsePane.setCollapsed(true);
 					showUserGuidePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F4:
-					refreshTaskToComeTableForDisplay();	
+					refreshTaskToComeTableForDisplay();//refresh displayTaskToComTable	
 					taskToComeCollapsePane.setCollapsed(false);
 					showUserExecutedCommandCollapsePane.setCollapsed(true);
 					showOverDueCollapsePane.setCollapsed(true);
@@ -430,10 +429,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 					showOverDueTasksScroll.getVerticalScrollBar().getModel().setValue(overDueScrollPane+5);
 					break;
 				case KeyEvent.VK_F7:
-					showTasksToComeScroll.getVerticalScrollBar().getModel().setValue(valueTodayScrollPane-5);
+					showTasksToComeScroll.getVerticalScrollBar().getModel().setValue(valueTaskToComeScrollPane-5);
 					break;
 				case KeyEvent.VK_F8:
-					showTasksToComeScroll.getVerticalScrollBar().getModel().setValue(valueTodayScrollPane+5);
+					showTasksToComeScroll.getVerticalScrollBar().getModel().setValue(valueTaskToComeScrollPane+5);
 					break;
 				case KeyEvent.VK_F9:
 					showUserExecutedCommandScroll.getVerticalScrollBar().getModel().setValue(valueCustomTextArea-5);
@@ -463,7 +462,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 					break;
 				}
 
-			}
+			}//@author A0111770R
 			public void keyReleased(KeyEvent e) {
 				int key = e.getKeyCode();				
 				if (key == KeyEvent.VK_ENTER) {
@@ -474,13 +473,13 @@ public class FlexiPlannerUI implements HotKeyListener {
 			}
 		});
 	}
-
+	//@author A0111770R
 	private void setValuesCombox() {
 		for (int i = actualYear; i <= actualYear + 20; i++) {
 			selectYear.addItem(String.valueOf(i));
 		}
 	}
-
+	//@author A0111770R
 	private void prevMth() {
 		if (currentDisplayedMonth == 0) { // Back one year
 			currentDisplayedMonth = 11;
@@ -490,7 +489,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		}
 		refreshCalendar(currentDisplayedMonth, currentDisplayedYear);
 	}
-
+	//@author A0111770R
 	private void nextMth() {
 		if (currentDisplayedMonth == 11) { // Foward one year
 			currentDisplayedMonth = 0;
@@ -500,6 +499,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		}
 		refreshCalendar(currentDisplayedMonth, currentDisplayedYear);
 	}
+	//@author A0111770R
 	private String getGuide(){
 		String guide="HotKeys:"
 				+ "\n1: 'ctrl+o':Execute FlexiPlanner from system tray"
@@ -508,11 +508,11 @@ public class FlexiPlannerUI implements HotKeyListener {
 				+ "\n4: 'f1': Guide"
 				+ "\n5: 'f2': Executed commands"
 				+ "\n6: 'f3': Over due tasks"
-				+ "\n7: 'f4': Today task"
+				+ "\n7: 'f4': Tasks to come"
 				+ "\n8: 'f5': Scroll up over due tasks"
 				+ "\n9: 'f6': Scroll down over due tasks"
-				+ "\n10: 'f7': Scroll up today tasks"
-				+ "\n11: 'f8': Scroll down today tasks"
+				+ "\n10: 'f7': Scroll up tasks to come tasks"
+				+ "\n11: 'f8': Scroll down tasks to come tasks"
 				+ "\n12: 'f9': Scroll up Executed commands"
 				+ "\n13: 'f10': Scroll down Executed commands"
 				+ "\n14: 'f11': Scroll up category"
@@ -521,7 +521,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 				+ "\n17: 'pgdw': Next month";
 		return guide;
 	}
-
+	//@author A0111770R
 	private void setDisplayOverDueTableProperties() {
 		displayOverDueTable.setModel(displayOverDueTableDTM);
 		displayOverDueTable.setCellSelectionEnabled(false);
@@ -540,26 +540,26 @@ public class FlexiPlannerUI implements HotKeyListener {
 		displayOverDueTable.setColumnSelectionAllowed(false);
 		displayOverDueTable.setRowSelectionAllowed(false);
 	}
-
-	private void setDisplayTodayTableProperties(){
-		displayTodayTable.setModel(displayTodayTableDTM);
-		displayTodayTable.setCellSelectionEnabled(false);
-		displayTodayTable.setRowHeight(20);
-		displayTodayTable.getColumnModel().getColumn(0).setPreferredWidth(30);
-		displayTodayTable.getColumnModel().getColumn(1).setPreferredWidth(55);
-		displayTodayTable.getColumnModel().getColumn(2).setPreferredWidth(65);
-		displayTodayTable.getColumnModel().getColumn(3).setPreferredWidth(210);
-		displayTodayTable.getColumnModel().getColumn(3).setMaxWidth(210);
-		displayTodayTable.getColumnModel().getColumn(4).setPreferredWidth(100);
-		displayTodayTable.getColumnModel().getColumn(5).setPreferredWidth(100);
-		displayTodayTable.getColumnModel().getColumn(5).setMaxWidth(100);
-		displayTodayTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-		displayTodayTable.getTableHeader().setResizingAllowed(false);
-		displayTodayTable.getTableHeader().setReorderingAllowed(false);
-		displayTodayTable.setColumnSelectionAllowed(false);
-		displayTodayTable.setRowSelectionAllowed(false);
+	//@author A0111770R
+	private void setDisplayTaskToComeTableProperties(){
+		displayTasksToComeTable.setModel(displayTaskToComeTableDTM);
+		displayTasksToComeTable.setCellSelectionEnabled(false);
+		displayTasksToComeTable.setRowHeight(20);
+		displayTasksToComeTable.getColumnModel().getColumn(0).setPreferredWidth(30);
+		displayTasksToComeTable.getColumnModel().getColumn(1).setPreferredWidth(55);
+		displayTasksToComeTable.getColumnModel().getColumn(2).setPreferredWidth(65);
+		displayTasksToComeTable.getColumnModel().getColumn(3).setPreferredWidth(210);
+		displayTasksToComeTable.getColumnModel().getColumn(3).setMaxWidth(210);
+		displayTasksToComeTable.getColumnModel().getColumn(4).setPreferredWidth(100);
+		displayTasksToComeTable.getColumnModel().getColumn(5).setPreferredWidth(100);
+		displayTasksToComeTable.getColumnModel().getColumn(5).setMaxWidth(100);
+		displayTasksToComeTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+		displayTasksToComeTable.getTableHeader().setResizingAllowed(false);
+		displayTasksToComeTable.getTableHeader().setReorderingAllowed(false);
+		displayTasksToComeTable.setColumnSelectionAllowed(false);
+		displayTasksToComeTable.setRowSelectionAllowed(false);
 	}
-
+	//@author A0111770R
 	private void refreshOverDueTableForDisplay() {
 
 		// Clear table
@@ -583,13 +583,13 @@ public class FlexiPlannerUI implements HotKeyListener {
 			if(row==50){break;}
 		}
 	}
-
+	//@author A0111770R
 	private void refreshTaskToComeTableForDisplay() {
 
 		// Clear table
-		for (int i = 0; i < displayTodayTableDTM.getRowCount(); i++) {
-			for (int j = 1; j < displayTodayTableDTM.getColumnCount(); j++) {
-				displayTodayTableDTM.setValueAt("", i, j);
+		for (int i = 0; i < displayTaskToComeTableDTM.getRowCount(); i++) {
+			for (int j = 1; j < displayTaskToComeTableDTM.getColumnCount(); j++) {
+				displayTaskToComeTableDTM.setValueAt("", i, j);
 			}
 		}
 		try {
@@ -597,14 +597,14 @@ public class FlexiPlannerUI implements HotKeyListener {
 
 			for (Logic.DisplayedEntry t : logic.getTaskToCome()) {
 				if (t.getPriority() != null)
-					displayTodayTableDTM.setValueAt(t.getPriority(),row,1);
+					displayTaskToComeTableDTM.setValueAt(t.getPriority(),row,1);
 				if (t.getCategory() != null)
-					displayTodayTableDTM.setValueAt(t.getCategory(),row,2);
-				displayTodayTableDTM.setValueAt(t.getContent(),row,3);
+					displayTaskToComeTableDTM.setValueAt(t.getCategory(),row,2);
+				displayTaskToComeTableDTM.setValueAt(t.getContent(),row,3);
 				if (t.getStartDateTime() != null)
-					displayTodayTableDTM.setValueAt(t.getStartDateTime(),row,4);
+					displayTaskToComeTableDTM.setValueAt(t.getStartDateTime(),row,4);
 				if (t.getEndDateTime() != null)
-					displayTodayTableDTM.setValueAt(t.getStartDateTime(),row,5);
+					displayTaskToComeTableDTM.setValueAt(t.getStartDateTime(),row,5);
 				row++;
 				if(row==50){break;}
 			}
@@ -617,7 +617,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		}
 
 	}
-
+	//@author A0111770R
 	private void refreshCalendar(int month, int year) {
 
 		int nod, som; // Number Of Days, Start Of Month
@@ -661,8 +661,9 @@ public class FlexiPlannerUI implements HotKeyListener {
 				new Calendar1Renderer());// using Calendar1Renderer class to set
 		// table display
 	}// end of refreshCalendar method
-
+	
 	// class Calendar1Renderer used for editting how things are displayed
+	//@author A0111770R
 	class Calendar1Renderer extends DefaultTableCellRenderer {
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean selected, boolean focused, int row,
@@ -726,6 +727,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	}// end of class Calendar1Renderer
 
 	// Prev_Action points to the previous year
+	//@author A0111770R
 	class Prev_Action implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if (currentDisplayedMonth == 0) { // Back one year
@@ -738,7 +740,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		}
 	}// end of class Prev_Action
 	// Next_Action points to the next year
-
+	//@author A0111770R
 	class Next_Action implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if (currentDisplayedMonth == 11) { // Foward one year
@@ -750,7 +752,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 			refreshCalendar(currentDisplayedMonth, currentDisplayedYear);
 		}
 	}// end of class Next_Action
-
+	//@author A0111770R
 	class Years_Action implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if (selectYear.getSelectedItem() != null) {
