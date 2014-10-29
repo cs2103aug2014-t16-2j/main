@@ -1,44 +1,164 @@
 {
   "Tasks": [
     {
+      "startDateTime": "2014-11-02T00:00",
+      "category": null,
+      "priority": "normal",
+      "endDateTime": "2014-11-02T23:59:59",
+      "taskId": "2014103000592372223",
+      "content": "reading Harry Potter"
+    },
+    {
+      "startDateTime": "2014-10-30T13:00",
+      "category": "work",
+      "priority": "normal",
+      "endDateTime": "2014-10-30T15:00",
+      "taskId": "2014103001000532424",
+      "content": "CS2103 Group meeting"
+    },
+    {
+      "startDateTime": "2014-10-31T00:00",
+      "category": "study",
+      "priority": "normal",
+      "endDateTime": "2014-10-31T23:59:59",
+      "taskId": "2014103001015382625",
+      "content": "borrow book from library"
+    },
+    {
+      "startDateTime": "2014-10-31T19:00",
+      "category": "play",
+      "priority": "normal",
+      "endDateTime": "2014-10-31T23:59:59",
+      "taskId": "2014103001023663626",
+      "content": "go to the cinema"
+    },
+    {
       "startDateTime": null,
       "category": null,
       "priority": "normal",
       "endDateTime": null,
-      "taskId": "2014102904262784537",
-      "content": "reco"
+      "taskId": "2014103001024972527",
+      "content": "doing homework"
     },
     {
-      "startDateTime": "2014-03-03T00:00",
-      "category": "lala",
+      "startDateTime": "2014-10-31T23:59",
+      "category": null,
       "priority": "normal",
-      "endDateTime": "2014-03-03T23:59:59",
-      "taskId": "2014102904262969638",
-      "content": "t"
+      "endDateTime": "2014-10-31T23:59:59",
+      "taskId": "2014103001032287830",
+      "content": "submit CS2106 Project"
+    },
+    {
+      "startDateTime": "2014-11-01T00:00",
+      "category": null,
+      "priority": "normal",
+      "endDateTime": "2014-11-01T23:59:59",
+      "taskId": "2014103001044052734",
+      "content": "buy new pair of glasses"
+    },
+    {
+      "startDateTime": "2014-11-10T15:00",
+      "category": null,
+      "priority": "normal",
+      "endDateTime": "2014-11-10T23:59:59",
+      "taskId": "2014103001060885035",
+      "content": "go to kino kuniya bookshop"
+    },
+    {
+      "startDateTime": "2014-11-02T00:00",
+      "category": "personal",
+      "priority": "normal",
+      "endDateTime": "2014-11-02T23:59:59",
+      "taskId": "2014103001063396936",
+      "content": "calling home"
+    },
+    {
+      "startDateTime": "2014-10-31T17:00",
+      "category": "itshalloween",
+      "priority": "normal",
+      "endDateTime": "2014-10-31T23:59:59",
+      "taskId": "2014103001083812137",
+      "content": "it\u0027s halloween hahaha, keep calm and read Harry Potter"
+    },
+    {
+      "startDateTime": "2014-10-30T00:00",
+      "category": "project",
+      "priority": "very high",
+      "endDateTime": "2014-10-30T23:59:59",
+      "taskId": "2014103001092293038",
+      "content": "demo V0.3 CS2103 flexiplanner"
     },
     {
       "startDateTime": null,
-      "category": "work",
+      "category": "personal",
       "priority": "normal",
       "endDateTime": null,
-      "taskId": "2014102904265369450",
-      "content": "t"
+      "taskId": "2014103001110031240",
+      "content": "do exercise, don\u0027t be lazy"
     },
     {
-      "startDateTime": "2014-02-02T00:00",
-      "category": "work",
+      "startDateTime": "2014-11-05T16:00",
+      "category": null,
       "priority": "normal",
-      "endDateTime": "2014-02-02T23:59:59",
-      "taskId": "2014102904274202261",
-      "content": "t"
+      "endDateTime": "2014-11-05T23:59:59",
+      "taskId": "2014103001125952841",
+      "content": "play football with Ateam"
+    },
+    {
+      "startDateTime": "2014-11-12T00:00",
+      "category": "interview",
+      "priority": "very high",
+      "endDateTime": "2014-11-12T23:59:59",
+      "taskId": "2014103001134326142",
+      "content": "interview"
+    },
+    {
+      "startDateTime": "2014-11-02T19:00",
+      "category": null,
+      "priority": "normal",
+      "endDateTime": "2014-11-02T23:59:59",
+      "taskId": "2014103001143865143",
+      "content": "dinner with Linh"
+    },
+    {
+      "startDateTime": "2014-11-09T00:00",
+      "category": null,
+      "priority": "normal",
+      "endDateTime": "2014-11-09T23:59:59",
+      "taskId": "2014103001160002948",
+      "content": "buy food"
+    },
+    {
+      "startDateTime": "2014-10-12T00:00",
+      "category": "project",
+      "priority": "normal",
+      "endDateTime": "2014-10-12T23:59:59",
+      "taskId": "2014103001165358849",
+      "content": "ask Thanh about the project"
     },
     {
       "startDateTime": null,
       "category": null,
       "priority": "very high",
       "endDateTime": null,
-      "taskId": "2014102920412649727",
-      "content": "i"
+      "taskId": "2014103001173045050",
+      "content": "do CS2105 assignment weekend"
+    },
+    {
+      "startDateTime": "2014-10-29T00:00",
+      "category": null,
+      "priority": "normal",
+      "endDateTime": "2014-10-29T23:59:59",
+      "taskId": "2014103001175697251",
+      "content": "say happy birthday to John"
+    },
+    {
+      "startDateTime": "2014-10-30T00:00",
+      "category": "CS2103",
+      "priority": "high",
+      "endDateTime": "2014-10-30T23:59:59",
+      "taskId": "2014103001182519052",
+      "content": "finish homework cs2103"
     }
   ]
 }

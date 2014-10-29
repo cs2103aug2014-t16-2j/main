@@ -1,6 +1,8 @@
 package Logic;
 
 import java.io.IOException;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -95,7 +97,7 @@ public class SearchTool {
 		searchResult = filterByTime(taskList, startTime, endTime);
 		if (category != null)
 			searchResult = filterByCategory(searchResult, category.split(" "));
-		if (!priority.equals("normal"))
+		if (priority != null)
 			searchResult = filterByPriority(searchResult, priority);
 		searchResult = filterByKeywords(searchResult, words);
 
@@ -180,10 +182,40 @@ public class SearchTool {
 
 	private String displaySearch(ArrayList<TaskData> list) {
 		String lines = "Search result:\n";
+		SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+		SimpleDateFormat f = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
 		if (!list.isEmpty()) {
 			for (TaskData t : list) {
-				lines += t.toString();
-				lines += "\n";
+				lines += t.getContent() + "\n";
+				lines += "     Category : " + t.getCategory() + "\n";
+				lines += "     Priority   : " + t.getPriority() + "\n";
+				LocalDateTime start = t.getStartDateTime();
+				if (start != null) {
+					Date d;
+					try {
+						String x = start + "";
+						d = formater.parse(x);
+						String s = f.format(d);
+						lines += "     From      : " + s + "\n";
+					} catch (java.text.ParseException e) {
+						System.out.print("Mo");
+					}
+
+				}
+				LocalDateTime end = t.getEndDateTime();
+				if (end != null) {
+					Date d;
+					try {
+						d = formater.parse(start + "");
+						String s = f.format(d);
+						lines += "     To           : " + s + "\n";
+					} catch (java.text.ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				lines += "***********************************************\n";
+
 			}
 		}
 		return lines;

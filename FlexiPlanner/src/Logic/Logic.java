@@ -2,8 +2,10 @@ package Logic;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Stack;
@@ -740,17 +742,37 @@ public class Logic {
 	// @author A0112066U
 	private String showToUser(ArrayList<TaskData> taskToShow) {
 		String text = "";
+		SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+		SimpleDateFormat f = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
+		int i = 1;
 		for (TaskData t : taskToShow) {
-			if (t.getPriority() != null)
-				text += t.getPriority() + " ";
-			if (t.getCategory() != null)
-				text += t.getCategory() + " ";
+			text += i + ": ";
 			text += t.getContent();
-			if (t.getStartDateTime() != null)
-				text += "\n    From: " + t.getStartDateTime();
-			if (t.getEndDateTime() != null)
-				text += "\n    To: " + t.getEndDateTime();
+			if (t.getPriority() != null)
+				text += "\n    " + t.getPriority() + " priority ";
+			if (t.getCategory() != null)
+				text += "\n    #" + t.getCategory() + " ";
+			if (t.getStartDateTime() != null) {
+				Date d;
+				try {
+					d = formater.parse(t.getStartDateTime() + "");
+					String s = f.format(d);
+					text += "\n    From: " + s;
+				} catch (java.text.ParseException e) {
+				}
+				
+			}
+			if (t.getEndDateTime() != null) {
+				Date d;
+				try {
+					d = formater.parse(t.getEndDateTime() + "");
+					String s = f.format(d);
+					text += "\n    To  : " + s;
+				} catch (java.text.ParseException e) {
+				}
+			}
 			text += "\n";
+			i++;
 		}
 		return text;
 	}
@@ -946,6 +968,7 @@ public class Logic {
 		private String priority;
 		private LocalDateTime startDateTime;
 		private LocalDateTime endDateTime;
+		
 		public DisplayedEntry(TaskData t) {
 			this.setContent(t.getContent());
 			this.setCategory(t.getCategory());
