@@ -189,6 +189,16 @@ public class Logic {
 			if (isSuccessful)
 				actionList.push(new ActionEntry(action, null));
 			return isSuccessful;
+		case "block":
+			isSuccessful = block();
+			if (isSuccessful)
+				actionList.push(new ActionEntry(action, null));
+			return isSuccessful;
+		case "unblock":
+			isSuccessful = unblock();
+			if (isSuccessful)
+				actionList.push(new ActionEntry(action, null));
+			return isSuccessful;
 		case "exit":
 			exit();
 		default:
@@ -694,8 +704,15 @@ public class Logic {
 		} catch (IOException e) {
 			System.out.println("Error while saving data");
 		}
-		System.exit(0);
+		//System.exit(0);
 
+	}
+	
+	private boolean block() {
+		return true;
+	}
+	private boolean unblock() {
+		return false;
 	}
 
 	// @author A0112066U
@@ -717,7 +734,7 @@ public class Logic {
 		int yearToday = now.getYear();
 		LocalDateTime today = LocalDateTime.of(yearToday, monthToday,
 				dateToday, 0, 0, 0).minusSeconds(1);
-		LocalDateTime tomorrow = today.plusSeconds(86402);
+		LocalDateTime tomorrow = today.plusSeconds(172801);
 		ArrayList<DisplayedEntry> taskToShow = new ArrayList<DisplayedEntry>();
 
 		for (TaskData _task : taskList) {
@@ -889,6 +906,10 @@ public class Logic {
 		return dataToShow();
 	}
 	
+	public void clear() throws IOException {
+		taskList.clear();
+		saveData();
+	}
 	
 
 	// This function check whether a string provided is an integer

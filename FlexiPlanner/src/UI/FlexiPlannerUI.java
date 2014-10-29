@@ -359,6 +359,9 @@ public class FlexiPlannerUI implements HotKeyListener {
 				switch (key){
 				case KeyEvent.VK_ENTER: 
 					String userCommand = inputCommand.getText();
+					if (userCommand.startsWith("exit")) {
+						getJFrame().setVisible(false);
+					}
 					try {
 						commandFeedback.setText(logic
 								.executeInputCommand(userCommand));
