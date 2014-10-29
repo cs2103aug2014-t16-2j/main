@@ -293,6 +293,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		commandFeedback.setBackground(new Color(240, 240, 240));
 		commandFeedback.setForeground(Color.RED);
 		commandFeedback.setFont(new Font("Times New Roman", Font.BOLD, 15));
+		commandFeedback.setEditable(false);
 		commandFeedback.setLineWrap(true);
 		commandFeedback.setBounds(11, 500, 870, 40);
 
