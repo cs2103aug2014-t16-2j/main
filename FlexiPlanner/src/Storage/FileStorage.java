@@ -39,9 +39,19 @@ public class FileStorage implements Storage {
 	private FileManager manager;
 	private JsonConverter converter;
 	
+	private static FileStorage fStorageInstance;
+	
+	/** Singleton Constructor Method **/
+	public static synchronized FileStorage getInstance() {
+		if (fStorageInstance == null) {
+			fStorageInstance = new FileStorage();
+		}
+		return fStorageInstance;
+	}
+	
 	/** Constructor Method **/
 	
-	public FileStorage() {
+	private FileStorage() {
 		manager = new FileManager();
 		converter = new JsonConverter();
 		

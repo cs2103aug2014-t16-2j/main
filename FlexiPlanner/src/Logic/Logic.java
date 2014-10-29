@@ -32,7 +32,7 @@ public class Logic {
 	private ArrayList<TaskData> currentDisplayedTask;
 
 	private ArrayList<TaskData> completedTask;
-	private Storage storerForCompleted; // Don't call to file storage, call
+	//private Storage storerForCompleted; // Don't call to file storage, call
 										// storage
 
 	String filePath = "text.json";
@@ -44,12 +44,15 @@ public class Logic {
 	// ------------------Constructor-------------------------//
 
 	public Logic() throws FileNotFoundException, IOException, ParseException {
-		storer = new FileStorage();
-		storerForCompleted = new FileStorage(); // For
+		storer = FileStorage.getInstance();
+		// Sorry Duy! I applied singleton pattern for now so I can modify storage without the need to modify 
+		// logic all the way. Hope you understand.
+		// Because i feel not good modifying your part although I just wanna make your work easier. 
+		//storerForCompleted = new FileStorage(); // For
 												// compeleted
 												// task
 		storer.setupDatabase(filePath); // act upon changes made in storage
-		storerForCompleted.setupDatabase(completedpath); // act upon changes
+		storer.setupDatabase(completedpath); // act upon changes
 															// made in storage
 
 		command = null;
@@ -111,7 +114,7 @@ public class Logic {
 			}
 		}
 		completedTask = new ArrayList<TaskData>(
-				storerForCompleted.loadTasks(completedpath));
+				storer.loadTasks(completedpath));
 
 	}
 
@@ -704,7 +707,8 @@ public class Logic {
 
 	// return data to show to UI
 	// @author A0112066U
-	public ArrayList<DisplayedEntry> getTasksToCome() throws IOException, ParseException {
+
+	public ArrayList<DisplayedEntry> getTaskToCome() throws IOException, ParseException {
 		LocalDateTime now = LocalDateTime.now();
 		int dateToday = now.getDayOfMonth();
 		int monthToday = now.getMonthValue();

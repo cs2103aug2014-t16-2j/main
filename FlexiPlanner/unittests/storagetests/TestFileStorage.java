@@ -11,12 +11,10 @@ import java.util.ArrayList;
 
 import org.json.simple.parser.ParseException;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import Storage.FileManager;
 import Storage.FileStorage;
-import Storage.Option;
 import Storage.Storage;
 import Storage.TaskData;
 
@@ -27,7 +25,7 @@ import Storage.TaskData;
  *
  */
 public class TestFileStorage {
-	Storage database = new FileStorage();
+	Storage database = FileStorage.getInstance();
 	FileManager manager = new FileManager();
 	
 	private final ByteArrayOutputStream out = new ByteArrayOutputStream();
