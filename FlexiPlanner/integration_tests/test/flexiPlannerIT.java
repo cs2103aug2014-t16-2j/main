@@ -2,6 +2,18 @@ package test;
 
 import static org.junit.Assert.*;
 
+/**
+ * Integration testing for Logic, Parser and Storage Component
+ * 
+ * Test cases are in serial format tc1 till the last test case. 
+ * Therefore, test cases may not work when testing individually. 
+ * Breaking any test case will break the serial form resulting to 
+ * incorrect test-results. 
+ * 
+ *  @author Moe Lwin Hein (A0117989H)
+ * 
+ */
+
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
