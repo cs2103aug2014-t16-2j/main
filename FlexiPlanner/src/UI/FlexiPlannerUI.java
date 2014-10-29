@@ -360,7 +360,9 @@ public class FlexiPlannerUI implements HotKeyListener {
 				case KeyEvent.VK_ENTER: 
 					String userCommand = inputCommand.getText();
 					if (userCommand.startsWith("exit")) {
+						commandFeedback.setText("");
 						getJFrame().setVisible(false);
+						break;
 					}
 					try {
 						commandFeedback.setText(logic
