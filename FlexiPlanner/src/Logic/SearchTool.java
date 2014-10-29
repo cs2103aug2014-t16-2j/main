@@ -62,34 +62,9 @@ public class SearchTool {
 		}
 		if (taskFound == null)
 			return null;
-		System.out.println("here" + taskFound.toString());
-		if (!hasSameCategory(task, taskFound))
-			return null;
-		if (!hasSamePriority(task, taskFound))
-			return null;
 		if (!hasSameDateTime(task, taskFound))
 			return null;
 		return taskFound;
-	}
-
-	private boolean hasSameCategory(TaskData t1, TaskData t2) {
-		String cat1 = t1.getCategory();
-		String cat2 = t2.getCategory();
-		if (cat1 == null && cat2 != null)
-			return false;
-		if (cat1 != null && cat2 == null)
-			return false;
-		if (cat1 != null && !cat1.equals(cat2))
-			return false;
-		return true;
-	}
-
-	private boolean hasSamePriority(TaskData t1, TaskData t2) {
-		String p1 = t1.getPriority();
-		String p2 = t2.getPriority();
-		if (!p1.equals(p2))
-			return false;
-		return true;
 	}
 
 	private boolean hasSameDateTime(TaskData t1, TaskData t2) {
@@ -108,7 +83,8 @@ public class SearchTool {
 		String[] words;
 		if (content != null)
 			words = content.split(" "); // keyword for searching
-		else words = new String[] {""};
+		else
+			words = new String[] { "" };
 		LocalDateTime startTime = task.getStartDateTime();
 		LocalDateTime endTime = task.getEndDateTime(); // search in between
 														// startTime and endTime
@@ -119,8 +95,8 @@ public class SearchTool {
 		searchResult = filterByTime(taskList, startTime, endTime);
 		if (category != null)
 			searchResult = filterByCategory(searchResult, category.split(" "));
-		if (priority != null)
-			searchResult = filterByPriority(searchResult, priority.split(" "));
+		if (!priority.equals("normal"))
+			searchResult = filterByPriority(searchResult, priority);
 		searchResult = filterByKeywords(searchResult, words);
 
 		return displaySearch(searchResult);
@@ -174,18 +150,15 @@ public class SearchTool {
 	}
 
 	private ArrayList<TaskData> filterByPriority(ArrayList<TaskData> taskList,
-			String[] _priority) {
+			String _priority) {
 		ArrayList<TaskData> searchResult = new ArrayList<TaskData>();
-		List<String> _prior = Arrays.asList(_priority);
-		if (_prior.isEmpty())
-			return taskList;
-		else {
-			for (TaskData t : taskList) {
-				if (_prior.contains(t.getPriority()))
-					searchResult.add(t);
-			}
-			return searchResult;
+
+		for (TaskData t : taskList) {
+			if (t.getPriority().contains(_priority))
+				searchResult.add(t);
 		}
+		return searchResult;
+
 	}
 
 	private ArrayList<TaskData> filterByKeywords(ArrayList<TaskData> taskList,

@@ -161,7 +161,7 @@ public class Logic {
 				actionList.push(new ActionEntry(action, null));
 			return isSuccessful;
 		case "delete":
-			isSuccessful = deleteTask(toTaskData(task));
+			isSuccessful = deleteTask(toTaskData(task), false);
 			if (isSuccessful)
 				actionList.push(new ActionEntry(action, null));
 			return isSuccessful;
@@ -180,7 +180,7 @@ public class Logic {
 			isSuccessful = search(task);
 			return isSuccessful;
 		case "mark":
-			isSuccessful = markAsDone(task);
+			isSuccessful = markAsDone(task, false);
 			if (isSuccessful)
 				actionList.push(new ActionEntry(action, null));
 			return isSuccessful;
@@ -231,11 +231,11 @@ public class Logic {
 
 	// delete a task described by content
 	// @author A0112066U
-	private boolean deleteTask(TaskData task) {
+	private boolean deleteTask(TaskData task, boolean unredo) {
 
 		String content = task.getContent();
 		if (isInteger(content))
-			deleteIndex(Integer.parseInt(content));
+			deleteIndex(Integer.parseInt(content), unredo);
 		if (content == null || content.isEmpty()) {
 			return false;
 		}
@@ -246,7 +246,7 @@ public class Logic {
 			TaskData toDelete = null;
 			LocalDateTime st = task.getStartDateTime();
 			LocalDateTime et = task.getEndDateTime();
-			if (st != null || et != null) {
+			if (unredo || st != null || et != null) {
 				DateInfo d = new DateInfo(st, et);
 				toDelete = toDeleteList.get(d);
 				if (isSuspendedAction) {
@@ -315,14 +315,14 @@ public class Logic {
 	}
 
 	// @author A0112066U
-	private void deleteIndex(int index) {
+	private void deleteIndex(int index, boolean unredo) {
 		int size = currentDisplayedTask.size();
 		if (index < 1 || index > size) {
 			System.out.print("Error-----------");
 			return;
 		} else {
 			TaskData task = currentDisplayedTask.get(index - 1);
-			deleteTask(task);
+			deleteTask(task, unredo);
 		}
 	}
 
@@ -344,11 +344,11 @@ public class Logic {
 		case "add":
 			return addTask(_task);
 		case "delete":
-			return deleteTask(_task);
+			return deleteTask(_task, true);
 		case "modify":
 			return modifyTask(task, t);
 		case "mark":
-			return markAsDone(task);
+			return markAsDone(task, true);
 		}
 		return false;
 	}
@@ -392,7 +392,7 @@ public class Logic {
 
 	// @author A0112066U
 	private boolean undoAdd(Action done) {
-		boolean isSuccessful = deleteTask(toTaskData(done.getTask()));
+		boolean isSuccessful = deleteTask(toTaskData(done.getTask()), true);
 		if (isSuccessful)
 			redoList.push(new ActionEntry(done, null));
 		else
@@ -603,32 +603,58 @@ public class Logic {
 
 	// mark as done
 	// @author A0112066U
-	private boolean markAsDone(Task _task) {
+	private boolean markAsDone(Task _task, boolean unredo) {
 		boolean isSuccessful = false;
 		String content = _task.getContent();
 		HashMap<DateInfo, TaskData> _taskToEdit = taskIdentifier.get(content);
 		TaskData task = null;
 		LocalDateTime st = _task.getStartDateTime();
 		LocalDateTime et = _task.getEndDateTime();
-		if (st != null || et != null) {
+		if (unredo || st != null || et != null) {
 			DateInfo d = new DateInfo(st, et);
 			task = _taskToEdit.get(d);
-			suspendingAction = null;
-			isSuspendedAction = false;
-		} else {
-			task = searchTool.findTaskByContentandDate(toTaskData(_task),
-					_taskToEdit);
-			if (task.getContent().equals("xxxxxxxxxxxxxxxxxxxx")) {
-				suspendingAction = action;
-				isSuspendedAction = true;
-				return false;
-			} else {
+			if (isSuspendedAction) {
 				suspendingAction = null;
 				isSuspendedAction = false;
 			}
+		} else {
+
+			if (isSuspendedAction) {
+				DateInfo d = new DateInfo(st, et);
+				task = _taskToEdit.get(d);
+				suspendingAction = null;
+				isSuspendedAction = false;
+			} else {
+				task = searchTool.findTaskByContentandDate(toTaskData(_task),
+						_taskToEdit);
+				if (task.getContent().equals("xxxxxxxxxxxxxxxxxxxx")) {
+					if (isSuspendedAction) {
+						suspendingAction = null;
+						isSuspendedAction = false;
+					} else {
+						suspendingAction = action;
+						isSuspendedAction = true;
+					}
+					return false;
+
+				}
+			}
+
 		}
 		if (task != null) {
-			deleteTask(task);
+			if (_taskToEdit.size() == 1)
+				taskIdentifier.remove(content);
+			else {
+				DateInfo d = new DateInfo(task.getStartDateTime(),
+						task.getEndDateTime());
+
+				_taskToEdit.remove(d);
+
+			}
+			taskList.remove(task);
+			if (currentDisplayedTask.contains(task)) {
+				currentDisplayedTask.remove(task);
+			}
 			String s = task.getStartDateTime() + "" + task.getEndDateTime();
 			completedTaskIdentifier.put(s, task);
 			completedTask.add(task);
@@ -678,7 +704,7 @@ public class Logic {
 
 	// return data to show to UI
 	// @author A0112066U
-	public ArrayList<DisplayedEntry> getTodayTask() throws IOException, ParseException {
+	public ArrayList<DisplayedEntry> getTasksToCome() throws IOException, ParseException {
 		LocalDateTime now = LocalDateTime.now();
 		int dateToday = now.getDayOfMonth();
 		int monthToday = now.getMonthValue();
@@ -836,6 +862,8 @@ public class Logic {
 		}
 		return dataToShow();
 	}
+	
+	
 
 	// This function check whether a string provided is an integer
 	private static boolean isInteger(String index) {

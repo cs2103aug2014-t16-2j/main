@@ -593,7 +593,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		}
 		try {
 			int row=0;		
-			for (Logic.DisplayedEntry t : logic.getTodayTask()) {
+			for (Logic.DisplayedEntry t : logic.getTasksToCome()) {
 				if (t.getPriority() != null)
 					displayTodayTableDTM.setValueAt(t.getPriority(),row,1);
 				if (t.getCategory() != null)
