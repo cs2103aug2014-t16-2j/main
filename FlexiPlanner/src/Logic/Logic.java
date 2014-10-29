@@ -681,7 +681,7 @@ public class Logic {
 
 	// return data to show to UI
 	// @author A0112066U
-	public ArrayList<DisplayedEntry> getTodayTask() throws IOException, ParseException {
+	public ArrayList<DisplayedEntry> getTaskToCome() throws IOException, ParseException {
 		LocalDateTime now = LocalDateTime.now();
 		int dateToday = now.getDayOfMonth();
 		int monthToday = now.getMonthValue();
