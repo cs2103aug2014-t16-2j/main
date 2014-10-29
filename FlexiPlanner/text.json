@@ -159,6 +159,22 @@
       "endDateTime": "2014-10-30T23:59:59",
       "taskId": "2014103001182519052",
       "content": "finish homework cs2103"
+    },
+    {
+      "startDateTime": "2014-11-01T00:00",
+      "category": null,
+      "priority": null,
+      "endDateTime": "2014-11-01T23:59:59",
+      "taskId": "2014103002391196843",
+      "content": "nearbytask"
+    },
+    {
+      "startDateTime": "2014-10-31T13:00",
+      "category": null,
+      "priority": null,
+      "endDateTime": "2014-10-31T14:00",
+      "taskId": "2014103002432106448",
+      "content": "a"
     }
   ]
 }
