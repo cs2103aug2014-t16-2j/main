@@ -22,6 +22,7 @@ public class TaskData {
 	private static int id = 10;
 	
 	private Reminder reminder;
+	private LocalDateTime remindDateTime;
 	
 	/** Constructor Method **/
 	
@@ -77,6 +78,10 @@ public class TaskData {
 		return taskId;
 	}
 	
+	public LocalDateTime getRemindDateTime() {
+		return remindDateTime;
+	}
+	
 	public Reminder getReminder() {
 		return reminder;
 	}
@@ -107,13 +112,21 @@ public class TaskData {
 		this.taskId = taskId;
 	}
 	
-	public void setReminder(final LocalDateTime dateTime) {
-		this.reminder = new Reminder(dateTime, this.content);
-		reminder.start();
+	public void setRemindDateTime(LocalDateTime remindDateTime) {
+		this.remindDateTime = remindDateTime;
+	}
+	
+	public void setReminder() {
+		if (remindDateTime != null) {
+			this.reminder = new Reminder(this.remindDateTime, this.content);
+			reminder.start();
+		}
 	}
 	
 	public void clearReminder() {
-		reminder.stop();
+		if (remindDateTime != null) {
+			reminder.stop();
+		}
 	}
 	
 	/** Other Methods **/
