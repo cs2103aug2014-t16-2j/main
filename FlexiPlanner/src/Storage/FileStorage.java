@@ -3,7 +3,10 @@ package Storage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.io.FilenameUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
@@ -19,16 +22,17 @@ import org.json.simple.parser.ParseException;
 
 public class FileStorage implements Storage {
 	
-	private final String ERROR_IO = "IO Error!\n";
-	private final String ERROR_PARSE = "Parse Error!\n";
-	private final String ERROR_INVALID_FILE_NAME = "Invalid file name!\n";
-	private final String ERROR_NULL_LIST = "List cannot be null!\n";
-	private final String ERROR_NOT_SETUP_YET = "File record not found! Setup database first!\n";
+	private final String ERROR_IO = "IO Error!";
+	private final String ERROR_PARSE = "Parse Error!";
+	private final String ERROR_INVALID_FILE_NAME = "Invalid file name!";
+	private final String ERROR_NULL_LIST = "List cannot be null!";
+	private final String ERROR_NOT_SETUP_YET = "File record not found! Setup database first!";
 	
-	private final String INFO_FILE_ALD_EXISTS = "File exists!\n";
-	private final String INFO_FILE_CREATED = "Database setup completed for : ";
+	private final String INFO_FILE_ALD_EXISTS = "File exists!";
 	
-	private final String NEXT_LINE = "\n";
+	private final String FILE_NAME_PATTERN = "^[\\w,\\s-]+$";
+	private final String VALID_EXTENSION_TASKS_FILE = "json";
+	private final String VALID_EXTENSION_NORMAL_FILE = "txt";
 	
 	private List<String> path;
 	
@@ -58,25 +62,24 @@ public class FileStorage implements Storage {
 	public boolean setupDatabase(final String filePath) {
 		boolean isSetup = false;
 		
-		if (manager.isValidFileName(filePath)) {
+		if (isValidFileName(filePath)) {
 			try {
 				isSetup = manager.create(filePath);
 				if (isSetup) {
 					path.add(filePath);
-					report(INFO_FILE_CREATED + filePath + NEXT_LINE);
 				}
 				else {
-					report(INFO_FILE_ALD_EXISTS);
+					reportError(INFO_FILE_ALD_EXISTS);
 					path.add(filePath);
 				}
 			} catch (IOException e) {
-				report(ERROR_IO);
+				reportError(ERROR_IO);
 				return false;
 			}
 		}
 		else {
 			isSetup = false;
-			report(ERROR_INVALID_FILE_NAME);
+			reportError(ERROR_INVALID_FILE_NAME);
 		}
 		
 		return isSetup;
@@ -89,12 +92,12 @@ public class FileStorage implements Storage {
 		boolean isSaveSuccess = false;
 		
 		if (path.isEmpty() || !path.contains(filePath)) {
-			report(ERROR_NOT_SETUP_YET);
+			reportError(ERROR_NOT_SETUP_YET);
 			return isSaveSuccess;
 		}
 		
 		if (taskList == null) {
-			report(ERROR_NULL_LIST);
+			reportError(ERROR_NULL_LIST);
 			return isSaveSuccess;
 		}
 		
@@ -107,7 +110,7 @@ public class FileStorage implements Storage {
 			manager.writeInJsonFormat(filePath, jObjToSave, false);
 			isSaveSuccess = true;	
 		} catch (IOException e) {
-			report(ERROR_IO);
+			reportError(ERROR_IO);
 			isSaveSuccess = false;
 		}
 		
@@ -119,7 +122,7 @@ public class FileStorage implements Storage {
 		ArrayList<TaskData> tasksToReturn = new ArrayList<TaskData>();
 		
 		if (path.isEmpty() || !path.contains(filePath)) {
-			report(ERROR_NOT_SETUP_YET);
+			reportError(ERROR_NOT_SETUP_YET);
 			return tasksToReturn;
 		}
 		
@@ -134,10 +137,10 @@ public class FileStorage implements Storage {
 			tasksToReturn = converter.jsonArrToTasks(jArr);
 			
 		} catch (IOException e) {
-			report(ERROR_IO);
+			reportError(ERROR_IO);
 			tasksToReturn.clear();
 		} catch (ParseException pe) {
-			report(ERROR_PARSE);
+			reportError(ERROR_PARSE);
 			tasksToReturn.clear();
 		}
 		
@@ -149,7 +152,7 @@ public class FileStorage implements Storage {
 		boolean isSaveSuccess = false;
 		
 		if (path.isEmpty() || !path.contains(filePath)) {
-			report(ERROR_NOT_SETUP_YET);
+			reportError(ERROR_NOT_SETUP_YET);
 			return isSaveSuccess;
 		}
 		
@@ -165,7 +168,7 @@ public class FileStorage implements Storage {
 			
 			isSaveSuccess = true;
 		} catch (IOException e) {
-			report(ERROR_IO);
+			reportError(ERROR_IO);
 			isSaveSuccess = false;
 		}
 		
@@ -177,7 +180,7 @@ public class FileStorage implements Storage {
 		ArrayList<String> categories = new ArrayList<String>();
 		
 		if (path.isEmpty() || !path.contains(filePath)) {
-			report(ERROR_NOT_SETUP_YET);
+			reportError(ERROR_NOT_SETUP_YET);
 			return categories;
 		}
 		
@@ -188,14 +191,30 @@ public class FileStorage implements Storage {
 			
 			categories = manager.read(filePath);
 		} catch (IOException e) {
-			report(ERROR_IO);
+			reportError(ERROR_IO);
 			categories.clear();
 		}
 		
 		return categories;
 	}
 	
-	private void report(final String toReport) {
-		System.out.print(toReport);
+	private boolean isValidFileName(final String filePath) {
+		if (filePath == null) {
+			return false;
+		}
+		
+		if (!FilenameUtils.getExtension(filePath).equalsIgnoreCase(VALID_EXTENSION_TASKS_FILE) &&
+			!FilenameUtils.getExtension(filePath).equalsIgnoreCase(VALID_EXTENSION_NORMAL_FILE)) {
+			return false;
+		}
+		
+		Pattern pattern = Pattern.compile(FILE_NAME_PATTERN);
+		Matcher matcher = pattern.matcher(FilenameUtils.getBaseName(filePath));
+		
+		return matcher.matches();
+	}
+	
+	private void reportError(final String err) {
+		System.out.println(err);
 	}
 }

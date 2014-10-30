@@ -12,10 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.apache.commons.io.FilenameUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -28,10 +25,6 @@ import org.json.simple.parser.ParseException;
  */
 
 public class FileManager {
-	
-	private final String FILE_NAME_PATTERN = "^[\\w,\\s-]+$";
-	private final String VALID_EXTENSION_TASKS_FILE = "json";
-	private final String VALID_EXTENSION_NORMAL_FILE = "txt";
 	
 	public boolean create(String filePath) throws IOException {
 		boolean isCreated = false;
@@ -81,22 +74,6 @@ public class FileManager {
 		return listToReturn;
 	}
 	
-	public boolean isValidFileName(final String filePath) {
-		if (filePath == null) {
-			return false;
-		}
-		
-		if (!FilenameUtils.getExtension(filePath).equalsIgnoreCase(VALID_EXTENSION_TASKS_FILE) &&
-			!FilenameUtils.getExtension(filePath).equalsIgnoreCase(VALID_EXTENSION_NORMAL_FILE)) {
-			return false;
-		}
-		
-		Pattern pattern = Pattern.compile(FILE_NAME_PATTERN);
-		Matcher matcher = pattern.matcher(FilenameUtils.getBaseName(filePath));
-		
-		return matcher.matches();
-	}
-	
 	public void copy(String from, String to) throws IOException, FileNotFoundException {
 		InputStream is = new FileInputStream(new File(from));
 		OutputStream os = new FileOutputStream(new File(to));
@@ -119,6 +96,11 @@ public class FileManager {
 	
 	public void clear(String filePath) throws FileNotFoundException, IOException {
 		write(filePath, "", false);
+	}
+	
+	public String[] listFilesIn(String folderPath) throws FileNotFoundException {
+		File dir = new File(folderPath);
+		return dir.list();
 	}
 	
 	public boolean isEmptyFile(String filePath) throws IOException {
