@@ -794,7 +794,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 			schedulerFrame.setVisible(true);
 			schedulerFrame.setExtendedState(JFrame.NORMAL);
 			break;
-		case KeyEvent.VK_C :
+		case KeyEvent.VK_M :
 			schedulerFrame.setVisible(false);
 			break;
 		case KeyEvent.VK_E :
