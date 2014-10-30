@@ -20,6 +20,9 @@ import javax.swing.JLabel;
 
 
 public class ReminderPopup {
+	
+	private static int counter = 0;
+	
 	private float[] hsbvals = {0, 0, 0};
 
 	public ReminderPopup(final String content) {
@@ -52,10 +55,16 @@ public class ReminderPopup {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				frame.dispose();
+				counter--;
 			}
 		});
 		
-		frame.setLocation((int) (GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().getWidth() - 300), 30);
+		counter++;
+		if (counter == 7) {
+			counter = 1;
+		}
+		
+		frame.setLocation((int) (GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().getWidth() - 300), 30 + (((counter-1) * 110)));
 		frame.setAlwaysOnTop(true);
 		frame.setVisible(true);
 
