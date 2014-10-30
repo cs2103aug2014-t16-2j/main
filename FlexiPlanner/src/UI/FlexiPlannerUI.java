@@ -120,7 +120,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		schedulerPanel = new JPanel(null);
 
 		schedulerFrame.getContentPane().add(schedulerPanel);// add panel to frame
-		
+
 		displaytaskTable=new JTable(new DefaultTableModel(dummyData, columnNames){
 			public boolean isCellEditable(int rowIndex, int mColIndex) {
 				return false;
@@ -191,7 +191,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 
 		displayTaskLabel = new JLabel();
 		displayTaskLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		displayTaskLabel.setForeground(Color.RED);
+		displayTaskLabel.setForeground(Color.BLUE);
 		displayTaskLabel.setBorder(BorderFactory.createCompoundBorder(border, 
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		displayTaskLabel.setText("Tasks");
@@ -219,6 +219,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		showUserRecentAddedTaskCommand.setForeground(Color.CYAN);
 		showUserRecentAddedTaskCommand.setBackground(Color.BLUE);
 		showUserRecentAddedTaskCommand.setText("");
+		showUserRecentAddedTaskCommand.setAutoscrolls(false);
 		showUserRecentAddedTaskCommand.setLineWrap(true);
 		showUserRecentAddedTaskCommand.setEditable(false);
 
@@ -265,7 +266,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		inputCommand.setBackground(Color.WHITE);
 		inputCommand.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		inputCommand.setBounds(10, 540, 880, 46);
-		
+
 		//add components to panel
 		schedulerPanel.add(displayedMonth);
 		schedulerPanel.add(displayedYear);
@@ -320,7 +321,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 				switch (key){
 				case KeyEvent.VK_ENTER: 
 					String userCommand = inputCommand.getText();
-					if (userCommand.startsWith("exit")) {
+					if (userCommand.toLowerCase().startsWith("exit")) {
 						inputCommand.setText("");
 						commandFeedback.setText("");
 						getJFrame().setVisible(false);
@@ -338,20 +339,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 					}
 					inputCommand.setText("");
 					showCategory.setText(logic.getCategory());
-					try {
-						showUserRecentAddedTaskCommand.setText(logic.getData(userCommand));
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (ParseException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					refreshTasksTableForDisplay();//refresh displayTasksTable
-					showUserGuidePane.setCollapsed(true);
-					showUserRecentAddedTaskCollapsePane.setCollapsed(true);
-					showTasksCollapsePane.setCollapsed(true);
-					showTasksCollapsePane.setCollapsed(false);
+					refreshTasksTableForDisplay(userCommand);//refresh displayTasksTable
 					refreshCalendar(currentDisplayedMonth, currentDisplayedYear);
 					break;
 				case KeyEvent.VK_F1:
@@ -375,7 +363,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 					showTasksCollapsePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F3:
-					refreshTasksTableForDisplay();//refresh displayTasksTable
+					refreshTasksTableForDisplay("");//refresh displayTasksTable
 					showTasksCollapsePane.setCollapsed(false);
 					showUserRecentAddedTaskCollapsePane.setCollapsed(true);
 					showUserGuidePane.setCollapsed(true);
@@ -486,34 +474,20 @@ public class FlexiPlannerUI implements HotKeyListener {
 	}
 
 	//@author A0111770R
-	private void refreshTasksTableForDisplay() {
-
+	private void refreshTasksTableForDisplay(String userCommand) {
 		// Clear table
 		for (int i = 0; i < displayTasksTableDTM.getRowCount(); i++) {
 			for (int j = 0; j < displayTasksTableDTM.getColumnCount(); j++) {
 				displayTasksTableDTM.setValueAt("", i, j);
 			}
 		}
-		int row=0;
-		for (Logic.DisplayedEntry t : logic.getOverdue()) {
+		if(userCommand.toLowerCase().startsWith("search")||userCommand.toLowerCase().startsWith("show")){
+				;
+		}else{
+
+			int row=0;
+			for (Logic.DisplayedEntry t : logic.getOverdue()) {
 				displayTasksTableDTM.setValueAt(row+1, row, 0);			
-			if (t.getPriority() != null)
-				displayTasksTableDTM.setValueAt(t.getPriority(),row,1);
-			if (t.getCategory() != null)
-				displayTasksTableDTM.setValueAt(t.getCategory(),row,2);
-			displayTasksTableDTM.setValueAt(t.getContent(),row,3);
-			if (t.getStartDateTime() != null)
-				displayTasksTableDTM.setValueAt(t.getStartDateTime(),row,4);
-			if (t.getEndDateTime() != null)
-				displayTasksTableDTM.setValueAt(t.getEndDateTime(),row,5);
-			overDueRow=row;
-			row++;
-			if(row==50){break;}
-		}
-		try {
-			for (Logic.DisplayedEntry t : logic.getTaskToCome()) {
-				if(row==50){break;}
-				displayTasksTableDTM.setValueAt(row+1, row, 0);
 				if (t.getPriority() != null)
 					displayTasksTableDTM.setValueAt(t.getPriority(),row,1);
 				if (t.getCategory() != null)
@@ -523,20 +497,37 @@ public class FlexiPlannerUI implements HotKeyListener {
 					displayTasksTableDTM.setValueAt(t.getStartDateTime(),row,4);
 				if (t.getEndDateTime() != null)
 					displayTasksTableDTM.setValueAt(t.getEndDateTime(),row,5);
+				overDueRow=row;
 				row++;
 				if(row==50){break;}
 			}
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (ParseException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			try {
+				for (Logic.DisplayedEntry t : logic.getTaskToCome()) {
+					if(row==50){break;}
+					displayTasksTableDTM.setValueAt(row+1, row, 0);
+					if (t.getPriority() != null)
+						displayTasksTableDTM.setValueAt(t.getPriority(),row,1);
+					if (t.getCategory() != null)
+						displayTasksTableDTM.setValueAt(t.getCategory(),row,2);
+					displayTasksTableDTM.setValueAt(t.getContent(),row,3);
+					if (t.getStartDateTime() != null)
+						displayTasksTableDTM.setValueAt(t.getStartDateTime(),row,4);
+					if (t.getEndDateTime() != null)
+						displayTasksTableDTM.setValueAt(t.getEndDateTime(),row,5);
+					row++;
+					if(row==50){break;}
+				}
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (ParseException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
-
 		displaytaskTable.setDefaultRenderer(displaytaskTable.getColumnClass(0),
 				new TasksTableRenderer());// using Calendar1Renderer class to set
-		
+
 	}
 	class TasksTableRenderer extends DefaultTableCellRenderer {
 		public Component getTableCellRendererComponent(JTable table,
@@ -544,7 +535,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 				int column) {
 			super.getTableCellRendererComponent(table, value, selected,
 					focused, row, column);
-			
+
 			if (row <= overDueRow) {
 				setBackground(Color.RED);
 			} else { 
@@ -559,7 +550,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		}
 	}// end of class TasksTableRenderer
 
-	
+
 	//@author A0111770R
 	private void refreshCalendar(int month, int year) {
 
@@ -604,7 +595,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 				new Calendar1Renderer());// using Calendar1Renderer class to set
 		// table display
 	}// end of refreshCalendar method
-	
+
 	// class Calendar1Renderer used for editting how things are displayed
 	//@author A0111770R
 	class Calendar1Renderer extends DefaultTableCellRenderer {
