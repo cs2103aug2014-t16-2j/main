@@ -17,7 +17,7 @@ import Parser.*;
 
 public class Logic {
 
-	private String command;
+	private Command command;
 	private Task task;
 
 	private HashMap<String, HashMap<DateInfo, TaskData>> taskIdentifier;
@@ -160,50 +160,50 @@ public class Logic {
 	}
 
 	// @author A0112066U
-	private boolean executeCommand(String command, Task task)
+	private boolean executeCommand(Command command, Task task)
 			throws IOException, ParseException {
 		boolean isSuccessful;
 		switch (command) {
-		case "add":
+		case ADD :
 			isSuccessful = addTask(toTaskData(task));
 			if (isSuccessful)
 				actionList.push(new ActionEntry(action, null));
 			return isSuccessful;
-		case "delete":
+		case DELETE:
 			isSuccessful = deleteTask(toTaskData(task), false);
 			if (isSuccessful)
 				actionList.push(new ActionEntry(action, null));
 			return isSuccessful;
-		case "modify":
+		case MODIFY:
 			isSuccessful = modifyTask(task, null);
 			if (isSuccessful)
 				actionList.push(entry);
 			return isSuccessful;
-		case "undo":
+		case UNDO:
 			isSuccessful = undo();
 			return isSuccessful;
-		case "redo":
+		case REDO:
 			isSuccessful = redo();
 			return isSuccessful;
-		case "search":
+		case SEARCH:
 			isSuccessful = search(task);
 			return isSuccessful;
-		case "mark":
+		case MARK:
 			isSuccessful = markAsDone(task, false);
 			if (isSuccessful)
 				actionList.push(new ActionEntry(action, null));
 			return isSuccessful;
-		case "block":
+		case BLOCK:
 			isSuccessful = block(toTaskData(task));
 			if (isSuccessful)
 				actionList.push(new ActionEntry(action, null));
 			return isSuccessful;
-		case "unblock":
+		case UNBLOCK:
 			isSuccessful = unblock(toTaskData(task));
 			if (isSuccessful)
 				actionList.push(new ActionEntry(action, null));
 			return isSuccessful;
-		case "exit":
+		case EXIT:
 			return exit();
 		default:
 			return false;
@@ -319,7 +319,7 @@ public class Logic {
 				t.setStartDateTime(toDelete.getStartDateTime());
 				t.setEndDateTime(toDelete.getEndDateTime());
 				t.setPriority(toDelete.getPriority());
-				action = new Action("delete", t);
+				action = new Action(Command.DELETE, t);
 			} else {
 				return false;
 			}
@@ -357,21 +357,21 @@ public class Logic {
 		Task t = ae.getTask();
 		actionList.push(ae);
 
-		String command = done.getCommand();
+		Command command = done.getCommand();
 		Task task = done.getTask();
 		TaskData _task = toTaskData(task);
 		switch (command) {
-		case "add":
+		case ADD:
 			return addTask(_task);
-		case "delete":
+		case DELETE:
 			return deleteTask(_task, true);
-		case "modify":
+		case MODIFY:
 			return modifyTask(task, t);
-		case "mark":
+		case MARK:
 			return markAsDone(task, true);
-		case "block":
+		case BLOCK:
 			return block(_task);
-		case "unblock":
+		case UNBLOCK:
 			return unblock(_task);
 		}
 		
@@ -386,24 +386,24 @@ public class Logic {
 		}
 		ActionEntry x = actionList.pop();
 		Action done = x.getAction();
-		String command = done.getCommand();
+		Command command = done.getCommand();
 		switch (command) {
-		case "add":
+		case ADD:
 			isSuccessful = undoAdd(done);
 			break;
-		case "delete":
+		case DELETE:
 			isSuccessful = undoDelete(done);
 			break;
-		case "modify":
+		case MODIFY:
 			isSuccessful = undoModify(done, x.getTask());
 			break;
-		case "mark":
+		case MARK:
 			isSuccessful = undoMark(done);
 			break;
-		case "block":
+		case BLOCK:
 			isSuccessful = undoBlock(done);
 			break;
-		case "unblock":
+		case UNBLOCK:
 			isSuccessful = undoUnblock(done);
 			break;
 		}
@@ -609,7 +609,7 @@ public class Logic {
 			_listTaskToEdit.remove(new DateInfo(oldStartTime, oldEndTime));
 			_listTaskToEdit.put(new DateInfo(newStartTime, newEndTime),
 					taskToModify);
-			action = new Action("modify", _task);
+			action = new Action(Command.MODIFY, _task);
 			entry = new ActionEntry(action, t);
 
 		} else {
