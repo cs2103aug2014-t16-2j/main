@@ -46,38 +46,34 @@ import Logic.*;
 public class FlexiPlannerUI implements HotKeyListener {
 	private JLabel displayedMonth, displayedYear;
 	private JLabel showUserGuideLabel;
-	private JLabel tasksToComeLabel;
-	private JLabel overDueTaskLabel;
-	private JLabel showUserExecutedCommandLabel;
+	private JLabel displayTaskLabel;
+	private JLabel showUserRecentAddedTaskLabel;
 	private JLabel showCategoryLabel;
 	private JPanel schedulerPanel;
 	private JButton prevMonth, nextMonth;
 	private JTable calendar1;
-	private JTable displayOverDueTable;
-	private JTable displayTasksToComeTable;
+	private JTable displaytaskTable;
 	private DefaultTableModel calendar2;
-	private DefaultTableModel displayOverDueTableDTM;
-	private DefaultTableModel displayTaskToComeTableDTM;
+	private DefaultTableModel displayTasksTableDTM;
 	private Border border;
 	private JXCollapsiblePane showUserGuidePane;
-	private JXCollapsiblePane showOverDueCollapsePane;
-	private JXCollapsiblePane taskToComeCollapsePane;
-	private JXCollapsiblePane showUserExecutedCommandCollapsePane;
-	private JTextArea showUserExecutedCommand;
+	private JXCollapsiblePane showTasksCollapsePane;
+	private JXCollapsiblePane showUserRecentAddedTaskCollapsePane;
+	private JTextArea showUserRecentAddedTaskCommand;
 	private JTextArea commandFeedback;
 	private JTextArea showCategory;
 	private JTextArea showUserGuide;
 	private JScrollPane calendarScroll;
 	private JScrollPane showUserGuideScroll;
-	private JScrollPane showTasksToComeScroll;
-	private JScrollPane showOverDueTasksScroll;
-	private JScrollPane showUserExecutedCommandScroll;
+	private JScrollPane showTasksScroll;
+	private JScrollPane showUserRecentAddedTaskScroll;
 	private JScrollPane showCategoryScroll;
 	private JComboBox selectYear;
 	private static JFrame schedulerFrame;
 	private JTextField inputCommand;
 	private int actualYear, actualMonth, actualDay, currentDisplayedYear,
 	currentDisplayedMonth;
+	private int overDueRow;
 	private String[] months = { "January", "February", "March", "April", "May",
 			"June", "July", "August", "September", "October", "November",
 	"December" };
@@ -124,29 +120,14 @@ public class FlexiPlannerUI implements HotKeyListener {
 		schedulerPanel = new JPanel(null);
 
 		schedulerFrame.getContentPane().add(schedulerPanel);// add panel to frame
-		
-		displayOverDueTable=new JTable(new DefaultTableModel(dummyData, columnNames){
+
+		displaytaskTable=new JTable(new DefaultTableModel(dummyData, columnNames){
 			public boolean isCellEditable(int rowIndex, int mColIndex) {
 				return false;
 			}});
-		displayOverDueTableDTM = (DefaultTableModel) displayOverDueTable.getModel();
-		displayOverDueTableDTM.setRowCount(100);
-		setDisplayOverDueTableProperties();//Set table restrictions
-		for (int i = 0; i < displayOverDueTableDTM.getRowCount(); i++) {//set index
-			displayOverDueTableDTM.setValueAt(i+1, i, 0);			
-		}
-
-		displayTasksToComeTable=new JTable(new DefaultTableModel(dummyData, columnNames){
-			public boolean isCellEditable(int rowIndex, int mColIndex) {
-				return false;
-			}});		
-		displayTaskToComeTableDTM = (DefaultTableModel) displayTasksToComeTable.getModel();
-		displayTaskToComeTableDTM.setRowCount(100);
-		setDisplayTaskToComeTableProperties();//Set table restrictions
-		for (int i = 0; i < displayTaskToComeTableDTM.getRowCount(); i++) {//set index
-			displayTaskToComeTableDTM.setValueAt(i+1, i, 0);			
-		}
-
+		displayTasksTableDTM = (DefaultTableModel) displaytaskTable.getModel();
+		displayTasksTableDTM.setRowCount(50);
+		setDisplayTaskTableProperties();//Set table restrictions
 
 		// get calendar format
 		GregorianCalendar cal = new GregorianCalendar();
@@ -208,66 +189,49 @@ public class FlexiPlannerUI implements HotKeyListener {
 		showUserGuidePane.setPreferredSize(new Dimension(570,495));			
 		showUserGuidePane.setCollapsed(false);
 
-		overDueTaskLabel = new JLabel();
-		overDueTaskLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		overDueTaskLabel.setForeground(Color.RED);
-		overDueTaskLabel.setBorder(BorderFactory.createCompoundBorder(border, 
+		displayTaskLabel = new JLabel();
+		displayTaskLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
+		displayTaskLabel.setForeground(Color.BLUE);
+		displayTaskLabel.setBorder(BorderFactory.createCompoundBorder(border, 
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-		overDueTaskLabel.setText("Overdue tasks");
+		displayTaskLabel.setText("Tasks");
 
-		showOverDueTasksScroll = new JScrollPane (displayOverDueTable, 
+		showTasksScroll = new JScrollPane (displaytaskTable, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		showOverDueTasksScroll.setPreferredSize(new Dimension(570,460));
+		showTasksScroll.setPreferredSize(new Dimension(570,460));
 
-		showOverDueCollapsePane = new JXCollapsiblePane();
-		showOverDueCollapsePane.add(overDueTaskLabel);
-		showOverDueCollapsePane.add(showOverDueTasksScroll);
-		showOverDueCollapsePane.setCollapsed(true);
-		showOverDueCollapsePane.setBounds(320, 4, 570, 0);
-		showOverDueCollapsePane.setPreferredSize(new Dimension(570,495));
+		showTasksCollapsePane = new JXCollapsiblePane();
+		showTasksCollapsePane.add(displayTaskLabel);
+		showTasksCollapsePane.add(showTasksScroll);
+		showTasksCollapsePane.setCollapsed(true);
+		showTasksCollapsePane.setBounds(320, 4, 570, 0);
+		showTasksCollapsePane.setPreferredSize(new Dimension(570,495));
 
-		tasksToComeLabel = new JLabel();
-		tasksToComeLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		tasksToComeLabel.setForeground(Color.MAGENTA);
-		tasksToComeLabel.setBorder(BorderFactory.createCompoundBorder(border, 
+		showUserRecentAddedTaskLabel = new JLabel();
+		showUserRecentAddedTaskLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
+		showUserRecentAddedTaskLabel.setForeground(Color.BLUE);
+		showUserRecentAddedTaskLabel.setBorder(BorderFactory.createCompoundBorder(border, 
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-		tasksToComeLabel.setText("Tasks To Come");
+		showUserRecentAddedTaskLabel.setText("Recent Added Tasks");
 
-		showTasksToComeScroll = new JScrollPane (displayTasksToComeTable, 
+		showUserRecentAddedTaskCommand = new JTextArea();
+		showUserRecentAddedTaskCommand.setFont(new Font("Times New Roman", Font.BOLD, 14));
+		showUserRecentAddedTaskCommand.setForeground(Color.CYAN);
+		showUserRecentAddedTaskCommand.setBackground(Color.BLUE);
+		showUserRecentAddedTaskCommand.setText("");
+		showUserRecentAddedTaskCommand.setAutoscrolls(false);
+		showUserRecentAddedTaskCommand.setLineWrap(true);
+		showUserRecentAddedTaskCommand.setEditable(false);
+
+		showUserRecentAddedTaskScroll = new JScrollPane (showUserRecentAddedTaskCommand, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		showTasksToComeScroll.setPreferredSize(new Dimension(570,460));
+		showUserRecentAddedTaskScroll.setColumnHeaderView(showUserRecentAddedTaskLabel);
 
-		taskToComeCollapsePane = new JXCollapsiblePane();
-		taskToComeCollapsePane.add(tasksToComeLabel);
-		taskToComeCollapsePane.add(showTasksToComeScroll);
-		taskToComeCollapsePane.setCollapsed(true);
-		taskToComeCollapsePane.setBounds(320, 4, 570, 0);
-		taskToComeCollapsePane.setPreferredSize(new Dimension(570,495));
-
-		showUserExecutedCommandLabel = new JLabel();
-		showUserExecutedCommandLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		showUserExecutedCommandLabel.setForeground(Color.BLUE);
-		showUserExecutedCommandLabel.setBorder(BorderFactory.createCompoundBorder(border, 
-				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-		showUserExecutedCommandLabel.setText("Executed Commands");
-
-		showUserExecutedCommand = new JTextArea();
-		showUserExecutedCommand.setFont(new Font("Times New Roman", Font.BOLD, 14));
-		showUserExecutedCommand.setForeground(Color.CYAN);
-		showUserExecutedCommand.setBackground(Color.BLUE);
-		showUserExecutedCommand.setText("");
-		showUserExecutedCommand.setLineWrap(true);
-		showUserExecutedCommand.setEditable(false);
-
-		showUserExecutedCommandScroll = new JScrollPane (showUserExecutedCommand, 
-				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		showUserExecutedCommandScroll.setColumnHeaderView(showUserExecutedCommandLabel);
-
-		showUserExecutedCommandCollapsePane = new JXCollapsiblePane();
-		showUserExecutedCommandCollapsePane.setContentPane(showUserExecutedCommandScroll);
-		showUserExecutedCommandCollapsePane.setCollapsed(true);
-		showUserExecutedCommandCollapsePane.setBounds(320, 4, 570, 0);
-		showUserExecutedCommandCollapsePane.setPreferredSize(new Dimension(570,495));			
+		showUserRecentAddedTaskCollapsePane = new JXCollapsiblePane();
+		showUserRecentAddedTaskCollapsePane.setContentPane(showUserRecentAddedTaskScroll);
+		showUserRecentAddedTaskCollapsePane.setCollapsed(true);
+		showUserRecentAddedTaskCollapsePane.setBounds(320, 4, 570, 0);
+		showUserRecentAddedTaskCollapsePane.setPreferredSize(new Dimension(570,495));			
 
 		showCategoryLabel = new JLabel();
 		showCategoryLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
@@ -302,7 +266,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		inputCommand.setBackground(Color.WHITE);
 		inputCommand.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		inputCommand.setBounds(10, 540, 880, 46);
-		
+
 		//add components to panel
 		schedulerPanel.add(displayedMonth);
 		schedulerPanel.add(displayedYear);
@@ -311,9 +275,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 		schedulerPanel.add(nextMonth);
 		schedulerPanel.add(calendarScroll);
 		schedulerPanel.add(showUserGuidePane);
-		schedulerPanel.add(showOverDueCollapsePane);
-		schedulerPanel.add(taskToComeCollapsePane);
-		schedulerPanel.add(showUserExecutedCommandCollapsePane);
+		schedulerPanel.add(showTasksCollapsePane);
+		schedulerPanel.add(showUserRecentAddedTaskCollapsePane);
 		schedulerPanel.add(showCategoryScroll);
 		schedulerPanel.add(commandFeedback);
 		schedulerPanel.add(inputCommand);
@@ -340,26 +303,25 @@ public class FlexiPlannerUI implements HotKeyListener {
 		nextMonth.addActionListener(new Next_Action());
 		selectYear.addActionListener(new Years_Action());
 		inputCommand.requestFocusInWindow();
-		executeKeyAction(commandFeedback,showUserExecutedCommand,showCategory,
-				showOverDueTasksScroll,showTasksToComeScroll,showUserExecutedCommandScroll,showCategoryScroll
-				,showUserGuidePane,showOverDueCollapsePane,taskToComeCollapsePane,showUserExecutedCommandCollapsePane);
+		executeKeyAction(commandFeedback,showUserRecentAddedTaskCommand,showCategory,
+				showTasksScroll,showUserRecentAddedTaskScroll,showCategoryScroll
+				,showUserGuidePane,showTasksCollapsePane,showUserRecentAddedTaskCollapsePane);
 	}
 	//@author A0111770R
 	private void executeKeyAction(final JTextArea commandFeedback,
-			final JTextArea showUserExecutedCommand,final JTextArea showCategory, 
-			final JScrollPane showOverDueTasksScroll, final JScrollPane showTasksToComeScroll ,final JScrollPane showUserExecutedCommandScroll,final JScrollPane showCategoryScroll
-			,final JXCollapsiblePane showUserGuidePane,final JXCollapsiblePane showOverDueCollapsePane,final JXCollapsiblePane taskToComeCollapsePane,final JXCollapsiblePane showUserExecutedCommandCollapsePane) {
+			final JTextArea showUserRecentAddedTaskCommand,final JTextArea showCategory, 
+			final JScrollPane showTasksScroll, final JScrollPane showUserRecentAddedTaskScroll,final JScrollPane showCategoryScroll
+			,final JXCollapsiblePane showUserGuidePane,final JXCollapsiblePane showTasksCollapsePane, final JXCollapsiblePane showUserRecentAddedTaskCollapsePane) {
 		inputCommand.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				int key = e.getKeyCode();
-				int overDueScrollPane = showOverDueTasksScroll.getVerticalScrollBar().getModel().getValue();
-				int valueTaskToComeScrollPane = showTasksToComeScroll.getVerticalScrollBar().getModel().getValue();
-				int valueCustomTextArea=showUserExecutedCommandScroll.getVerticalScrollBar().getModel().getValue();
+				int tasksScrollPane = showTasksScroll.getVerticalScrollBar().getModel().getValue();
+				int valueCustomTextArea=showUserRecentAddedTaskScroll.getVerticalScrollBar().getModel().getValue();
 				int valueCategoryScrollPane = showCategoryScroll.getVerticalScrollBar().getModel().getValue();
 				switch (key){
 				case KeyEvent.VK_ENTER: 
 					String userCommand = inputCommand.getText();
-					if (userCommand.startsWith("exit")) {
+					if (userCommand.toLowerCase().startsWith("exit")) {
 						inputCommand.setText("");
 						commandFeedback.setText("");
 						getJFrame().setVisible(false);
@@ -377,32 +339,18 @@ public class FlexiPlannerUI implements HotKeyListener {
 					}
 					inputCommand.setText("");
 					showCategory.setText(logic.getCategory());
-					try {
-						showUserExecutedCommand.setText(logic.getData(userCommand));
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (ParseException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					showUserGuidePane.setCollapsed(true);
-					showOverDueCollapsePane.setCollapsed(true);
-					taskToComeCollapsePane.setCollapsed(true);
-					showUserExecutedCommandCollapsePane.setCollapsed(true);
-					showUserExecutedCommandCollapsePane.setCollapsed(false);
+					refreshTasksTableForDisplay(userCommand);//refresh displayTasksTable
 					refreshCalendar(currentDisplayedMonth, currentDisplayedYear);
 					break;
 				case KeyEvent.VK_F1:
 					showUserGuidePane.setCollapsed(false);						
-					showUserExecutedCommandCollapsePane.setCollapsed(true);
-					showOverDueCollapsePane.setCollapsed(true);
-					taskToComeCollapsePane.setCollapsed(true);
+					showUserRecentAddedTaskCollapsePane.setCollapsed(true);
+					showTasksCollapsePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F2:
 					userCommand = inputCommand.getText();
 					try {
-						showUserExecutedCommand.setText(logic.getData(userCommand));
+						showUserRecentAddedTaskCommand.setText(logic.getData(userCommand));
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -410,47 +358,32 @@ public class FlexiPlannerUI implements HotKeyListener {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-					showUserExecutedCommandCollapsePane.setCollapsed(false);
+					showUserRecentAddedTaskCollapsePane.setCollapsed(false);
 					showUserGuidePane.setCollapsed(true);
-					taskToComeCollapsePane.setCollapsed(true);
-					showOverDueCollapsePane.setCollapsed(true);
+					showTasksCollapsePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F3:
-					refreshOverDueTableForDisplay();//refresh displayOverDueTable
-					showOverDueCollapsePane.setCollapsed(false);
-					showUserExecutedCommandCollapsePane.setCollapsed(true);
-					taskToComeCollapsePane.setCollapsed(true);
-					showUserGuidePane.setCollapsed(true);
-					break;
-				case KeyEvent.VK_F4:
-					refreshTaskToComeTableForDisplay();//refresh displayTaskToComTable	
-					taskToComeCollapsePane.setCollapsed(false);
-					showUserExecutedCommandCollapsePane.setCollapsed(true);
-					showOverDueCollapsePane.setCollapsed(true);
+					refreshTasksTableForDisplay("");//refresh displayTasksTable
+					showTasksCollapsePane.setCollapsed(false);
+					showUserRecentAddedTaskCollapsePane.setCollapsed(true);
 					showUserGuidePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F5:
-					showOverDueTasksScroll.getVerticalScrollBar().getModel().setValue(overDueScrollPane-5);
+					showTasksScroll.getVerticalScrollBar().getModel().setValue(tasksScrollPane-5);
 					break;
 				case KeyEvent.VK_F6:
-					showOverDueTasksScroll.getVerticalScrollBar().getModel().setValue(overDueScrollPane+5);
+					showTasksScroll.getVerticalScrollBar().getModel().setValue(tasksScrollPane+5);
 					break;
 				case KeyEvent.VK_F7:
-					showTasksToComeScroll.getVerticalScrollBar().getModel().setValue(valueTaskToComeScrollPane-5);
-					break;
+					showUserRecentAddedTaskScroll.getVerticalScrollBar().getModel().setValue(valueCustomTextArea-5);
+					break;					
 				case KeyEvent.VK_F8:
-					showTasksToComeScroll.getVerticalScrollBar().getModel().setValue(valueTaskToComeScrollPane+5);
+					showUserRecentAddedTaskScroll.getVerticalScrollBar().getModel().setValue(valueCustomTextArea+5);
 					break;
 				case KeyEvent.VK_F9:
-					showUserExecutedCommandScroll.getVerticalScrollBar().getModel().setValue(valueCustomTextArea-5);
-					break;					
-				case KeyEvent.VK_F10:
-					showUserExecutedCommandScroll.getVerticalScrollBar().getModel().setValue(valueCustomTextArea+5);
-					break;
-				case KeyEvent.VK_F11:
 					showCategoryScroll.getVerticalScrollBar().getModel().setValue(valueCategoryScrollPane-5);
 					break;					
-				case KeyEvent.VK_F12:
+				case KeyEvent.VK_F10:
 					showCategoryScroll.getVerticalScrollBar().getModel().setValue(valueCategoryScrollPane+5);
 					break;
 				case KeyEvent.VK_PAGE_UP:
@@ -469,14 +402,6 @@ public class FlexiPlannerUI implements HotKeyListener {
 					break;
 				}
 
-			}//@author A0111770R
-			public void keyReleased(KeyEvent e) {
-				int key = e.getKeyCode();				
-				if (key == KeyEvent.VK_ENTER) {
-					;
-				} else {
-					commandFeedback.setText(inputCommand.getText());
-				}
 			}
 		});
 	}
@@ -513,117 +438,142 @@ public class FlexiPlannerUI implements HotKeyListener {
 				+ "\n2: 'ctrl+m': Minimise FlexiPlanner to system tray"
 				+ "\n3: 'ctrl+e': Exit FlexiPlanner"
 				+ "\n4: 'f1': Guide"
-				+ "\n5: 'f2': Executed commands"
-				+ "\n6: 'f3': Over due tasks"
-				+ "\n7: 'f4': Tasks to come"
-				+ "\n8: 'f5': Scroll up over due tasks"
-				+ "\n9: 'f6': Scroll down over due tasks"
-				+ "\n10: 'f7': Scroll up tasks to come tasks"
-				+ "\n11: 'f8': Scroll down tasks to come tasks"
-				+ "\n12: 'f9': Scroll up Executed commands"
-				+ "\n13: 'f10': Scroll down Executed commands"
-				+ "\n14: 'f11': Scroll up category"
-				+ "\n15: 'f12': Scroll down category"
-				+ "\n16: 'pgup': Previous month"
-				+ "\n17: 'pgdw': Next month";
+				+ "\n5: 'f2': Recent added tasks"
+				+ "\n6: 'f3': Tasks"
+				+ "\n7: 'f5': Scroll up Tasks"
+				+ "\n8: 'f6': Scroll down Tasks"
+				+ "\n9: 'f7': Scroll up Recent added tasks"
+				+ "\n10: 'f8': Scroll down Recent added tasks"
+				+ "\n11: 'f9': Scroll up category"
+				+ "\n12: 'f10': Scroll down category"
+				+ "\n13: 'pgup': Previous month"
+				+ "\n14: 'pgdw': Next month";
 		return guide;
 	}
 	//@author A0111770R
-	private void setDisplayOverDueTableProperties() {
-		displayOverDueTable.setModel(displayOverDueTableDTM);
-		displayOverDueTable.setCellSelectionEnabled(false);
-		displayOverDueTable.setRowHeight(20);
-		displayOverDueTable.getColumnModel().getColumn(0).setPreferredWidth(30);
-		displayOverDueTable.getColumnModel().getColumn(1).setPreferredWidth(55);
-		displayOverDueTable.getColumnModel().getColumn(2).setPreferredWidth(65);
-		displayOverDueTable.getColumnModel().getColumn(3).setPreferredWidth(210);
-		displayOverDueTable.getColumnModel().getColumn(3).setMaxWidth(210);
-		displayOverDueTable.getColumnModel().getColumn(4).setPreferredWidth(100);
-		displayOverDueTable.getColumnModel().getColumn(5).setPreferredWidth(100);
-		displayOverDueTable.getColumnModel().getColumn(5).setMaxWidth(100);
-		displayOverDueTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-		displayOverDueTable.getTableHeader().setResizingAllowed(false);
-		displayOverDueTable.getTableHeader().setReorderingAllowed(false);
-		displayOverDueTable.setColumnSelectionAllowed(false);
-		displayOverDueTable.setRowSelectionAllowed(false);
+	private void setDisplayTaskTableProperties() {
+		displaytaskTable.setModel(displayTasksTableDTM);
+		displaytaskTable.setCellSelectionEnabled(false);
+		displaytaskTable.setRowHeight(20);
+		displaytaskTable.getColumnModel().getColumn(0).setPreferredWidth(30);
+		displaytaskTable.getColumnModel().getColumn(1).setPreferredWidth(55);
+		displaytaskTable.getColumnModel().getColumn(2).setPreferredWidth(65);
+		displaytaskTable.getColumnModel().getColumn(3).setPreferredWidth(210);
+		displaytaskTable.getColumnModel().getColumn(3).setMaxWidth(210);
+		displaytaskTable.getColumnModel().getColumn(4).setPreferredWidth(100);
+		displaytaskTable.getColumnModel().getColumn(5).setPreferredWidth(100);
+		displaytaskTable.getColumnModel().getColumn(5).setMaxWidth(100);
+		displaytaskTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+		displaytaskTable.getTableHeader().setResizingAllowed(false);
+		displaytaskTable.getTableHeader().setReorderingAllowed(false);
+		displaytaskTable.setColumnSelectionAllowed(false);
+		displaytaskTable.setRowSelectionAllowed(false);
 	}
-	//@author A0111770R
-	private void setDisplayTaskToComeTableProperties(){
-		displayTasksToComeTable.setModel(displayTaskToComeTableDTM);
-		displayTasksToComeTable.setCellSelectionEnabled(false);
-		displayTasksToComeTable.setRowHeight(20);
-		displayTasksToComeTable.getColumnModel().getColumn(0).setPreferredWidth(30);
-		displayTasksToComeTable.getColumnModel().getColumn(1).setPreferredWidth(55);
-		displayTasksToComeTable.getColumnModel().getColumn(2).setPreferredWidth(65);
-		displayTasksToComeTable.getColumnModel().getColumn(3).setPreferredWidth(210);
-		displayTasksToComeTable.getColumnModel().getColumn(3).setMaxWidth(210);
-		displayTasksToComeTable.getColumnModel().getColumn(4).setPreferredWidth(100);
-		displayTasksToComeTable.getColumnModel().getColumn(5).setPreferredWidth(100);
-		displayTasksToComeTable.getColumnModel().getColumn(5).setMaxWidth(100);
-		displayTasksToComeTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-		displayTasksToComeTable.getTableHeader().setResizingAllowed(false);
-		displayTasksToComeTable.getTableHeader().setReorderingAllowed(false);
-		displayTasksToComeTable.setColumnSelectionAllowed(false);
-		displayTasksToComeTable.setRowSelectionAllowed(false);
-	}
-	//@author A0111770R
-	private void refreshOverDueTableForDisplay() {
 
+	//@author A0111770R
+	private void refreshTasksTableForDisplay(String userCommand) {
 		// Clear table
-		for (int i = 0; i < displayOverDueTableDTM.getRowCount(); i++) {
-			for (int j = 1; j < displayOverDueTableDTM.getColumnCount(); j++) {
-				displayOverDueTableDTM.setValueAt("", i, j);
+		for (int i = 0; i < displayTasksTableDTM.getRowCount(); i++) {
+			for (int j = 0; j < displayTasksTableDTM.getColumnCount(); j++) {
+				displayTasksTableDTM.setValueAt("", i, j);
 			}
 		}
-		int row=0;		
-		for (Logic.DisplayedEntry t : logic.getOverdue()) {
-			if (t.getPriority() != null)
-				displayOverDueTableDTM.setValueAt(t.getPriority(),row,1);
-			if (t.getCategory() != null)
-				displayOverDueTableDTM.setValueAt(t.getCategory(),row,2);
-			displayOverDueTableDTM.setValueAt(t.getContent(),row,3);
-			if (t.getStartDateTime() != null)
-				displayOverDueTableDTM.setValueAt(t.getStartDateTime(),row,4);
-			if (t.getEndDateTime() != null)
-				displayOverDueTableDTM.setValueAt(t.getEndDateTime(),row,5);
-			row++;
-			if(row==50){break;}
-		}
-	}
-	//@author A0111770R
-	private void refreshTaskToComeTableForDisplay() {
+		overDueRow=0;
+		if(userCommand.toLowerCase().startsWith("search")||userCommand.toLowerCase().startsWith("show")
+				||userCommand.toLowerCase().startsWith("display")||userCommand.toLowerCase().startsWith("find")){
+				;
+		}else{
 
-		// Clear table
-		for (int i = 0; i < displayTaskToComeTableDTM.getRowCount(); i++) {
-			for (int j = 1; j < displayTaskToComeTableDTM.getColumnCount(); j++) {
-				displayTaskToComeTableDTM.setValueAt("", i, j);
-			}
-		}
-		try {
-			int row=0;		
-
-			for (Logic.DisplayedEntry t : logic.getTaskToCome()) {
+			int row=0;
+			for (Logic.DisplayedEntry t : logic.getOverdue()) {
+				displayTasksTableDTM.setValueAt(row+1, row, 0);			
 				if (t.getPriority() != null)
-					displayTaskToComeTableDTM.setValueAt(t.getPriority(),row,1);
+					displayTasksTableDTM.setValueAt(t.getPriority(),row,1);
 				if (t.getCategory() != null)
-					displayTaskToComeTableDTM.setValueAt(t.getCategory(),row,2);
-				displayTaskToComeTableDTM.setValueAt(t.getContent(),row,3);
-				if (t.getStartDateTime() != null)
-					displayTaskToComeTableDTM.setValueAt(t.getStartDateTime(),row,4);
-				if (t.getEndDateTime() != null)
-					displayTaskToComeTableDTM.setValueAt(t.getEndDateTime(),row,5);
+					displayTasksTableDTM.setValueAt(t.getCategory(),row,2);
+				displayTasksTableDTM.setValueAt(t.getContent(),row,3);
+				if (t.getStartDateTime() != null){
+					String startYear=t.getStartDateTime().toString().substring(0, 4);
+					String startMonth=t.getStartDateTime().toString().substring(5, 7);
+					String startDay=t.getStartDateTime().toString().substring(8, 10);
+					String startTime=t.getStartDateTime().toString().substring(11, 16);
+					String getStart=startDay+"/"+startMonth+"/"+startYear+" "+startTime;
+					displayTasksTableDTM.setValueAt(getStart,row,4);
+				}
+				if (t.getEndDateTime() != null){
+					String startYear=t.getEndDateTime().toString().substring(0, 4);
+					String startMonth=t.getEndDateTime().toString().substring(5, 7);
+					String startDay=t.getEndDateTime().toString().substring(8, 10);
+					String startTime=t.getEndDateTime().toString().substring(11, 16);
+					String getEnd=startDay+"/"+startMonth+"/"+startYear+" "+startTime;
+					displayTasksTableDTM.setValueAt(getEnd,row,5);
+				}				
+				overDueRow=row;
 				row++;
 				if(row==50){break;}
 			}
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (ParseException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			try {
+				for (Logic.DisplayedEntry t : logic.getTaskToCome()) {
+					if(row==50){break;}
+					displayTasksTableDTM.setValueAt(row+1, row, 0);
+					if (t.getPriority() != null)
+						displayTasksTableDTM.setValueAt(t.getPriority(),row,1);
+					if (t.getCategory() != null)
+						displayTasksTableDTM.setValueAt(t.getCategory(),row,2);
+					displayTasksTableDTM.setValueAt(t.getContent(),row,3);
+					if (t.getStartDateTime() != null){
+						String startYear=t.getStartDateTime().toString().substring(0, 4);
+						String startMonth=t.getStartDateTime().toString().substring(5, 7);
+						String startDay=t.getStartDateTime().toString().substring(8, 10);
+						String startTime=t.getStartDateTime().toString().substring(11, 16);
+						String getStart=startDay+"/"+startMonth+"/"+startYear+" "+startTime;
+						displayTasksTableDTM.setValueAt(getStart,row,4);
+					}
+					if (t.getEndDateTime() != null){
+						String startYear=t.getEndDateTime().toString().substring(0, 4);
+						String startMonth=t.getEndDateTime().toString().substring(5, 7);
+						String startDay=t.getEndDateTime().toString().substring(8, 10);
+						String startTime=t.getEndDateTime().toString().substring(11, 16);
+						String getEnd=startDay+"/"+startMonth+"/"+startYear+" "+startTime;
+						displayTasksTableDTM.setValueAt(getEnd,row,5);
+					}
+					row++;
+					if(row==50){break;}
+				}
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (ParseException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
+		displaytaskTable.setDefaultRenderer(displaytaskTable.getColumnClass(0),
+				new TasksTableRenderer());// using Calendar1Renderer class to set
 
 	}
+	class TasksTableRenderer extends DefaultTableCellRenderer {
+		public Component getTableCellRendererComponent(JTable table,
+				Object value, boolean selected, boolean focused, int row,
+				int column) {
+			super.getTableCellRendererComponent(table, value, selected,
+					focused, row, column);
+
+			if (row <= overDueRow) {
+				setBackground(Color.RED);
+			} else { 
+				setBackground(Color.WHITE);
+			}
+
+			if (value != null) {
+				;				
+			}
+			setBorder(null);
+			return this;
+		}
+	}// end of class TasksTableRenderer
+
+
 	//@author A0111770R
 	private void refreshCalendar(int month, int year) {
 
@@ -668,7 +618,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 				new Calendar1Renderer());// using Calendar1Renderer class to set
 		// table display
 	}// end of refreshCalendar method
-	
+
 	// class Calendar1Renderer used for editting how things are displayed
 	//@author A0111770R
 	class Calendar1Renderer extends DefaultTableCellRenderer {
