@@ -23,7 +23,6 @@ public class Parser {
 	private final List<String> deleteCommandWords = Arrays.asList("delete", "remove", "clear");
 	private final List<String> searchCommandWords = Arrays.asList("display", "show", "find", "search");
 	private final List<String> blockCommandWords = Arrays.asList("block", "reserve");
-	private final List<String> unblockCommandWords = Arrays.asList("unblock", "unreserve", "free");
 	private final List<String> otherCommandWords = Arrays.asList("exit", "undo", "redo");
 	private final List<String> dayWords = Arrays.asList("today", "tomorrow", "yesterday", "tonight");
 	private final List<String> timeOfDayWords = Arrays.asList("morning", "noon", "afternoon", "evening", "night", "midnight");
@@ -34,7 +33,6 @@ public class Parser {
 	private final List<String> monthWords = Arrays.asList("jan", "january", "feb", "february", "mar", "march", "apr", "april", "may", "jun", "june", "jul", "july", "aug", "august", "sep", "september", "oct", "october", "nov", "november", "dec", "december");
 	private final List<String> ordinalNumWords = Arrays.asList("st", "nd", "rd" ,"th");
 	private final List<String> timeWords = Arrays.asList("am", "pm");
-	private final List<String> priorityWords = Arrays.asList("priority", "important", "unimportant");
 	private final List<String> uselessWords = Arrays.asList("on", "from", "to", "@", "at");
 	private final List<String> markDoneWords = Arrays.asList("complete", "completed", "incomplete", "done", "undone");
 	private final List<String> markDoneKeyWords = Arrays.asList("not", "yet", "to", "be", "has", "been", "is");
@@ -87,12 +85,6 @@ public class Parser {
 				return "block";
 			}
 		}
-		for (String c : unblockCommandWords) {
-			if (words.containsIgnoreCase(c)) {
-				words.removeIgnoreCase(c);
-				return "unblock";
-			}
-		}
 		for (String c : otherCommandWords) {
 			if (words.containsIgnoreCase(c)) {
 				words.removeIgnoreCase(c);
@@ -123,7 +115,6 @@ public class Parser {
 		
 	}
 	
-	//This method creates a Task object with data translated from user input
 	private Task getTask(MyStringList words) {
 		
 		Task t = new Task();
@@ -152,10 +143,7 @@ public class Parser {
 	
 	private void setPriority(MyStringList words, Task t) {
 
-		int priorityLevel = findPriorityLevelWithWord(words);
-		if (priorityLevel == -1) {
-			priorityLevel = findPriorityLevelWithSymbol(words, MAX_PRIORITY_LEVEL);
-		}
+		int priorityLevel = getPriorityLevel(words, MAX_PRIORITY_LEVEL);
 		assert (priorityLevel < 2 && priorityLevel >= 0);
 		switch (priorityLevel) {
 			case 2 :
@@ -170,21 +158,10 @@ public class Parser {
 		
 	}
 	
-	private int findPriorityLevelWithWord(MyStringList words) {
-		
-		for (int index = 0; index < words.size(); index++) {
-			if (priorityWords.contains(words.get(index).toLowerCase())) {
-				return getPriorityLevelWithWord(words, index);
-			}
-		}
-		return -1;
-		
-	}
-	
-	private int findPriorityLevelWithSymbol(MyStringList words, int priorityLevel) {
+	private int getPriorityLevel(MyStringList words, int priorityLevel) {
 		
 		if (priorityLevel == 0) {
-			return -1;
+			return priorityLevel;
 		}
 		String priorityString = "";
 		for (int count = 0; count < priorityLevel; count++) {
@@ -202,7 +179,7 @@ public class Parser {
 				return priorityLevel;
 			}
 		}
-		return findPriorityLevelWithSymbol(words, priorityLevel - 1);
+		return getPriorityLevel(words, priorityLevel - 1);
 		
 	}
 	
@@ -678,62 +655,6 @@ public class Parser {
 			return getTimeWithTimeOfDayWord(word);
 		}
 		return null;
-		
-	}
-	
-	private int getPriorityLevelWithWord(MyStringList words, int index) {
-		
-		int priorityLevel = -1;
-		String word = words.get(index);
-		if (word.equalsIgnoreCase("priority") && index - 1 >= 0) {
-			word = words.get(index - 1);
-			switch (word) {
-				case "high" :
-					words.remove(index);
-					index--;
-					if (!words.get(index - 1).equalsIgnoreCase("very")) {
-						priorityLevel = 1;
-						break;
-					}
-				case "top" :
-					words.remove(index);
-					index--;
-					priorityLevel = 2;
-					break;
-				case "normal" :
-				case "low" :
-				case "lowest" :
-					words.remove(index);
-					index--;
-					priorityLevel = 0;
-			}
-			if (priorityLevel > -1) {
-				words.remove(index);
-			}
-		} else if (word.equalsIgnoreCase("important")) {
-			if (index - 1 >= 0) {
-				word = words.get(index - 1);
-			}
-			switch (word) {
-				case "very" :
-					words.remove(index);
-					index--;
-					priorityLevel = 2;
-					break;
-				case "not" :
-					words.remove(index);
-					index--;
-					priorityLevel = 0;
-					break;
-				default :
-					priorityLevel = 1;
-			}
-			words.remove(index);
-		} else if (word.equalsIgnoreCase("unimportant")) {
-			priorityLevel = 0;
-			words.remove(index);
-		}
-		return priorityLevel;
 		
 	}
 	
