@@ -42,7 +42,7 @@ public class Tray {
 	/** Global Shortcuts **/
 	private static Provider keyShortCuts = null;
 	private String openShortCut = "control O";
-	private String closeShortCut = "control C";
+	private String closeShortCut = "control M";
 	private String exitShortCut = "control E";
 	
 	public Tray(FlexiPlannerUI instance, JFrame frame) {

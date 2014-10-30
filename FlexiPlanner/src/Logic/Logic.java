@@ -19,7 +19,7 @@ public class Logic {
 
 	private String command;
 	private Task task;
-	private ArrayList<TaskData> taskList;
+
 	private HashMap<String, HashMap<DateInfo, TaskData>> taskIdentifier;
 	private HashMap<String, TaskData> completedTaskIdentifier;
 	private Stack<ActionEntry> actionList; // for undo and redo
@@ -32,11 +32,13 @@ public class Logic {
 	private SearchTool searchTool;
 
 	private ArrayList<TaskData> currentDisplayedTask;
-
+	private ArrayList<TaskData> taskList;
 	private ArrayList<TaskData> completedTask;
-	//private Storage storerForCompleted; // Don't call to file storage, call
-										// storage
+	private ArrayList<TaskData> blockedList;
+	// private Storage storerForCompleted; // Don't call to file storage, call
+	// storage
 
+	String blockedPath = "blocked.json";
 	String filePath = "text.json";
 	String completedpath = "completed.json";
 	boolean isSuspendedAction = false;
@@ -47,15 +49,17 @@ public class Logic {
 
 	public Logic() throws FileNotFoundException, IOException, ParseException {
 		storer = FileStorage.getInstance();
-		// Sorry Duy! I applied singleton pattern for now so I can modify storage without the need to modify 
+		// Sorry Duy! I applied singleton pattern for now so I can modify
+		// storage without the need to modify
 		// logic all the way. Hope you understand.
-		// Because i feel not good modifying your part although I just wanna make your work easier. 
-		//storerForCompleted = new FileStorage(); // For
-												// compeleted
-												// task
+		// Because i feel not good modifying your part although I just wanna
+		// make your work easier.
+		// storerForCompleted = new FileStorage(); // For
+		// compeleted
+		// task
 		storer.setupDatabase(filePath); // act upon changes made in storage
 		storer.setupDatabase(completedpath); // act upon changes
-															// made in storage
+		storer.setupDatabase(blockedPath);		// made in storage
 
 		command = null;
 		task = null;
@@ -115,8 +119,8 @@ public class Logic {
 						t);
 			}
 		}
-		completedTask = new ArrayList<TaskData>(
-				storer.loadTasks(completedpath));
+		completedTask = new ArrayList<TaskData>(storer.loadTasks(completedpath));
+		blockedList = storer.loadTasks(blockedPath);
 
 	}
 
@@ -190,17 +194,17 @@ public class Logic {
 				actionList.push(new ActionEntry(action, null));
 			return isSuccessful;
 		case "block":
-			isSuccessful = block();
+			isSuccessful = block(toTaskData(task));
 			if (isSuccessful)
 				actionList.push(new ActionEntry(action, null));
 			return isSuccessful;
 		case "unblock":
-			isSuccessful = unblock();
+			isSuccessful = unblock(toTaskData(task));
 			if (isSuccessful)
 				actionList.push(new ActionEntry(action, null));
 			return isSuccessful;
 		case "exit":
-			exit();
+			return exit();
 		default:
 			return false;
 		}
@@ -218,6 +222,7 @@ public class Logic {
 		if (taskIdentifier.containsKey(content)) {
 			HashMap<DateInfo, TaskData> map = taskIdentifier.get(content);
 			TaskData t = searchTool.findExactTask(task, map);
+			
 			// this is to determine whether the task has been added
 			if (t != null) {
 				System.out.println("Task has been created");
@@ -364,7 +369,12 @@ public class Logic {
 			return modifyTask(task, t);
 		case "mark":
 			return markAsDone(task, true);
+		case "block":
+			return block(_task);
+		case "unblock":
+			return unblock(_task);
 		}
+		
 		return false;
 	}
 
@@ -389,6 +399,12 @@ public class Logic {
 			break;
 		case "mark":
 			isSuccessful = undoMark(done);
+			break;
+		case "block":
+			isSuccessful = undoBlock(done);
+			break;
+		case "unblock":
+			isSuccessful = undoUnblock(done);
 			break;
 		}
 		return isSuccessful;
@@ -448,6 +464,31 @@ public class Logic {
 		return isSuccessful;
 
 	}
+	
+	private boolean undoBlock(Action done) {
+		Task task = done.getTask();
+		boolean isSuccessful = false;
+		isSuccessful = unblock(toTaskData(task));
+		if (isSuccessful) {
+			redoList.push(new ActionEntry(done, null));
+		} else {
+			actionList.push(new ActionEntry(done, null));
+		}
+		return isSuccessful;
+	}
+	
+	private boolean undoUnblock(Action done) {
+		Task task = done.getTask();
+		boolean isSuccessful = false;
+		isSuccessful = block(toTaskData(task));
+		if (isSuccessful) {
+			redoList.push(new ActionEntry(done, null));
+		} else {
+			actionList.push(new ActionEntry(done, null));
+		}
+		return isSuccessful;
+	}
+	
 
 	// modify a task
 	// @author A0112066U
@@ -696,7 +737,7 @@ public class Logic {
 
 	// exit
 	// @author A0112066U
-	private void exit() {
+	private boolean exit() {
 		// store when exit
 		try {
 			saveData();
@@ -704,15 +745,118 @@ public class Logic {
 		} catch (IOException e) {
 			System.out.println("Error while saving data");
 		}
-		//System.exit(0);
+		return true;
+		// System.exit(0);
 
 	}
-	
-	private boolean block() {
+
+	private boolean block(TaskData task) {
+
+		LocalDateTime start = task.getStartDateTime();
+		LocalDateTime end = task.getEndDateTime();
+		if (start == null || end == null) {
+			return false;
+		}
+		blockedList.add(task);
+		
+		ArrayList<TaskData> copy = new ArrayList<TaskData>(blockedList);
+
+		for (TaskData _task : copy) {
+
+			if (_task == task)
+				continue;
+			LocalDateTime _start = _task.getStartDateTime();
+			LocalDateTime _end = _task.getEndDateTime();
+			
+
+			if (isClash(start, end, _start, _end)
+					|| isSequential(start, end, _start, _end)) {
+				_start = chooseStart(start, _start);
+				_end = chooseEnd(end, _end);
+				task.setStartDateTime(_start);
+				task.setEndDateTime(_end);
+				blockedList.remove(_task);
+			}
+
+		}
+		
+		storer.saveTasks(blockedPath, blockedList);
+
 		return true;
 	}
-	private boolean unblock() {
+
+	private boolean unblock(TaskData task) {
+		LocalDateTime start = task.getStartDateTime();
+		LocalDateTime end = task.getEndDateTime();
+		if (start == null || end == null) {
+			return false;
+		}
+		ArrayList<TaskData> copy = new ArrayList<TaskData>(blockedList);
+
+		for (TaskData _task : copy) {
+			LocalDateTime _start = _task.getStartDateTime();
+			LocalDateTime _end = _task.getEndDateTime();
+			if (isClash(start, end, _start, _end)) {
+				if (start.isBefore(_start) && end.isAfter(_end)) {
+					blockedList.remove(_task);
+					continue;
+				}
+				if (_start.isBefore(start) && _end.isAfter(end)) {
+					_task.setEndDateTime(start);
+					blockedList.remove(_task);
+					_task.setEndDateTime(start);
+					TaskData t = new TaskData();
+					t.setStartDateTime(end);
+					t.setEndDateTime(_end);
+					blockedList.add(0, t);
+					blockedList.add(0, _task);
+					continue;
+				}
+				if (start.isBefore(_start) && end.isBefore(_end)) {
+					blockedList.remove(_task);
+					_task.setStartDateTime(end);
+					blockedList.add(_task);
+					continue;
+				}
+				if (_start.isBefore(start) && _end.isBefore(end)) {
+					blockedList.remove(_task);
+					_task.setEndDateTime(start);
+					blockedList.add(_task);
+					continue;
+				}
+				
+			}
+		}
+		storer.saveTasks(blockedPath, blockedList);
+		return true;
+	}
+
+	private LocalDateTime chooseStart(LocalDateTime start1, LocalDateTime start2) {
+		return (start1.isBefore(start2)) ? start1 : start2;
+
+	}
+
+	private LocalDateTime chooseEnd(LocalDateTime end1, LocalDateTime end2) {
+		return (end1.isAfter(end2)) ? end1 : end2;
+	}
+
+	private boolean isClash(LocalDateTime start1, LocalDateTime end1,
+			LocalDateTime start2, LocalDateTime end2) {
+
+		if (start1.isEqual(start2) || end1.isEqual(end2))
+			return true;
+		if (start1.isAfter(start2) && start1.isBefore(end2)
+				|| start2.isAfter(start1) && start2.isBefore(end1))
+			return true;
+		if (start1.isAfter(start2) && end1.isBefore(end2)
+				|| start2.isAfter(start1) && end2.isBefore(end1))
+			return true;
 		return false;
+	}
+
+	private boolean isSequential(LocalDateTime start1, LocalDateTime end1,
+			LocalDateTime start2, LocalDateTime end2) {
+		return start1.isEqual(end2) || start2.isEqual(end1);
 	}
 
 	// @author A0112066U
@@ -727,7 +871,8 @@ public class Logic {
 	// return data to show to UI
 	// @author A0112066U
 
-	public ArrayList<DisplayedEntry> getTaskToCome() throws IOException, ParseException {
+	public ArrayList<DisplayedEntry> getTaskToCome() throws IOException,
+			ParseException {
 		LocalDateTime now = LocalDateTime.now();
 		int dateToday = now.getDayOfMonth();
 		int monthToday = now.getMonthValue();
@@ -748,7 +893,7 @@ public class Logic {
 			}
 		}
 		return taskToShow;
-		
+
 	}
 
 	// @author A0112066U
@@ -777,7 +922,7 @@ public class Logic {
 					text += "\n    From: " + s;
 				} catch (java.text.ParseException e) {
 				}
-				
+
 			}
 			if (t.getEndDateTime() != null) {
 				Date d;
@@ -876,10 +1021,10 @@ public class Logic {
 		}
 		return overdue;
 	}
-	
-	// return category 
+
+	// return category
 	// @author A0112066U
-	
+
 	public String getCategory() {
 		ArrayList<String> category = new ArrayList<String>();
 		for (TaskData _task : taskList) {
@@ -905,12 +1050,11 @@ public class Logic {
 		}
 		return dataToShow();
 	}
-	
+
 	public void clear() throws IOException {
 		taskList.clear();
 		saveData();
 	}
-	
 
 	// This function check whether a string provided is an integer
 	private static boolean isInteger(String index) {
@@ -982,14 +1126,14 @@ public class Logic {
 			return task;
 		}
 	}
-	
+
 	public static class DisplayedEntry {
-		private String content; 
+		private String content;
 		private String category;
 		private String priority;
 		private LocalDateTime startDateTime;
 		private LocalDateTime endDateTime;
-		
+
 		public DisplayedEntry(TaskData t) {
 			this.setContent(t.getContent());
 			this.setCategory(t.getCategory());
@@ -997,26 +1141,27 @@ public class Logic {
 			this.setStartDateTime(t.getStartDateTime());
 			this.setEndDateTime(t.getEndDateTime());
 		}
+
 		public String getContent() {
 			return content;
 		}
-		
+
 		public String getCategory() {
 			return category;
 		}
-		
+
 		public String getPriority() {
 			return priority;
 		}
-		
+
 		public LocalDateTime getStartDateTime() {
 			return startDateTime;
 		}
-		
+
 		public LocalDateTime getEndDateTime() {
 			return endDateTime;
 		}
-		
+
 		public void setContent(String content) {
 			this.content = content;
 		}
