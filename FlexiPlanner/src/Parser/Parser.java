@@ -18,29 +18,29 @@ import java.util.List;
 
 public class Parser {
 
-	private final List<String> addCommandWords = Arrays.asList("add", "schedule", "create", "remember");
-	private final List<String> modifyCommandWords = Arrays.asList("modify", "edit", "reschedule", "change");
-	private final List<String> deleteCommandWords = Arrays.asList("delete", "remove", "clear");
-	private final List<String> searchCommandWords = Arrays.asList("display", "show", "find", "search");
-	private final List<String> blockCommandWords = Arrays.asList("block", "reserve");
-	private final List<String> unblockCommandWords = Arrays.asList("unblock", "unreserve", "free");
-	private final List<String> otherCommandWords = Arrays.asList("exit", "undo", "redo");
-	private final List<String> dayWords = Arrays.asList("today", "tomorrow", "yesterday", "tonight");
-	private final List<String> timeOfDayWords = Arrays.asList("morning", "noon", "afternoon", "evening", "night", "midnight");
-	private final List<String> dayOfWeekWords = Arrays.asList("monday","mon", "tuesday", "tue", "wednesday", "wed", "thursday", "thu", "friday", "fri", "saturday", "sat", "sunday", "sun");
-	private final List<String> datePeriodWords = Arrays.asList("day", "week", "month", "year");
-	private final List<String> keyWords = Arrays.asList("this", "next", "last");
-	private final List<String> moreKeyWords = Arrays.asList("after", "before", "by");
-	private final List<String> monthWords = Arrays.asList("jan", "january", "feb", "february", "mar", "march", "apr", "april", "may", "jun", "june", "jul", "july", "aug", "august", "sep", "september", "oct", "october", "nov", "november", "dec", "december");
-	private final List<String> ordinalNumWords = Arrays.asList("st", "nd", "rd" ,"th");
-	private final List<String> timeWords = Arrays.asList("am", "pm");
-	private final List<String> priorityWords = Arrays.asList("priority", "important", "unimportant");
-	private final List<String> uselessWords = Arrays.asList("on", "from", "to", "@", "at");
-	private final List<String> markDoneWords = Arrays.asList("complete", "completed", "incomplete", "done", "undone");
-	private final List<String> markDoneKeyWords = Arrays.asList("not", "yet", "to", "be", "has", "been", "is");
-	private final NumberFormat formatter = NumberFormat.getInstance();
-	private final String CATEGORY_SYMBOL = "#";
-	private final String PRIORITY_SYMBOL = "!";
+	private final List<String> KEYWORDS_COMMAND_ADD = Arrays.asList("add", "schedule", "create", "remember");
+	private final List<String> KEYWORDS_COMMAND_MODIFY = Arrays.asList("modify", "edit", "reschedule", "change");
+	private final List<String> KEYWORDS_COMMAND_DELETE = Arrays.asList("delete", "remove", "clear");
+	private final List<String> KEYWORDS_COMMAND_SEARCH = Arrays.asList("display", "show", "find", "search");
+	private final List<String> KEYWORDS_COMMAND_BLOCK = Arrays.asList("block", "reserve");
+	private final List<String> KEYWORDS_COMMAND_UNBLOCK = Arrays.asList("unblock", "unreserve", "free");
+	private final List<String> KEYWORDS_COMMAND_OTHER = Arrays.asList("exit", "undo", "redo");
+	private final List<String> KEYWORDS_DATE_DAY = Arrays.asList("today", "tomorrow", "yesterday", "tonight");
+	private final List<String> KEYWORDS_DATE_DAY_OF_WEEK = Arrays.asList("monday","mon", "tuesday", "tue", "wednesday", "wed", "thursday", "thu", "friday", "fri", "saturday", "sat", "sunday", "sun");
+	private final List<String> KEYWORDS_DATE_PERIOD = Arrays.asList("day", "week", "month", "year");
+	private final List<String> KEYWORDS_DATE_MONTH = Arrays.asList("jan", "january", "feb", "february", "mar", "march", "apr", "april", "may", "jun", "june", "jul", "july", "aug", "august", "sep", "september", "oct", "october", "nov", "november", "dec", "december");
+	private final List<String> KEYWORDS_DATE_ORDINAL_NUMBER = Arrays.asList("st", "nd", "rd" ,"th");
+	private final List<String> KEYWORDS_TIME_OF_DAY = Arrays.asList("morning", "noon", "afternoon", "evening", "night", "midnight");
+	private final List<String> KEYWORDS_TIME = Arrays.asList("am", "pm");
+	private final List<String> KEYWORDS_PRIORITY = Arrays.asList("priority", "important", "unimportant");
+	private final List<String> KEYWORDS_MARK = Arrays.asList("complete", "completed", "incomplete", "done", "undone");
+	private final List<String> SECONDARY_KEYWORDS_DATE = Arrays.asList("this", "next", "last");
+	private final List<String> SECONDARY_KEYWORDS_DATE_TIME = Arrays.asList("after", "before", "by");
+	private final List<String> SECONDARY_KEYWORDS_MARK = Arrays.asList("not", "yet", "to", "be", "has", "been", "is");
+	private final List<String> USELESS_WORDS = Arrays.asList("on", "from", "to", "@", "at");
+	private final NumberFormat FORMATTER = NumberFormat.getInstance();
+	private final String SYMBOL_CATEGORY = "#";
+	private final String SYMBOL_PRIORITY = "!";
 	private final String PRIORITY_VERY_HIGH = "very high";
 	private final String PRIORITY_HIGH = "high";
 	private final String PRIORITY_NORMAL = "normal";
@@ -55,54 +55,61 @@ public class Parser {
 	}
 	
 	//This methods find the word representing a command and returns the command String.
-	private String getCommand(MyStringList words) {
+	private Command getCommand(MyStringList words) {
 		
-		for (String c : addCommandWords) {
+		for (String c : KEYWORDS_COMMAND_ADD) {
 			if (words.containsIgnoreCase(c)) {
 				words.removeIgnoreCase(c);
-				return "add";
+				return Command.ADD;
 			}
 		}
-		for (String c : modifyCommandWords) {
+		for (String c : KEYWORDS_COMMAND_MODIFY) {
 			if (words.containsIgnoreCase(c)) {
 				words.removeIgnoreCase(c);
-				return "modify";
+				return Command.MODIFY;
 			}
 		}
-		for (String c : deleteCommandWords) {
+		for (String c : KEYWORDS_COMMAND_DELETE) {
 			if (words.containsIgnoreCase(c)) {
 				words.removeIgnoreCase(c);
-				return "delete";
+				return Command.DELETE;
 			}
 		}
-		for (String c : searchCommandWords) {
+		for (String c : KEYWORDS_COMMAND_SEARCH) {
 			if (words.containsIgnoreCase(c)) {
 				words.removeIgnoreCase(c);
-				return "search";
+				return Command.SEARCH;
 			}
 		}
-		for (String c : blockCommandWords) {
+		for (String c : KEYWORDS_COMMAND_BLOCK) {
 			if (words.containsIgnoreCase(c)) {
 				words.removeIgnoreCase(c);
-				return "block";
+				return Command.BLOCK;
 			}
 		}
-		for (String c : unblockCommandWords) {
+		for (String c : KEYWORDS_COMMAND_UNBLOCK) {
 			if (words.containsIgnoreCase(c)) {
 				words.removeIgnoreCase(c);
-				return "unblock";
+				return Command.UNBLOCK;
 			}
 		}
-		for (String c : otherCommandWords) {
+		for (String c : KEYWORDS_COMMAND_OTHER) {
 			if (words.containsIgnoreCase(c)) {
 				words.removeIgnoreCase(c);
-				return c;
+				switch (c) {
+					case "undo" :
+						return Command.UNDO;
+					case "redo" :
+						return Command.REDO;
+					case "exit" :
+						return Command.EXIT;
+				}
 			}
 		}
 		if (isMarked(words)) {
-			return "mark";
+			return Command.MARK;
 		}
-		return "add";
+		return Command.ADD;
 		
 	}
 	
@@ -115,7 +122,7 @@ public class Parser {
 		}
 		for (int index = 0; index < words.size(); index++) {
 			String word = words.get(index).toLowerCase();
-			if (markDoneWords.contains(word)) {
+			if (KEYWORDS_MARK.contains(word)) {
 				return true;
 			}
 		}
@@ -141,12 +148,13 @@ public class Parser {
 	private void setCategory(MyStringList words, Task t) {
 		
 		for (String word : words) {
-			if(word.startsWith(CATEGORY_SYMBOL)) {
+			if(word.startsWith(SYMBOL_CATEGORY)) {
 				t.setCategory(word.substring(1));
 				words.remove(words.indexOf(word));
-				break;
+				return;
 			}
 		}
+		t.setCategory("none");
 		
 	}
 	
@@ -173,7 +181,7 @@ public class Parser {
 	private int findPriorityLevelWithWord(MyStringList words) {
 		
 		for (int index = 0; index < words.size(); index++) {
-			if (priorityWords.contains(words.get(index).toLowerCase())) {
+			if (KEYWORDS_PRIORITY.contains(words.get(index).toLowerCase())) {
 				return getPriorityLevelWithWord(words, index);
 			}
 		}
@@ -188,7 +196,7 @@ public class Parser {
 		}
 		String priorityString = "";
 		for (int count = 0; count < priorityLevel; count++) {
-			priorityString += PRIORITY_SYMBOL;
+			priorityString += SYMBOL_PRIORITY;
 		}
 		for (int index = 0; index < words.size(); index++) {
 			String word = words.get(index);
@@ -210,7 +218,7 @@ public class Parser {
 
 		for (int index = 0; index < words.size(); index++) {
 			String word = words.get(index).toLowerCase();
-			if (markDoneWords.contains(word)) {
+			if (KEYWORDS_MARK.contains(word)) {
 				if (word.equals("undone") || word.equals("incomplete")) {
 					t.setDone(false);
 				} else {
@@ -228,7 +236,7 @@ public class Parser {
 		
 		String word = words.get(index).toLowerCase();
 		boolean isDone = t.isDone();
-		while (markDoneKeyWords.contains(word)) {
+		while (SECONDARY_KEYWORDS_MARK.contains(word)) {
 			switch (word) {
 				case "yet" :
 					if (words.get(index - 1).toLowerCase().equals("not")) {
@@ -379,7 +387,7 @@ public class Parser {
 
 		if (index >= 0) {
 			String word = words.get(index).toLowerCase();
-			if (moreKeyWords.contains(word)) {
+			if (SECONDARY_KEYWORDS_DATE_TIME.contains(word)) {
 				return changeDateTimeOfTask(t, words, index);
 			}
 		}
@@ -390,7 +398,7 @@ public class Parser {
 	private LocalDate findDateWithKeyWord(MyStringList words, int index) {
 		
 		LocalDate ld = null;
-		if (keyWords.contains(words.get(index).toLowerCase())) {
+		if (SECONDARY_KEYWORDS_DATE.contains(words.get(index).toLowerCase())) {
 			ld = getDateWithDayOfWeekWord(words, index + 1);
 			switch (words.get(index)) {
 				case "this" :
@@ -457,7 +465,7 @@ public class Parser {
 	
 	private int changeDateTimeWithPeriodWord(Task t, MyStringList words, int index, int multiplier) {
 		
-		if (index >= 0 && datePeriodWords.contains(words.get(index))) {
+		if (index >= 0 && KEYWORDS_DATE_PERIOD.contains(words.get(index))) {
 			String word = words.get(index).toLowerCase();
 			LocalDateTime startDateTime = t.getStartDateTime();
 			LocalDateTime endDateTime = t.getEndDateTime();
@@ -616,7 +624,7 @@ public class Parser {
 		int hrToAdd = 0;
 		boolean noAmPm = true;
 		boolean mayBeTime = false;
-		for (String tw : timeWords) {
+		for (String tw : KEYWORDS_TIME) {
 			if (time.toLowerCase().endsWith(tw)) {
 				noAmPm = false;
 				mayBeTime = true;
@@ -628,7 +636,7 @@ public class Parser {
 			}
 		}
 		if (noAmPm && index + 1 < words.size()) {
-			for (String tw : timeWords) {
+			for (String tw : KEYWORDS_TIME) {
 				if (words.get(index + 1).equalsIgnoreCase(tw)) {
 					mayBeTime = true;
 					if (tw.equals("pm")) {
@@ -661,9 +669,9 @@ public class Parser {
 	private LocalDate findDateWithWord(MyStringList words, int index) {
 		
 		String word = words.get(index).toLowerCase();
-		if (dayWords.contains(word)) {
+		if (KEYWORDS_DATE_DAY.contains(word)) {
 			return getDateWithDayWord(words, index);
-		} else if (dayOfWeekWords.contains(word)){
+		} else if (KEYWORDS_DATE_DAY_OF_WEEK.contains(word)){
 			return getDateWithDayOfWeekWord(words, index);
 		}
 		return null;
@@ -673,7 +681,7 @@ public class Parser {
 	private LocalTime findTimeWithWord(MyStringList words, int index) {
 		
 		String word = words.get(index).toLowerCase();
-		if (timeOfDayWords.contains(word)) {
+		if (KEYWORDS_TIME_OF_DAY.contains(word)) {
 			words.remove(index);
 			return getTimeWithTimeOfDayWord(word);
 		}
@@ -794,7 +802,7 @@ public class Parser {
 	
 	private LocalDate getDateWithPeriodWord(MyStringList words, int index, int multiplier) {
 		
-		if (index < words.size() && datePeriodWords.contains(words.get(index))) {
+		if (index < words.size() && KEYWORDS_DATE_PERIOD.contains(words.get(index))) {
 			switch (words.get(index).toLowerCase()) {
 				case "day" :
 					return LocalDate.now().plusDays(multiplier);
@@ -820,7 +828,7 @@ public class Parser {
 					return num;
 				}
 			} else {
-				for (String onw : ordinalNumWords) {
+				for (String onw : KEYWORDS_DATE_ORDINAL_NUMBER) {
 					if (s.endsWith(onw)) {
 						return getDay(s.substring(0, s.lastIndexOf(onw)));
 					}
@@ -839,7 +847,7 @@ public class Parser {
 				return num;
 			}
 		} else {
-			for (String m : monthWords) {
+			for (String m : KEYWORDS_DATE_MONTH) {
 				if (s.equalsIgnoreCase(m)) {
 					return getNumeric(m);
 				}
@@ -895,7 +903,7 @@ public class Parser {
 	private int removeUselessWord(MyStringList words, int index) {
 		
 		if (index >= 0) {
-			for (String uw : uselessWords) {
+			for (String uw : USELESS_WORDS) {
 				if(words.get(index).equalsIgnoreCase(uw)) {
 					words.remove(index);
 					return 1;
@@ -979,7 +987,7 @@ public class Parser {
 	private boolean isNumeric(String word) {
 		
 		ParsePosition pos = new ParsePosition(0);
-		formatter.parse(word, pos);
+		FORMATTER.parse(word, pos);
 		if (word.length() == pos.getIndex()) {
 			return true;
 		}

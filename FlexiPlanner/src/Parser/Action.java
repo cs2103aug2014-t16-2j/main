@@ -8,17 +8,17 @@ package Parser;
 
 public class Action {
 
-	private String command;
+	private Command command;
 	private Task task;
 
-	public Action(String cmd, Task t) {
+	public Action(Command cmd, Task t) {
 
 		command = cmd;
 		task = t;
 
 	}
 
-	public String getCommand() {
+	public Command getCommand() {
 
 		return command;
 
