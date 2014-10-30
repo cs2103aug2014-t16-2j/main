@@ -48,7 +48,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private JLabel showUserGuideLabel;
 	private JLabel tasksToComeLabel;
 	private JLabel overDueTaskLabel;
-	private JLabel showUserRecentActionLabel;
+	private JLabel showUserRecentAddedTaskLabel;
 	private JLabel showCategoryLabel;
 	private JPanel schedulerPanel;
 	private JButton prevMonth, nextMonth;
@@ -62,8 +62,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private JXCollapsiblePane showUserGuidePane;
 	private JXCollapsiblePane showOverDueCollapsePane;
 	private JXCollapsiblePane taskToComeCollapsePane;
-	private JXCollapsiblePane showUserRecentTaskCollapsePane;
-	private JTextArea showUserRecentActionCommand;
+	private JXCollapsiblePane showUserRecentAddedTaskCollapsePane;
+	private JTextArea showUserRecentAddedTaskCommand;
 	private JTextArea commandFeedback;
 	private JTextArea showCategory;
 	private JTextArea showUserGuide;
@@ -71,7 +71,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private JScrollPane showUserGuideScroll;
 	private JScrollPane showTasksToComeScroll;
 	private JScrollPane showOverDueTasksScroll;
-	private JScrollPane showUserRecentActionScroll;
+	private JScrollPane showUserRecentAddedTaskScroll;
 	private JScrollPane showCategoryScroll;
 	private JComboBox selectYear;
 	private static JFrame schedulerFrame;
@@ -244,30 +244,30 @@ public class FlexiPlannerUI implements HotKeyListener {
 		taskToComeCollapsePane.setBounds(320, 4, 570, 0);
 		taskToComeCollapsePane.setPreferredSize(new Dimension(570,495));
 
-		showUserRecentActionLabel = new JLabel();
-		showUserRecentActionLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		showUserRecentActionLabel.setForeground(Color.BLUE);
-		showUserRecentActionLabel.setBorder(BorderFactory.createCompoundBorder(border, 
+		showUserRecentAddedTaskLabel = new JLabel();
+		showUserRecentAddedTaskLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
+		showUserRecentAddedTaskLabel.setForeground(Color.BLUE);
+		showUserRecentAddedTaskLabel.setBorder(BorderFactory.createCompoundBorder(border, 
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-		showUserRecentActionLabel.setText("Recent Actions");
+		showUserRecentAddedTaskLabel.setText("Recent Added Tasks");
 
-		showUserRecentActionCommand = new JTextArea();
-		showUserRecentActionCommand.setFont(new Font("Times New Roman", Font.BOLD, 14));
-		showUserRecentActionCommand.setForeground(Color.CYAN);
-		showUserRecentActionCommand.setBackground(Color.BLUE);
-		showUserRecentActionCommand.setText("");
-		showUserRecentActionCommand.setLineWrap(true);
-		showUserRecentActionCommand.setEditable(false);
+		showUserRecentAddedTaskCommand = new JTextArea();
+		showUserRecentAddedTaskCommand.setFont(new Font("Times New Roman", Font.BOLD, 14));
+		showUserRecentAddedTaskCommand.setForeground(Color.CYAN);
+		showUserRecentAddedTaskCommand.setBackground(Color.BLUE);
+		showUserRecentAddedTaskCommand.setText("");
+		showUserRecentAddedTaskCommand.setLineWrap(true);
+		showUserRecentAddedTaskCommand.setEditable(false);
 
-		showUserRecentActionScroll = new JScrollPane (showUserRecentActionCommand, 
+		showUserRecentAddedTaskScroll = new JScrollPane (showUserRecentAddedTaskCommand, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		showUserRecentActionScroll.setColumnHeaderView(showUserRecentActionLabel);
+		showUserRecentAddedTaskScroll.setColumnHeaderView(showUserRecentAddedTaskLabel);
 
-		showUserRecentTaskCollapsePane = new JXCollapsiblePane();
-		showUserRecentTaskCollapsePane.setContentPane(showUserRecentActionScroll);
-		showUserRecentTaskCollapsePane.setCollapsed(true);
-		showUserRecentTaskCollapsePane.setBounds(320, 4, 570, 0);
-		showUserRecentTaskCollapsePane.setPreferredSize(new Dimension(570,495));			
+		showUserRecentAddedTaskCollapsePane = new JXCollapsiblePane();
+		showUserRecentAddedTaskCollapsePane.setContentPane(showUserRecentAddedTaskScroll);
+		showUserRecentAddedTaskCollapsePane.setCollapsed(true);
+		showUserRecentAddedTaskCollapsePane.setBounds(320, 4, 570, 0);
+		showUserRecentAddedTaskCollapsePane.setPreferredSize(new Dimension(570,495));			
 
 		showCategoryLabel = new JLabel();
 		showCategoryLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
@@ -313,7 +313,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		schedulerPanel.add(showUserGuidePane);
 		schedulerPanel.add(showOverDueCollapsePane);
 		schedulerPanel.add(taskToComeCollapsePane);
-		schedulerPanel.add(showUserRecentTaskCollapsePane);
+		schedulerPanel.add(showUserRecentAddedTaskCollapsePane);
 		schedulerPanel.add(showCategoryScroll);
 		schedulerPanel.add(commandFeedback);
 		schedulerPanel.add(inputCommand);
@@ -340,21 +340,21 @@ public class FlexiPlannerUI implements HotKeyListener {
 		nextMonth.addActionListener(new Next_Action());
 		selectYear.addActionListener(new Years_Action());
 		inputCommand.requestFocusInWindow();
-		executeKeyAction(commandFeedback,showUserRecentActionCommand,showCategory,
-				showOverDueTasksScroll,showTasksToComeScroll,showUserRecentActionScroll,showCategoryScroll
-				,showUserGuidePane,showOverDueCollapsePane,taskToComeCollapsePane,showUserRecentTaskCollapsePane);
+		executeKeyAction(commandFeedback,showUserRecentAddedTaskCommand,showCategory,
+				showOverDueTasksScroll,showTasksToComeScroll,showUserRecentAddedTaskScroll,showCategoryScroll
+				,showUserGuidePane,showOverDueCollapsePane,taskToComeCollapsePane,showUserRecentAddedTaskCollapsePane);
 	}
 	//@author A0111770R
 	private void executeKeyAction(final JTextArea commandFeedback,
-			final JTextArea showUserRecentActionCommand,final JTextArea showCategory, 
-			final JScrollPane showOverDueTasksScroll, final JScrollPane showTasksToComeScroll ,final JScrollPane showUserRecentTaskScroll,final JScrollPane showCategoryScroll
-			,final JXCollapsiblePane showUserGuidePane,final JXCollapsiblePane showOverDueCollapsePane,final JXCollapsiblePane taskToComeCollapsePane,final JXCollapsiblePane showUserRecentTaskCollapsePane) {
+			final JTextArea showUserRecentAddedTaskCommand,final JTextArea showCategory, 
+			final JScrollPane showOverDueTasksScroll, final JScrollPane showTasksToComeScroll ,final JScrollPane showUserRecentAddedTaskScroll,final JScrollPane showCategoryScroll
+			,final JXCollapsiblePane showUserGuidePane,final JXCollapsiblePane showOverDueCollapsePane,final JXCollapsiblePane taskToComeCollapsePane,final JXCollapsiblePane showUserRecentAddedTaskCollapsePane) {
 		inputCommand.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				int key = e.getKeyCode();
 				int overDueScrollPane = showOverDueTasksScroll.getVerticalScrollBar().getModel().getValue();
 				int valueTaskToComeScrollPane = showTasksToComeScroll.getVerticalScrollBar().getModel().getValue();
-				int valueCustomTextArea=showUserRecentTaskScroll.getVerticalScrollBar().getModel().getValue();
+				int valueCustomTextArea=showUserRecentAddedTaskScroll.getVerticalScrollBar().getModel().getValue();
 				int valueCategoryScrollPane = showCategoryScroll.getVerticalScrollBar().getModel().getValue();
 				switch (key){
 				case KeyEvent.VK_ENTER: 
@@ -378,7 +378,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 					inputCommand.setText("");
 					showCategory.setText(logic.getCategory());
 					try {
-						showUserRecentActionCommand.setText(logic.getData(userCommand));
+						showUserRecentAddedTaskCommand.setText(logic.getData(userCommand));
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -389,20 +389,20 @@ public class FlexiPlannerUI implements HotKeyListener {
 					showUserGuidePane.setCollapsed(true);
 					showOverDueCollapsePane.setCollapsed(true);
 					taskToComeCollapsePane.setCollapsed(true);
-					showUserRecentTaskCollapsePane.setCollapsed(true);
-					showUserRecentTaskCollapsePane.setCollapsed(false);
+					showUserRecentAddedTaskCollapsePane.setCollapsed(true);
+					showUserRecentAddedTaskCollapsePane.setCollapsed(false);
 					refreshCalendar(currentDisplayedMonth, currentDisplayedYear);
 					break;
 				case KeyEvent.VK_F1:
 					showUserGuidePane.setCollapsed(false);						
-					showUserRecentTaskCollapsePane.setCollapsed(true);
+					showUserRecentAddedTaskCollapsePane.setCollapsed(true);
 					showOverDueCollapsePane.setCollapsed(true);
 					taskToComeCollapsePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F2:
 					userCommand = inputCommand.getText();
 					try {
-						showUserRecentActionCommand.setText(logic.getData(userCommand));
+						showUserRecentAddedTaskCommand.setText(logic.getData(userCommand));
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -410,7 +410,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-					showUserRecentTaskCollapsePane.setCollapsed(false);
+					showUserRecentAddedTaskCollapsePane.setCollapsed(false);
 					showUserGuidePane.setCollapsed(true);
 					taskToComeCollapsePane.setCollapsed(true);
 					showOverDueCollapsePane.setCollapsed(true);
@@ -418,14 +418,14 @@ public class FlexiPlannerUI implements HotKeyListener {
 				case KeyEvent.VK_F3:
 					refreshOverDueTableForDisplay();//refresh displayOverDueTable
 					showOverDueCollapsePane.setCollapsed(false);
-					showUserRecentTaskCollapsePane.setCollapsed(true);
+					showUserRecentAddedTaskCollapsePane.setCollapsed(true);
 					taskToComeCollapsePane.setCollapsed(true);
 					showUserGuidePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F4:
 					refreshTaskToComeTableForDisplay();//refresh displayTaskToComTable	
 					taskToComeCollapsePane.setCollapsed(false);
-					showUserRecentTaskCollapsePane.setCollapsed(true);
+					showUserRecentAddedTaskCollapsePane.setCollapsed(true);
 					showOverDueCollapsePane.setCollapsed(true);
 					showUserGuidePane.setCollapsed(true);
 					break;
@@ -442,10 +442,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 					showTasksToComeScroll.getVerticalScrollBar().getModel().setValue(valueTaskToComeScrollPane+5);
 					break;
 				case KeyEvent.VK_F9:
-					showUserRecentTaskScroll.getVerticalScrollBar().getModel().setValue(valueCustomTextArea-5);
+					showUserRecentAddedTaskScroll.getVerticalScrollBar().getModel().setValue(valueCustomTextArea-5);
 					break;					
 				case KeyEvent.VK_F10:
-					showUserRecentTaskScroll.getVerticalScrollBar().getModel().setValue(valueCustomTextArea+5);
+					showUserRecentAddedTaskScroll.getVerticalScrollBar().getModel().setValue(valueCustomTextArea+5);
 					break;
 				case KeyEvent.VK_F11:
 					showCategoryScroll.getVerticalScrollBar().getModel().setValue(valueCategoryScrollPane-5);
