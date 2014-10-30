@@ -513,7 +513,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 				+ "\n2: 'ctrl+m': Minimise FlexiPlanner to system tray"
 				+ "\n3: 'ctrl+e': Exit FlexiPlanner"
 				+ "\n4: 'f1': Guide"
-				+ "\n5: 'f2': Executed commands"
+				+ "\n5: 'f2': Recent Actions"
 				+ "\n6: 'f3': Over due tasks"
 				+ "\n7: 'f4': Tasks to come"
 				+ "\n8: 'f5': Scroll up over due tasks"
