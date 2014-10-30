@@ -327,15 +327,6 @@ public class FlexiPlannerUI implements HotKeyListener {
 						getJFrame().setVisible(false);
 						break;
 					}
-					if(userCommand.toLowerCase().startsWith("delete")|| 
-							userCommand.toLowerCase().startsWith("remove")||
-							userCommand.toLowerCase().startsWith("clear")){
-						int index=Integer.parseInt(userCommand.substring(userCommand.indexOf(" ")+1))-1;	
-						String taskFromIndex = displaytaskTable.getValueAt(index, 3).toString();
-						userCommand=userCommand.substring(0, userCommand.indexOf(" ")+1)+taskFromIndex
-								+" on "+displaytaskTable.getValueAt(index, 4).toString() +" "+
-								displaytaskTable.getValueAt(index, 5).toString();
-					}
 					try {
 						commandFeedback.setText(logic
 								.executeInputCommand(userCommand));
@@ -487,6 +478,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 				displayTasksTableDTM.setValueAt("", i, j);
 			}
 		}
+		overDueRow=0;
 		if(userCommand.toLowerCase().startsWith("search")||userCommand.toLowerCase().startsWith("show")
 				||userCommand.toLowerCase().startsWith("display")||userCommand.toLowerCase().startsWith("find")){
 				;
