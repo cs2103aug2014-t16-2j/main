@@ -360,7 +360,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 				case KeyEvent.VK_ENTER: 
 					String userCommand = inputCommand.getText();
 					if (userCommand.startsWith("exit")) {
+						inputCommand.setText("");
+						commandFeedback.setText("");
 						getJFrame().setVisible(false);
+						break;
 					}
 					try {
 						commandFeedback.setText(logic
@@ -582,7 +585,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 			if (t.getStartDateTime() != null)
 				displayOverDueTableDTM.setValueAt(t.getStartDateTime(),row,4);
 			if (t.getEndDateTime() != null)
-				displayOverDueTableDTM.setValueAt(t.getStartDateTime(),row,5);
+				displayOverDueTableDTM.setValueAt(t.getEndDateTime(),row,5);
 			row++;
 			if(row==50){break;}
 		}
@@ -608,7 +611,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 				if (t.getStartDateTime() != null)
 					displayTaskToComeTableDTM.setValueAt(t.getStartDateTime(),row,4);
 				if (t.getEndDateTime() != null)
-					displayTaskToComeTableDTM.setValueAt(t.getStartDateTime(),row,5);
+					displayTaskToComeTableDTM.setValueAt(t.getEndDateTime(),row,5);
 				row++;
 				if(row==50){break;}
 			}
