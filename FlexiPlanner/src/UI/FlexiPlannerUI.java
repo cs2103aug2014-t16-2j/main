@@ -327,6 +327,15 @@ public class FlexiPlannerUI implements HotKeyListener {
 						getJFrame().setVisible(false);
 						break;
 					}
+					if(userCommand.toLowerCase().startsWith("delete")|| 
+							userCommand.toLowerCase().startsWith("remove")||
+							userCommand.toLowerCase().startsWith("clear")){
+						int index=Integer.parseInt(userCommand.substring(userCommand.indexOf(" ")+1))-1;	
+						String taskFromIndex = displaytaskTable.getValueAt(index, 3).toString();
+						userCommand=userCommand.substring(0, userCommand.indexOf(" ")+1)+taskFromIndex
+								+" on "+displaytaskTable.getValueAt(index, 4).toString() +" "+
+								displaytaskTable.getValueAt(index, 5).toString();
+					}
 					try {
 						commandFeedback.setText(logic
 								.executeInputCommand(userCommand));
@@ -491,10 +500,22 @@ public class FlexiPlannerUI implements HotKeyListener {
 				if (t.getCategory() != null)
 					displayTasksTableDTM.setValueAt(t.getCategory(),row,2);
 				displayTasksTableDTM.setValueAt(t.getContent(),row,3);
-				if (t.getStartDateTime() != null)
-					displayTasksTableDTM.setValueAt(t.getStartDateTime(),row,4);
-				if (t.getEndDateTime() != null)
-					displayTasksTableDTM.setValueAt(t.getEndDateTime(),row,5);
+				if (t.getStartDateTime() != null){
+					String startYear=t.getStartDateTime().toString().substring(0, 4);
+					String startMonth=t.getStartDateTime().toString().substring(5, 7);
+					String startDay=t.getStartDateTime().toString().substring(8, 10);
+					String startTime=t.getStartDateTime().toString().substring(11, 16);
+					String getStart=startDay+"/"+startMonth+"/"+startYear+" "+startTime;
+					displayTasksTableDTM.setValueAt(getStart,row,4);
+				}
+				if (t.getEndDateTime() != null){
+					String startYear=t.getEndDateTime().toString().substring(0, 4);
+					String startMonth=t.getEndDateTime().toString().substring(5, 7);
+					String startDay=t.getEndDateTime().toString().substring(8, 10);
+					String startTime=t.getEndDateTime().toString().substring(11, 16);
+					String getEnd=startDay+"/"+startMonth+"/"+startYear+" "+startTime;
+					displayTasksTableDTM.setValueAt(getEnd,row,5);
+				}				
 				overDueRow=row;
 				row++;
 				if(row==50){break;}
@@ -508,10 +529,22 @@ public class FlexiPlannerUI implements HotKeyListener {
 					if (t.getCategory() != null)
 						displayTasksTableDTM.setValueAt(t.getCategory(),row,2);
 					displayTasksTableDTM.setValueAt(t.getContent(),row,3);
-					if (t.getStartDateTime() != null)
-						displayTasksTableDTM.setValueAt(t.getStartDateTime(),row,4);
-					if (t.getEndDateTime() != null)
-						displayTasksTableDTM.setValueAt(t.getEndDateTime(),row,5);
+					if (t.getStartDateTime() != null){
+						String startYear=t.getStartDateTime().toString().substring(0, 4);
+						String startMonth=t.getStartDateTime().toString().substring(5, 7);
+						String startDay=t.getStartDateTime().toString().substring(8, 10);
+						String startTime=t.getStartDateTime().toString().substring(11, 16);
+						String getStart=startDay+"/"+startMonth+"/"+startYear+" "+startTime;
+						displayTasksTableDTM.setValueAt(getStart,row,4);
+					}
+					if (t.getEndDateTime() != null){
+						String startYear=t.getEndDateTime().toString().substring(0, 4);
+						String startMonth=t.getEndDateTime().toString().substring(5, 7);
+						String startDay=t.getEndDateTime().toString().substring(8, 10);
+						String startTime=t.getEndDateTime().toString().substring(11, 16);
+						String getEnd=startDay+"/"+startMonth+"/"+startYear+" "+startTime;
+						displayTasksTableDTM.setValueAt(getEnd,row,5);
+					}
 					row++;
 					if(row==50){break;}
 				}
