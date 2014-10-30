@@ -374,16 +374,16 @@ public class FlexiPlannerUI implements HotKeyListener {
 				case KeyEvent.VK_F6:
 					showTasksScroll.getVerticalScrollBar().getModel().setValue(tasksScrollPane+5);
 					break;
-				case KeyEvent.VK_F9:
+				case KeyEvent.VK_F7:
 					showUserRecentAddedTaskScroll.getVerticalScrollBar().getModel().setValue(valueCustomTextArea-5);
 					break;					
-				case KeyEvent.VK_F10:
+				case KeyEvent.VK_F8:
 					showUserRecentAddedTaskScroll.getVerticalScrollBar().getModel().setValue(valueCustomTextArea+5);
 					break;
-				case KeyEvent.VK_F11:
+				case KeyEvent.VK_F9:
 					showCategoryScroll.getVerticalScrollBar().getModel().setValue(valueCategoryScrollPane-5);
 					break;					
-				case KeyEvent.VK_F12:
+				case KeyEvent.VK_F10:
 					showCategoryScroll.getVerticalScrollBar().getModel().setValue(valueCategoryScrollPane+5);
 					break;
 				case KeyEvent.VK_PAGE_UP:
@@ -438,19 +438,16 @@ public class FlexiPlannerUI implements HotKeyListener {
 				+ "\n2: 'ctrl+m': Minimise FlexiPlanner to system tray"
 				+ "\n3: 'ctrl+e': Exit FlexiPlanner"
 				+ "\n4: 'f1': Guide"
-				+ "\n5: 'f2': Recent Actions"
-				+ "\n6: 'f3': Over due tasks"
-				+ "\n7: 'f4': Tasks to come"
-				+ "\n8: 'f5': Scroll up over due tasks"
-				+ "\n9: 'f6': Scroll down over due tasks"
-				+ "\n10: 'f7': Scroll up tasks to come tasks"
-				+ "\n11: 'f8': Scroll down tasks to come tasks"
-				+ "\n12: 'f9': Scroll up Executed commands"
-				+ "\n13: 'f10': Scroll down Executed commands"
-				+ "\n14: 'f11': Scroll up category"
-				+ "\n15: 'f12': Scroll down category"
-				+ "\n16: 'pgup': Previous month"
-				+ "\n17: 'pgdw': Next month";
+				+ "\n5: 'f2': Recent added tasks"
+				+ "\n6: 'f3': Tasks"
+				+ "\n7: 'f5': Scroll up Tasks"
+				+ "\n8: 'f6': Scroll down Tasks"
+				+ "\n9: 'f7': Scroll up Recent added tasks"
+				+ "\n10: 'f8': Scroll down Recent added tasks"
+				+ "\n11: 'f9': Scroll up category"
+				+ "\n12: 'f10': Scroll down category"
+				+ "\n13: 'pgup': Previous month"
+				+ "\n14: 'pgdw': Next month";
 		return guide;
 	}
 	//@author A0111770R
@@ -481,7 +478,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 				displayTasksTableDTM.setValueAt("", i, j);
 			}
 		}
-		if(userCommand.toLowerCase().startsWith("search")||userCommand.toLowerCase().startsWith("show")){
+		if(userCommand.toLowerCase().startsWith("search")||userCommand.toLowerCase().startsWith("show")
+				||userCommand.toLowerCase().startsWith("display")||userCommand.toLowerCase().startsWith("find")){
 				;
 		}else{
 
