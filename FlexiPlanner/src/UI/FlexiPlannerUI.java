@@ -46,7 +46,7 @@ import Logic.*;
 public class FlexiPlannerUI implements HotKeyListener {
 	private JLabel displayedMonth, displayedYear;
 	private JLabel showUserGuideLabel;
-	private JLabel displayTaskLabel;
+	private JLabel displayLabel;
 	private JLabel showUserRecentAddedTaskLabel;
 	private JLabel showCategoryLabel;
 	private JPanel schedulerPanel;
@@ -189,19 +189,19 @@ public class FlexiPlannerUI implements HotKeyListener {
 		showUserGuidePane.setPreferredSize(new Dimension(570,495));			
 		showUserGuidePane.setCollapsed(false);
 
-		displayTaskLabel = new JLabel();
-		displayTaskLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		displayTaskLabel.setForeground(Color.BLUE);
-		displayTaskLabel.setBorder(BorderFactory.createCompoundBorder(border, 
+		displayLabel = new JLabel();
+		displayLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
+		displayLabel.setForeground(Color.BLUE);
+		displayLabel.setBorder(BorderFactory.createCompoundBorder(border, 
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-		displayTaskLabel.setText("Tasks");
+		displayLabel.setText("");
 
 		showTasksScroll = new JScrollPane (displaytaskTable, 
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		showTasksScroll.setPreferredSize(new Dimension(570,460));
 
 		showTasksCollapsePane = new JXCollapsiblePane();
-		showTasksCollapsePane.add(displayTaskLabel);
+		showTasksCollapsePane.add(displayLabel);
 		showTasksCollapsePane.add(showTasksScroll);
 		showTasksCollapsePane.setCollapsed(true);
 		showTasksCollapsePane.setBounds(320, 4, 570, 0);
@@ -363,6 +363,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 					showTasksCollapsePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F3:
+					displayLabel.setText("Tasks");
 					refreshTasksTableForDisplay("");//refresh displayTasksTable
 					showTasksCollapsePane.setCollapsed(false);
 					showUserRecentAddedTaskCollapsePane.setCollapsed(true);
@@ -481,9 +482,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 		overDueRow=0;
 		if(userCommand.toLowerCase().startsWith("search")||userCommand.toLowerCase().startsWith("show")
 				||userCommand.toLowerCase().startsWith("display")||userCommand.toLowerCase().startsWith("find")){
-				;
+				displayLabel.setText("Search Results");
 		}else{
-
 			int row=0;
 			for (Logic.DisplayedEntry t : logic.getOverdue()) {
 				displayTasksTableDTM.setValueAt(row+1, row, 0);			
@@ -559,7 +559,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 			super.getTableCellRendererComponent(table, value, selected,
 					focused, row, column);
 
-			if (row <= overDueRow) {
+			if(row==overDueRow && overDueRow==0){
+				setBackground(Color.WHITE);
+			}
+			else if (row <= overDueRow) {
 				setBackground(Color.RED);
 			} else { 
 				setBackground(Color.WHITE);
