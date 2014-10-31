@@ -1041,13 +1041,15 @@ public class Logic {
 
 	// @author A0112066U
 	public String getData(String s) throws IOException, ParseException {
-		String _command = s;
+		Command cmd = null;
+		
 		if (s != null && !s.isEmpty()) {
-			_command = parser.getAction(s).getCommand();
+			cmd = parser.getAction(s).getCommand();
 		}
-		if (_command.toLowerCase().startsWith("search")) {
+		if (cmd.equals(Command.SEARCH)) {
 			return searchRes;
 		}
+		
 		return dataToShow();
 	}
 
