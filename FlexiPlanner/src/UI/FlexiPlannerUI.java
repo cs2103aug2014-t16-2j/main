@@ -26,6 +26,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.Timer;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -78,7 +79,9 @@ public class FlexiPlannerUI implements HotKeyListener {
 	"December" };
 	private String[] columnNames = {"No:","Priority","Catogery","Task","From","To"};
 	private Object[][] dummyData = {{"","", "","", "", ""},};
-
+	private String userCommand;
+	private int overDueRow=0;
+	
 	private static Logic logic;
 	//@author A0111770R
 	public FlexiPlannerUI() {
@@ -304,7 +307,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		executeKeyAction(commandFeedback,showUserRecentAddedTaskCommand,showCategory,
 				showTasksScroll,showUserRecentAddedTaskScroll,showCategoryScroll
 				,showUserGuidePane,showTasksCollapsePane,showUserRecentAddedTaskCollapsePane);
-	}String userCommand;
+	}
 	//@author A0111770R
 	private void executeKeyAction(final JTextArea commandFeedback,
 			final JTextArea showUserRecentAddedTaskCommand,final JTextArea showCategory, 
@@ -346,7 +349,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 					}
 					inputCommand.setText("");
 					showCategory.setText(logic.getCategory());
-					//refreshTasksTableForDisplay(userCommand);//refresh displayTasksTable
+					refreshTasksTableForDisplay(userCommand);//refresh displayTasksTable
 					refreshCalendar(currentDisplayedMonth, currentDisplayedYear);
 					break;
 				case KeyEvent.VK_F1:
@@ -360,6 +363,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 					showTasksCollapsePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F3:
+					refreshTasksTableForDisplay("");
 					showTasksCollapsePane.setCollapsed(false);
 					showUserRecentAddedTaskCollapsePane.setCollapsed(true);
 					showUserGuidePane.setCollapsed(true);
@@ -401,12 +405,14 @@ public class FlexiPlannerUI implements HotKeyListener {
 			}
 		});
 	}
+
 	//@author A0111770R
 	private void setValuesCombox() {
 		for (int i = actualYear; i <= actualYear + 20; i++) {
 			selectYear.addItem(String.valueOf(i));
 		}
 	}
+	
 	//@author A0111770R
 	private void prevMth() {
 		if (currentDisplayedMonth == 0) { // Back one year
@@ -474,7 +480,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 				displayTasksTableDTM.setValueAt("", i, j);
 			}
 		}
-		
+			//overDueRow=logic.getOverDueRow();
 			/*int row=0;
 			for (Logic.DisplayedEntry t : logic.getRequiredTasks(userCommand)) {
 				displayTasksTableDTM.setValueAt(row+1, row, 0);			
@@ -515,7 +521,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 			super.getTableCellRendererComponent(table, value, selected,
 					focused, row, column);
 
-			/*if(row==overDueRow && overDueRow==0){
+			if(row==overDueRow && overDueRow==0){
 				setBackground(Color.WHITE);
 			}
 			else if (row <= overDueRow) {
@@ -526,7 +532,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 
 			if (value != null) {
 				;				
-			}*/
+			}
 			setBorder(null);
 			return this;
 		}
