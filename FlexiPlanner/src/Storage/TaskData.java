@@ -21,10 +21,17 @@ public class TaskData {
 	private String taskId;
 	private static int id = 10;
 	
+	private Reminder reminder;
+	private LocalDateTime remindDateTime;
+	
 	/** Constructor Method **/
 	
 	public TaskData() {
 		this(null, null, null, null, null);
+	}
+	
+	public TaskData(String content) {
+		this(content, null, null, null, null);
 	}
 	
 	public TaskData(TaskData t) {
@@ -71,6 +78,14 @@ public class TaskData {
 		return taskId;
 	}
 	
+	public LocalDateTime getRemindDateTime() {
+		return remindDateTime;
+	}
+	
+	public Reminder getReminder() {
+		return reminder;
+	}
+	
 	/** Mutator Methods **/
 
 	public void setContent(String content) {
@@ -95,6 +110,23 @@ public class TaskData {
 	
 	public void setTaskId(String taskId) {
 		this.taskId = taskId;
+	}
+	
+	public void setRemindDateTime(LocalDateTime remindDateTime) {
+		this.remindDateTime = remindDateTime;
+	}
+	
+	public void setReminder() {
+		if (remindDateTime != null) {
+			this.reminder = new Reminder(this.remindDateTime, this.content);
+			reminder.start();
+		}
+	}
+	
+	public void clearReminder() {
+		if (remindDateTime != null) {
+			reminder.stop();
+		}
 	}
 	
 	/** Other Methods **/
