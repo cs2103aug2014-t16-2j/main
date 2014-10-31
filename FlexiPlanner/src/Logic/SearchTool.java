@@ -75,10 +75,10 @@ public class SearchTool {
 		return d1.hashCode() == d2.hashCode();
 	}
 
-	public String search(ArrayList<TaskData> taskList, Task task)
+	public ArrayList<DisplayedEntry> search(ArrayList<TaskData> taskList, Task task)
 			throws IOException, ParseException {
 		if (taskList.isEmpty()) {
-			return "";
+			return null;
 		}
 
 		String content = task.getContent();
@@ -101,7 +101,11 @@ public class SearchTool {
 			searchResult = filterByPriority(searchResult, priority);
 		searchResult = filterByKeywords(searchResult, words);
 
-		return displaySearch(searchResult);
+		ArrayList<DisplayedEntry> toReturn = new ArrayList<DisplayedEntry>();
+		for (TaskData t : searchResult) {
+			toReturn.add(new DisplayedEntry(t));
+		}
+		return toReturn;
 	}
 
 	private ArrayList<TaskData> filterByTime(ArrayList<TaskData> taskList,
@@ -166,10 +170,13 @@ public class SearchTool {
 	private ArrayList<TaskData> filterByKeywords(ArrayList<TaskData> taskList,
 			String[] _words) {
 		ArrayList<TaskData> searchResult = new ArrayList<TaskData>();
+		for (String w : _words) {
+			w = w.toLowerCase();
+		}
 		for (TaskData t : taskList) {
 			boolean isContained = true;
 			for (String word : _words) {
-				if (!t.getContent().contains(word)) {
+				if (!t.getContent().toLowerCase().contains(word)) {
 					isContained = false;
 					break;
 				}
@@ -206,7 +213,7 @@ public class SearchTool {
 				if (end != null) {
 					Date d;
 					try {
-						d = formater.parse(start + "");
+						d = formater.parse(end + "");
 						String s = f.format(d);
 						lines += "     To           : " + s + "\n";
 					} catch (java.text.ParseException e) {
