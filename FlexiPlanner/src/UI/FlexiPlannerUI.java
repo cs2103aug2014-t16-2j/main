@@ -81,6 +81,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private Object[][] dummyData = {{"","", "","", "", ""},};
 	private String userCommand;
 	private int overDueRow=0;
+	private int frameNo=1;
 	
 	private static Logic logic;
 	//@author A0111770R
@@ -328,6 +329,12 @@ public class FlexiPlannerUI implements HotKeyListener {
 						getJFrame().setVisible(false);
 						break;
 					}
+					if (frameNo==1){
+						frameNo=3;
+						showUserGuidePane.setCollapsed(true);						
+						showUserRecentAddedTaskCollapsePane.setCollapsed(true);
+						showTasksCollapsePane.setCollapsed(false);
+					}
 					try {
 						commandFeedback.setText(logic
 								.executeInputCommand(userCommand));
@@ -352,17 +359,21 @@ public class FlexiPlannerUI implements HotKeyListener {
 					refreshTasksTableForDisplay(userCommand);//refresh displayTasksTable
 					refreshCalendar(currentDisplayedMonth, currentDisplayedYear);
 					break;
+				
 				case KeyEvent.VK_F1:
+					frameNo=1;
 					showUserGuidePane.setCollapsed(false);						
 					showUserRecentAddedTaskCollapsePane.setCollapsed(true);
 					showTasksCollapsePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F2:
+					frameNo=2;
 					showUserRecentAddedTaskCollapsePane.setCollapsed(false);
 					showUserGuidePane.setCollapsed(true);
 					showTasksCollapsePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F3:
+					frameNo=3;
 					refreshTasksTableForDisplay("");
 					showTasksCollapsePane.setCollapsed(false);
 					showUserRecentAddedTaskCollapsePane.setCollapsed(true);
@@ -482,7 +493,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		}
 			//overDueRow=logic.getOverDueRow();
 			/*int row=0;
-			for (Logic.DisplayedEntry t : logic.getRequiredTasks(userCommand)) {
+			for (Logic.DisplayedEntry t : logic.getRequiredTasks(userCommand,frameNo)) {
 				displayTasksTableDTM.setValueAt(row+1, row, 0);			
 				if (t.getPriority() != null)
 					displayTasksTableDTM.setValueAt(t.getPriority(),row,1);
