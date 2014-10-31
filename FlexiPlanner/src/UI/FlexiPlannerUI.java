@@ -12,6 +12,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.security.KeyStore.Entry;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
 import javax.swing.SwingUtilities;
@@ -482,7 +484,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		displaytaskTable.setColumnSelectionAllowed(false);
 		displaytaskTable.setRowSelectionAllowed(false);
 	}
-
+	
 	//@author A0111770R
 	private void refreshTasksTableForDisplay(String userCommand) {
 		// Clear table
@@ -491,9 +493,9 @@ public class FlexiPlannerUI implements HotKeyListener {
 				displayTasksTableDTM.setValueAt("", i, j);
 			}
 		}
-			//overDueRow=logic.getOverDueRow();
-			/*int row=0;
-			for (Logic.DisplayedEntry t : logic.getRequiredTasks(userCommand,frameNo)) {
+			overDueRow=logic.getOverdueRow();
+			int row=0;
+			/*for (Logic.DisplayedEntry t : logic.getRequiredTask(userCommand,frameNo)) {
 				displayTasksTableDTM.setValueAt(row+1, row, 0);			
 				if (t.getPriority() != null)
 					displayTasksTableDTM.setValueAt(t.getPriority(),row,1);
