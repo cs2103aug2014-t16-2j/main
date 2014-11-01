@@ -129,8 +129,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		schedulerPanel = new JPanel(null);
 		schedulerFrame.getContentPane().add(schedulerPanel);// add panel to
 															// frame
-		displaytaskTable = new JTable(new DefaultTableModel(dummyData,
-				columnNames) {
+		displaytaskTable = new JTable(new DefaultTableModel(dummyData, columnNames) {
 			public boolean isCellEditable(int rowIndex, int mColIndex) {
 				return false;
 			}
