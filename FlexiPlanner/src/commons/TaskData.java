@@ -129,6 +129,7 @@ public class TaskData {
 	public void clearReminder() {
 		if (remindDateTime != null) {
 			reminder.stop();
+			setRemindDateTime(null);
 		}
 	}
 	

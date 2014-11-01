@@ -20,8 +20,8 @@ import java.util.regex.Pattern;
  * command 1 : collect movie ticket from box office tomorrow "remind me 3hours before"
  * command 2 : tutorial paper submission tomorrow "set reminder 1h before"
  * command 3 : production meeting on 10 November "9 nov 8am"
- * command 4 : shop groceries for kitchen "remind me 10-11-14" (dd-mm-yy) or (dd-mm-yyyy)
- * command 5 : attend customer meeting next week "reminder me 10/11/14 830am"
+ * command 4 : shop groceries for kitchen "remind me 10-11-14 0700" (dd-mm-yy) or (dd-mm-yyyy)
+ * command 5 : attend customer meeting next week "reminder me 10/11/14 0830am"
  *
  */
 
@@ -35,6 +35,7 @@ public class ReminderPatternParser {
 	private final int R_PATTERN_2 = 2;
 	private final int R_PATTERN_3 = 3;
 	private final int NO_PATTERN = 0;
+	private final int YEAR_OF_TODAY = 2000;
 	
 	private final String PATTERN_1 = "(?i).*\\s*\"{1}(\\s*\\w*\\s+)*(\\d{1,2})\\s*(m|min|mins|minute|minutes|h|hr|hrs|hour|hours)(\\s+\\w*)*\"{1}(\\s+.*)*";
 	private final String PATTERN_2 = "(?i).*\\s*\"{1}(\\s*\\w*\\s+)*(\\d{1,2})\\s*(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december|)\\s+(\\d{1,2})(\\d{1,2})*\\s*(am|pm|)(\\s+\\w*)*\"{1}(\\s+.*)*";
@@ -160,7 +161,14 @@ public class ReminderPatternParser {
 			
 			day = Integer.valueOf(matcher.group(2));
 			month = Integer.valueOf(matcher.group(4));
-			year = Integer.valueOf(matcher.group(6)+matcher.group(7));
+			
+			if (matcher.group(7) != null) {
+				year = Integer.valueOf(matcher.group(6)+matcher.group(7));
+			}
+			else {
+				year = Integer.valueOf(matcher.group(6)) + YEAR_OF_TODAY;
+			}
+			
 			hour = Integer.valueOf(matcher.group(8));
 			
 			if (matcher.group(9) != null) {
