@@ -36,7 +36,7 @@ public class DisplayedEntry {
 
 	public String getStartDateTime() throws ParseException {
 		SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-		SimpleDateFormat f = new SimpleDateFormat("EEE, d MMM HH:mm");
+		SimpleDateFormat f = new SimpleDateFormat("d MMM yyyy HH:mm");
 
 		Date d = formater.parse(startDateTime + "");
 		System.out.println(f.format(d));
@@ -45,7 +45,7 @@ public class DisplayedEntry {
 
 	public String getEndDateTime() throws ParseException {
 		SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-		SimpleDateFormat f = new SimpleDateFormat("EEE, d MMM HH:mm");
+		SimpleDateFormat f = new SimpleDateFormat("d MMM yyyy HH:mm");
 
 		Date d = formater.parse(endDateTime + "");
 		return f.format(d);
