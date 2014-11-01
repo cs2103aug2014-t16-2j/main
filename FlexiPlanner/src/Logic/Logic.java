@@ -649,6 +649,9 @@ public class Logic {
 	private boolean markAsDone(Task _task, boolean unredo) {
 		boolean isSuccessful = false;
 		String content = _task.getContent();
+		if (isInteger(content)) {
+			
+		}
 		HashMap<DateInfo, TaskData> _taskToEdit = taskIdentifier.get(content);
 		TaskData task = null;
 		LocalDateTime st = _task.getStartDateTime();
@@ -1012,16 +1015,16 @@ public class Logic {
 	// @author A0112066U
 	public ArrayList<DisplayedEntry> getRequiredTask(String userCommand) {
 		Command cmd = null;
-		F3DisplayedList = null;
 		if (userCommand != null && !userCommand.isEmpty()) {
 			cmd = parser.getAction(userCommand).getCommand();
 		}
-		if (cmd.equals(Command.SEARCH)) {
+		
+		if (cmd != null && cmd.equals(Command.SEARCH)) {
 			F3DisplayedList = new ArrayList<TaskData>(searchRes);
 			
 		}
-		if (cmd.equals(Command.ADD) || cmd.equals(Command.DELETE)
-				|| cmd.equals(Command.MODIFY) || cmd.equals(Command.MARK)) {
+		if (cmd == null || cmd.equals(Command.ADD) || cmd.equals(Command.DELETE)
+				|| cmd.equals(Command.MODIFY) || cmd.equals(Command.MARK) || cmd.equals("")) {
 			F3DisplayedList = new ArrayList<TaskData>();
 			F3DisplayedList.addAll(getOverdue());
 			F3DisplayedList.addAll(getTaskToCome());
