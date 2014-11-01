@@ -83,7 +83,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private Object[][] dummyData = {{"","", "","", "", ""},};
 	private String userCommand;
 	private int overDueRow=0;
-	
+
 	private static Logic logic;
 	//@author A0111770R
 	public FlexiPlannerUI() {
@@ -390,7 +390,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 					showTasksCollapsePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F3:
-					refreshTasksTableForDisplay("");
+					refreshTasksTableForDisplay("add");
 					showTasksCollapsePane.setCollapsed(false);
 					showUserRecentAddedTaskCollapsePane.setCollapsed(true);
 					showUserGuidePane.setCollapsed(true);
@@ -439,7 +439,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 			selectYear.addItem(String.valueOf(i));
 		}
 	}
-	
+
 	//@author A0111770R
 	private void prevMth() {
 		if (currentDisplayedMonth == 0) { // Back one year
@@ -487,18 +487,18 @@ public class FlexiPlannerUI implements HotKeyListener {
 		displaytaskTable.getColumnModel().getColumn(0).setPreferredWidth(30);
 		displaytaskTable.getColumnModel().getColumn(1).setPreferredWidth(55);
 		displaytaskTable.getColumnModel().getColumn(2).setPreferredWidth(65);
-		displaytaskTable.getColumnModel().getColumn(3).setPreferredWidth(210);
-		displaytaskTable.getColumnModel().getColumn(3).setMaxWidth(210);
-		displaytaskTable.getColumnModel().getColumn(4).setPreferredWidth(100);
-		displaytaskTable.getColumnModel().getColumn(5).setPreferredWidth(100);
-		displaytaskTable.getColumnModel().getColumn(5).setMaxWidth(100);
+		displaytaskTable.getColumnModel().getColumn(3).setPreferredWidth(180);
+		displaytaskTable.getColumnModel().getColumn(3).setMaxWidth(180);
+		displaytaskTable.getColumnModel().getColumn(4).setPreferredWidth(110);
+		displaytaskTable.getColumnModel().getColumn(5).setPreferredWidth(110);
+		displaytaskTable.getColumnModel().getColumn(5).setMaxWidth(110);
 		displaytaskTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		displaytaskTable.getTableHeader().setResizingAllowed(false);
 		displaytaskTable.getTableHeader().setReorderingAllowed(false);
 		displaytaskTable.setColumnSelectionAllowed(false);
 		displaytaskTable.setRowSelectionAllowed(false);
 	}
-	
+
 	//@author A0111770R
 	private void refreshTasksTableForDisplay(String userCommand) {
 		// Clear table
@@ -507,36 +507,34 @@ public class FlexiPlannerUI implements HotKeyListener {
 				displayTasksTableDTM.setValueAt("", i, j);
 			}
 		}
-			overDueRow=logic.getOverdueRow();
-			int row=0;
-			/*for (Logic.DisplayedEntry t : logic.getRequiredTask(userCommand)) {
-				displayTasksTableDTM.setValueAt(row+1, row, 0);			
-				if (t.getPriority() != null)
-					displayTasksTableDTM.setValueAt(t.getPriority(),row,1);
-				if (t.getCategory() != null)
-					displayTasksTableDTM.setValueAt(t.getCategory(),row,2);
-				displayTasksTableDTM.setValueAt(t.getContent(),row,3);
+		if(logic.getOverdueRow()==0){
+			overDueRow=0;
+		}else{
+			overDueRow=logic.getOverdueRow()-1;
+		}
+		int row=0;
+		for (DisplayedEntry t : logic.getRequiredTask(userCommand)) {
+			displayTasksTableDTM.setValueAt(row+1, row, 0);			
+			if (t.getPriority() != null)
+				displayTasksTableDTM.setValueAt(t.getPriority(),row,1);
+			if (t.getCategory() != null)
+				displayTasksTableDTM.setValueAt(t.getCategory(),row,2);
+			displayTasksTableDTM.setValueAt(t.getContent(),row,3);
+			try{
 				if (t.getStartDateTime() != null){
-					String startYear=t.getStartDateTime().toString().substring(0, 4);
-					String startMonth=t.getStartDateTime().toString().substring(5, 7);
-					String startDay=t.getStartDateTime().toString().substring(8, 10);
-					String startTime=t.getStartDateTime().toString().substring(11, 16);
-					String getStart=startDay+"/"+startMonth+"/"+startYear+" "+startTime;
-					displayTasksTableDTM.setValueAt(getStart,row,4);
+					displayTasksTableDTM.setValueAt(t.getStartDateTime(),row,4);
 				}
 				if (t.getEndDateTime() != null){
-					String startYear=t.getEndDateTime().toString().substring(0, 4);
-					String startMonth=t.getEndDateTime().toString().substring(5, 7);
-					String startDay=t.getEndDateTime().toString().substring(8, 10);
-					String startTime=t.getEndDateTime().toString().substring(11, 16);
-					String getEnd=startDay+"/"+startMonth+"/"+startYear+" "+startTime;
-					displayTasksTableDTM.setValueAt(getEnd,row,5);
-				}				
-				row++;
-				if(row==50){break;}
-			}*/
-			
-		
+					displayTasksTableDTM.setValueAt(t.getEndDateTime(),row,5);
+				}
+			}catch(java.text.ParseException e){
+				System.out.println("");
+			}				
+			row++;
+			if(row==50){break;}
+		}
+
+
 		displaytaskTable.setDefaultRenderer(displaytaskTable.getColumnClass(0),
 				new TasksTableRenderer());// using Calendar1Renderer class to set
 
