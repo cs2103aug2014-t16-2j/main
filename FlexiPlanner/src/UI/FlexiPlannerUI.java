@@ -366,6 +366,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 					}
 					inputCommand.setText("");
 					showCategory.setText(logic.getCategory());
+					refreshTasksTableForDisplay(userCommand);
 					refreshCalendar(currentDisplayedMonth, currentDisplayedYear);
 					break;
 				case KeyEvent.VK_F1:
@@ -389,6 +390,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 					showTasksCollapsePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F3:
+					refreshTasksTableForDisplay("");
 					refreshTasksTableForDisplay("");
 					showTasksCollapsePane.setCollapsed(false);
 					showUserRecentAddedTaskCollapsePane.setCollapsed(true);
