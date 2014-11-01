@@ -26,6 +26,16 @@ import java.util.regex.Pattern;
  */
 
 public class ReminderPatternParser {
+	
+	private final String INFO_NO_COMMAND_FOR_REMINDER = "No commander to set reminder!\n";
+	
+	private final String ERROR_INVALID_DATE_TIME = "Invalid date and time!\n";
+	
+	private final int R_PATTERN_1 = 1;
+	private final int R_PATTERN_2 = 2;
+	private final int R_PATTERN_3 = 3;
+	private final int NO_PATTERN = 0;
+	
 	private final String PATTERN_1 = "(?i).*\\s*\"{1}(\\s*\\w*\\s+)*(\\d{1,2})\\s*(m|min|mins|minute|minutes|h|hr|hrs|hour|hours)(\\s+\\w*)*\"{1}(\\s+.*)*";
 	private final String PATTERN_2 = "(?i).*\\s*\"{1}(\\s*\\w*\\s+)*(\\d{1,2})\\s*(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december|)\\s+(\\d{1,2})(\\d{1,2})*\\s*(am|pm|)(\\s+\\w*)*\"{1}(\\s+.*)*";
 	private final String PATTERN_3 = "(?i).*\\s*\"{1}(\\s*\\w*\\s+)*(\\d{1,2})(\\-|\\/|\\\\)(\\d{1,2})(\\-|\\/|\\\\)(\\d{1,2})(\\d{1,2})*\\s*(\\d{1,2})(\\d{1,2})*\\s*(am|pm|)(\\s+\\w*)*\"{1}(\\s+.*)*";
@@ -54,24 +64,41 @@ public class ReminderPatternParser {
 		pattern3 = Pattern.compile(PATTERN_3);
 	}
 	
+	public boolean hasReminderPatternInCommand(final String commandStr) {
+		return findReminderPattern(commandStr) != NO_PATTERN;
+	}
+	
 	public Object parse(final String commandStr) {
 		int reminderPattern = findReminderPattern(commandStr);
 		
-		if (!isValidDateTime(reminderPattern, commandStr)) {
+		if (reminderPattern == NO_PATTERN)
+		{
+			report(INFO_NO_COMMAND_FOR_REMINDER);
+			
 			return null;
 		}
-		if (reminderPattern == 1) {
+		
+		if (!isValidDateTime(reminderPattern, commandStr)) {
+			report(ERROR_INVALID_DATE_TIME);
+			
+			return null;
+		}
+		
+		if (reminderPattern == R_PATTERN_1) {
 			return reminderMinutes;
 		}
 		else {
 			reminderDateTime = LocalDateTime.of(year, month, day, hour, minute);
+			
 			return reminderDateTime;
 		}
 	}
 	
 	private boolean isValidDateTime(int reminderPattern, final String commandStr) {
 		boolean isValid = false;
+		
 		switch (reminderPattern) {
+		
 		case 1: 
 			matcher = pattern1.matcher(commandStr);
 			matcher.find();
@@ -169,36 +196,30 @@ public class ReminderPatternParser {
 			
 		default : break;
 		}
+		
 		return isValid;
 	}
 	
 	private int findReminderPattern(final String commandStr) {
 		if (commandStr.matches(PATTERN_1)) {
-			return 1;
-		}
-		if (commandStr.matches(PATTERN_2)) {
-			return 2;
-		}
-		if (commandStr.matches(PATTERN_3)) {
-			return 3;
+			
+			return R_PATTERN_1;
 		}
 		
-		return 0;
+		if (commandStr.matches(PATTERN_2)) {
+			
+			return R_PATTERN_2;
+		}
+		
+		if (commandStr.matches(PATTERN_3)) {
+			
+			return R_PATTERN_3;
+		}
+		
+		return NO_PATTERN;
 	}
 	
-	public boolean hasReminderPatternInCommand(final String commandStr) {
-		return findReminderPattern(commandStr) != 0;
+	private void report(final String toReport) {
+		System.out.print(toReport);
 	}
-	
-	/*public static void main(String[] args) {
-		String s = "meet boss \"remind me on 9 oct 8am\"";
-		ReminderPatternParser rpp = new ReminderPatternParser();
-		Object obj = rpp.parse(s);
-		if (obj instanceof LocalDateTime) {
-			System.out.println((LocalDateTime) obj);
-		}
-		else if (obj instanceof Integer) {
-			System.out.println((Integer) obj);
-		}
-	}*/
 }
