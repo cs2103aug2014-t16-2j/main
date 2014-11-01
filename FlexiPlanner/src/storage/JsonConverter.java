@@ -9,6 +9,8 @@ import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import commons.TaskData;
+
 /**
  * This class handles encoding and decoding operations
  * among JSONObjects, JSONArrays, tasks and JSONStrings.

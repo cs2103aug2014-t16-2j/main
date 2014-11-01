@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import storage.TaskData;
+import commons.TaskData;
 
 public class DisplayedEntry {
 	private String content;

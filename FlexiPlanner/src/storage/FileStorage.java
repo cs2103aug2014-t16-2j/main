@@ -8,6 +8,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
+import commons.TaskData;
+
 /**
  * This class implements functions of saving and loading
  * tasks from respective files.

@@ -1,10 +1,11 @@
-package storage;
+package commons;
 
 import java.time.LocalDateTime;
 
 import org.json.simple.JSONObject;
 
 import reminder.Reminder;
+import storage.JsonConverter;
 
 /**
  * This class creates a task object representing an actual task.
