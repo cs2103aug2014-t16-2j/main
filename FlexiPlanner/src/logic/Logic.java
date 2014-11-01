@@ -124,6 +124,7 @@ public class Logic {
 			_command = " ";
 		}
 		extractCommandandTask(_command);
+		System.out.print("here");
 		boolean isSuccessful;
 		isSuccessful = executeCommand(command, task);
 		if (isSuccessful)
@@ -207,6 +208,9 @@ public class Logic {
 			System.out.println("Empty input");
 			return false;
 		}
+		if (task.getStartDateTime() != null && task.getEndDateTime() != null
+				&& isClashingWithBlockedSlots(task))
+			return false;
 		if (taskIdentifier.containsKey(content)) {
 			HashMap<DateInfo, TaskData> map = taskIdentifier.get(content);
 			TaskData t = searchTool.findExactTask(task, map);
@@ -233,6 +237,19 @@ public class Logic {
 			return false;
 		}
 		return true;
+	}
+
+	private boolean isClashingWithBlockedSlots(TaskData task) {
+		LocalDateTime start = task.getStartDateTime();
+		LocalDateTime end = task.getEndDateTime();
+		for (TaskData _task : blockedList) {
+			LocalDateTime _start = _task.getStartDateTime();
+			LocalDateTime _end = _task.getEndDateTime();
+			if (isClash(start, end, _start, _end))
+				return true;
+		}
+		return false;
+
 	}
 
 	// delete a task described by content
@@ -468,15 +485,17 @@ public class Logic {
 	// modify a task
 	// @author A0112066U
 	private boolean modifyTask(Task task, Task t, boolean unredo) {
-		String content = task.getContent();
+		String content;
+		if (t != null) content = t.getContent();
+		else content = task.getContent();
 		if (content == null || content.isEmpty()) {
 			System.out.print("No task to modify.");
 			return false;
 		}
-		if (!isInteger(content)) {
+		if (!isInteger(content.substring(0, 1))) {
 			return modifyTask(task, t, content, unredo);
 		} else {
-			return modifyIndex(task, Integer.parseInt(content), unredo);
+			return modifyIndex(task, content, unredo);
 		}
 	}
 
@@ -487,6 +506,11 @@ public class Logic {
 		LocalDateTime newEndTime = _task.getEndDateTime();
 		String newCategory = _task.getCategory();
 		String newPriority = _task.getPriority();
+
+		String newContent = _task.getContent();
+		if (newContent == null || newContent.isEmpty())
+			_task.setContent(content);
+		newContent = _task.getContent();
 		HashMap<DateInfo, TaskData> _listTaskToEdit = new HashMap<DateInfo, TaskData>();
 		if (taskIdentifier.containsKey(content))
 			_listTaskToEdit = taskIdentifier.get(content);
@@ -540,7 +564,7 @@ public class Logic {
 				t = new Task();
 				t.setContent(content);
 			}
-			toFind.setContent(content);
+			toFind.setContent(newContent);
 			if (newCategory != null)
 				toFind.setCategory(newCategory);
 			else
@@ -562,6 +586,7 @@ public class Logic {
 				System.out.print("A same task already exists");
 				return false;
 			}
+			deleteTask(taskToModify, false);
 			if (newStartTime != null || unredo) {
 				taskToModify.setStartDateTime(newStartTime);
 				t.setStartDateTime(newStartTime);
@@ -595,13 +620,15 @@ public class Logic {
 				t.setPriority(oldPriority);
 				_task.setPriority(oldPriority);
 			}
-			_listTaskToEdit.remove(new DateInfo(oldStartTime, oldEndTime));
 
-			newStartTime = taskToModify.getStartDateTime();
-			newEndTime = taskToModify.getEndDateTime();
+			taskToModify.setContent(newContent);
+			t.setContent(newContent);
+			_task.setContent(content);
+			addTask(taskToModify);
+			
+			System.out.println(toTaskData(_task));
+			System.out.println(toTaskData(t));
 
-			_listTaskToEdit.put(new DateInfo(newStartTime, newEndTime),
-					taskToModify);
 			action = new Action(Command.MODIFY, _task);
 			entry = new ActionEntry(action, t);
 		} else {
@@ -617,16 +644,23 @@ public class Logic {
 	}
 
 	// @author A0112066U
-	private boolean modifyIndex(Task task, int index, boolean unredo) {
+	private boolean modifyIndex(Task task, String content, boolean unredo) {
+		int index = Integer.parseInt(content.substring(0, 1));
+		content = content.substring(1).trim();
 		ArrayList<TaskData> displayedList = getDisplayedList();
 		int size = displayedList.size();
 		if (index < 1 || index > size) {
 			System.out.print("Error-----------");
 			return false;
 		} else {
-			TaskData _task = displayedList.get(index);
-			String content = _task.getContent();
-			return modifyTask(task, null, content, unredo);
+			TaskData _task = displayedList.get(index - 1);
+			Task t = new Task();
+			t.setContent(_task.getContent());
+			t.setStartDateTime(_task.getStartDateTime());
+			t.setEndDateTime(_task.getEndDateTime());
+
+			task.setContent(content);
+			return modifyTask(task, t, t.getContent(), unredo);
 		}
 	}
 
@@ -984,7 +1018,7 @@ public class Logic {
 		ArrayList<String> category = new ArrayList<String>();
 		for (TaskData _task : taskList) {
 			String cat = _task.getCategory();
-			if (!category.contains(cat))
+			if (cat != null && !category.contains(cat))
 				category.add(cat);
 		}
 		String res = "";
@@ -1017,6 +1051,7 @@ public class Logic {
 
 	// @author A0112066U
 	private int overdueRow = 0;
+
 	public ArrayList<DisplayedEntry> getRequiredTask(String userCommand) {
 		Command cmd = null;
 		if (userCommand != null && !userCommand.isEmpty()) {

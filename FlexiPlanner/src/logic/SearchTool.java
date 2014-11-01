@@ -1,22 +1,18 @@
 package logic;
 
 import java.io.IOException;
-import java.util.Date;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import logic.Logic.*;
 
 import org.json.simple.parser.ParseException;
 
 import commons.TaskData;
 
 import parser.*;
-import storage.*;
 
 public class SearchTool {
 
