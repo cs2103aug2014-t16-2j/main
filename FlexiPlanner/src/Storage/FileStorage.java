@@ -145,7 +145,7 @@ public class FileStorage implements Storage {
 	}
 	
 	@Override
-	public boolean saveCategory(final String filePath, ArrayList<String> categoryList) {
+	public boolean saveFile(final String filePath, ArrayList<String> list) {
 		boolean isSaveSuccess = false;
 		
 		if (path.isEmpty() || !path.contains(filePath)) {
@@ -156,9 +156,9 @@ public class FileStorage implements Storage {
 		try {
 			manager.write(filePath, "", false);
 			
-			for (String category : categoryList) {
+			for (String category : list) {
 				manager.write(filePath, category, true);
-				if (categoryList.indexOf(category) != (categoryList.size() - 1)) {
+				if (list.indexOf(category) != (list.size() - 1)) {
 					manager.write(filePath, "\n", true);
 				}
 			}
@@ -173,7 +173,7 @@ public class FileStorage implements Storage {
 	}
 
 	@Override
-	public ArrayList<String> loadCategory(final String filePath) {
+	public ArrayList<String> loadFile(final String filePath) {
 		ArrayList<String> categories = new ArrayList<String>();
 		
 		if (path.isEmpty() || !path.contains(filePath)) {

@@ -28,8 +28,8 @@ public interface Storage {
 	 * @return taskList : ArrayList<TaskData> 
 	 */
 	public ArrayList<TaskData> loadTasks(final String filePath);
-	
-	public boolean saveCategory(final String filePath, ArrayList<String> categoryList);
-	
-	public ArrayList<String> loadCategory(final String filePath);
+
+	boolean saveFile(String filePath, ArrayList<String> list);
+
+	ArrayList<String> loadFile(String filePath);
 }
