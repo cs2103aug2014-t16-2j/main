@@ -13,8 +13,8 @@ import java.util.Stack;
 import org.json.simple.parser.ParseException;
 
 import commons.TaskData;
-
 import parser.*;
+import reminder.ReminderPatternParser;
 import storage.*;
 
 public class Logic {
@@ -39,6 +39,11 @@ public class Logic {
 	boolean isSuspendedAction = false;
 	Action suspendingAction;
 	ArrayList<TaskData> F3DisplayedList;
+	
+	private ReminderPatternParser reminderParser;
+	
+	private LocalDateTime reminderDateTime;
+	private Integer reminderMinutes;
 
 	int currentDisplayList;
 	static Scanner sc = new Scanner(System.in);
@@ -147,6 +152,38 @@ public class Logic {
 			Task t = suspendingAction.getTask();
 			task.setContent(t.getContent());
 		}
+		getReminderDateTime(_command, toTaskData(task)); // get reminder date/time
+	}
+	/**
+	 * get reminder date and time from reminder parser
+	 */
+	private void getReminderDateTime(String command, TaskData t) {
+		Object obj = reminderParser.parse(command);
+		if (obj != null) {
+			if (obj instanceof LocalDateTime) {
+				reminderDateTime = (LocalDateTime) obj;
+			}
+			else if (obj instanceof Integer) {
+				reminderMinutes = (Integer) obj;
+				if ((t.getStartDateTime() == null) &&
+						(t.getEndDateTime() == null)) {
+
+					reminderDateTime = null;
+				}
+				else if (t.getStartDateTime() != null) {
+					reminderDateTime =
+							t.getStartDateTime().minusMinutes(reminderMinutes);
+				}
+				else if (t.getEndDateTime() != null) {
+					reminderDateTime =
+							t.getEndDateTime().minusMinutes(reminderMinutes);
+				}
+			}
+		}
+		else {
+			reminderDateTime = null;
+			reminderMinutes = null;
+		}
 	}
 
 	// @author A0112066U
@@ -228,6 +265,19 @@ public class Logic {
 			map.put(new DateInfo(task.getStartDateTime(), task.getEndDateTime()),
 					task);
 		}
+		
+		/** set reminder **/
+
+		if (reminderDateTime != null) {
+			task.setRemindDateTime(reminderDateTime);
+			task.setReminder();
+		}
+		else {
+			System.out.println("Reminder date and time is not set!");
+		}
+		
+		/** **/
+		
 		taskList.add(task);
 		F2DisplayedList.add(0, task);
 		try {
@@ -303,6 +353,7 @@ public class Logic {
 							toDelete.getEndDateTime());
 					toDeleteList.remove(d);
 				}
+				toDelete.clearReminder(); // to kill the background reminder app
 				taskList.remove(toDelete);
 				if (F2DisplayedList.contains(toDelete)) {
 					F2DisplayedList.remove(toDelete);
