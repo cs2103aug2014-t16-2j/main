@@ -50,7 +50,34 @@ public class Parser {
 		
 		MyStringList words = new MyStringList();
 		words.addAll(Arrays.asList(input.split(" ")));
+		removeReminder(words);
 		return new Action(getCommand(words), getTask(words));
+		
+	}
+	
+	private void removeReminder(MyStringList words) {
+		
+		int startIndex = 0;
+		int endIndex = 0;
+		for (int index = 0; index < words.size(); index++) {
+			if (words.get(index).startsWith("\"")) {
+				startIndex = index;
+				break;
+			}
+		}
+		for (int index = 0; index < words.size(); index++) {
+			if (words.get(index).endsWith("\"")) {
+				if (index > startIndex) {
+					endIndex = index;
+					break;
+				}
+			}
+		}
+		if (endIndex != 0) {
+			for (int index = startIndex; index < endIndex + 1; index++) {
+				words.remove(index);
+			}
+		}
 		
 	}
 	
@@ -151,10 +178,9 @@ public class Parser {
 			if(word.startsWith(SYMBOL_CATEGORY)) {
 				t.setCategory(word.substring(1));
 				words.remove(words.indexOf(word));
-				return;
+				break;
 			}
 		}
-		t.setCategory("none");
 		
 	}
 	
@@ -219,9 +245,7 @@ public class Parser {
 		for (int index = 0; index < words.size(); index++) {
 			String word = words.get(index).toLowerCase();
 			if (KEYWORDS_MARK.contains(word)) {
-				if (word.equals("undone") || word.equals("incomplete")) {
-					t.setDone(false);
-				} else {
+				if (word.equals("done") || word.equals("complete") || word.equals("completed")) {
 					t.setDone(true);
 				}
 				words.remove(index);
@@ -235,8 +259,9 @@ public class Parser {
 	private void changeDone(MyStringList words, int index, Task t) {
 		
 		String word = words.get(index).toLowerCase();
-		boolean isDone = t.isDone();
+		boolean isDone;
 		while (SECONDARY_KEYWORDS_MARK.contains(word)) {
+			isDone = t.isDone();
 			switch (word) {
 				case "yet" :
 					if (words.get(index - 1).toLowerCase().equals("not")) {
@@ -348,9 +373,9 @@ public class Parser {
 	
 	private void setDateTimeToTask(Task t, LocalDate ld, LocalTime lt) {
 		
+		LocalDateTime startDateTime = t.getStartDateTime();
+		LocalDateTime endDateTime = t.getEndDateTime();
 		if (ld != null) {
-			LocalDateTime startDateTime = t.getStartDateTime();
-			LocalDateTime endDateTime = t.getEndDateTime();
 			if (startDateTime == null && endDateTime == null) {
 				t.setStartDateTime(LocalDateTime.of(ld, LocalTime.of(0, 0)));
 			} else if (endDateTime == null) {
@@ -363,8 +388,6 @@ public class Parser {
 				t.setEndDateTime(LocalDateTime.of(ld, LocalTime.of(endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond())));
 			}
 		} else {
-			LocalDateTime startDateTime = t.getStartDateTime();
-			LocalDateTime endDateTime = t.getEndDateTime();
 			if (startDateTime == null && endDateTime == null) {
 				t.setStartDateTime(LocalDateTime.of(LocalDate.of(0, 1, 1), lt));
 			} else if (endDateTime == null) {
