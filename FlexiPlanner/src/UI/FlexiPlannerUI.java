@@ -515,11 +515,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 				displayTasksTableDTM.setValueAt("", i, j);
 			}
 		}
-		if (logic.getOverdueRow() == 0) {
-			overDueRow = 0;
-		} else {
-			overDueRow = logic.getOverdueRow() - 1;
-		}
+		overDueRow=logic.getOverdueRow();
 		int row = 0;
 		for (DisplayedEntry t : logic.getRequiredTask(userCommand)) {
 			displayTasksTableDTM.setValueAt(row + 1, row, 0);
@@ -557,7 +553,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 					focused, row, column);
 			if (row == overDueRow && overDueRow == 0) {
 				setBackground(Color.WHITE);
-			} else if (row <= overDueRow) {
+			} else if (row <= overDueRow-1) {
 				setBackground(Color.RED);
 			} else {
 				setBackground(Color.WHITE);
