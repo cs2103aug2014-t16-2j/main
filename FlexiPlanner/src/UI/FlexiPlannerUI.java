@@ -390,7 +390,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 					showTasksCollapsePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F3:
-					refreshTasksTableForDisplay("add");
+					refreshTasksTableForDisplay("");
 					showTasksCollapsePane.setCollapsed(false);
 					showUserRecentAddedTaskCollapsePane.setCollapsed(true);
 					showUserGuidePane.setCollapsed(true);
