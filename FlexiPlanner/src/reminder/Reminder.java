@@ -1,4 +1,4 @@
-package storage;
+package reminder;
 
 import java.time.LocalDateTime;
 import java.util.Calendar;
