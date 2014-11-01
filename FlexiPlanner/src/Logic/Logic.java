@@ -25,7 +25,7 @@ public class Logic {
 	private Action action;
 	private ActionEntry entry;
 	private SearchTool searchTool;
-	private ArrayList<TaskData> currentDisplayedTask;
+	private ArrayList<TaskData> F2DisplayedList;
 	private ArrayList<TaskData> taskList;
 	private ArrayList<TaskData> completedTask;
 	private ArrayList<TaskData> blockedList;
@@ -34,7 +34,9 @@ public class Logic {
 	String completedpath = "completed.json";
 	boolean isSuspendedAction = false;
 	Action suspendingAction;
-	ArrayList<DisplayedEntry> tobeDisplayedTaskList;
+	ArrayList<TaskData> F3DisplayedList;
+	
+	int currentDisplayList;
 	static Scanner sc = new Scanner(System.in);
 
 	// ------------------Constructor-------------------------//
@@ -58,7 +60,7 @@ public class Logic {
 		completedTaskIdentifier = new HashMap<String, TaskData>();
 		actionList = new Stack<ActionEntry>();
 		redoList = new Stack<ActionEntry>();
-		currentDisplayedTask = new ArrayList<TaskData>();
+		F2DisplayedList = new ArrayList<TaskData>();
 		completedTask = new ArrayList<TaskData>();
 		parser = new Parser();
 		searchTool = new SearchTool();
@@ -219,7 +221,7 @@ public class Logic {
 					task);
 		}
 		taskList.add(task);
-		currentDisplayedTask.add(0, task);
+		F2DisplayedList.add(0, task);
 		try {
 			storer.saveTasks(filePath, taskList);
 		} catch (Exception e) {
@@ -281,8 +283,8 @@ public class Logic {
 					toDeleteList.remove(d);
 				}
 				taskList.remove(toDelete);
-				if (currentDisplayedTask.contains(toDelete)) {
-					currentDisplayedTask.remove(toDelete);
+				if (F2DisplayedList.contains(toDelete)) {
+					F2DisplayedList.remove(toDelete);
 				}
 				Task t = new Task();
 				t.setContent(toDelete.getContent());
@@ -306,12 +308,13 @@ public class Logic {
 
 	// @author A0112066U
 	private void deleteIndex(int index, boolean unredo) {
-		int size = currentDisplayedTask.size();
+		ArrayList<TaskData> displayedList = getDisplayedList();
+		int size = displayedList.size();
 		if (index < 1 || index > size) {
 			System.out.print("Error-----------");
 			return;
 		} else {
-			TaskData task = currentDisplayedTask.get(index - 1);
+			TaskData task = displayedList.get(index - 1);
 			deleteTask(task, unredo);
 		}
 	}
@@ -489,8 +492,12 @@ public class Logic {
 		TaskData taskToModify = null;
 
 		if (unredo) {
-			DateInfo d = new DateInfo(st, et);			
+			st = t.getStartDateTime();
+			et = t.getEndDateTime();
+			DateInfo d = new DateInfo(st, et);
 			taskToModify = _listTaskToEdit.get(d);
+
+			
 		} else {
 			if (isSuspendedAction) {
 				DateInfo d = new DateInfo(st, et);
@@ -589,6 +596,7 @@ public class Logic {
 
 			newStartTime = taskToModify.getStartDateTime();
 			newEndTime = taskToModify.getEndDateTime();
+			
 			_listTaskToEdit.put(new DateInfo(newStartTime, newEndTime),
 					taskToModify);
 			action = new Action(Command.MODIFY, _task);
@@ -607,12 +615,13 @@ public class Logic {
 
 	// @author A0112066U
 	private boolean modifyIndex(Task task, int index, boolean unredo) {
-		int size = currentDisplayedTask.size();
+		ArrayList<TaskData> displayedList = getDisplayedList();
+		int size = displayedList.size();
 		if (index < 1 || index > size) {
 			System.out.print("Error-----------");
 			return false;
 		} else {
-			TaskData _task = currentDisplayedTask.get(index);
+			TaskData _task = displayedList.get(index);
 			String content = _task.getContent();
 			return modifyTask(task, null, content, unredo);
 		}
@@ -620,7 +629,7 @@ public class Logic {
 
 	// search for a task by key words or time
 	// @author A0112066U
-	ArrayList<DisplayedEntry> searchRes;
+	ArrayList<TaskData> searchRes;
 
 	private boolean search(Task task) throws IOException, ParseException {
 		searchRes = null;
@@ -681,8 +690,8 @@ public class Logic {
 				_taskToEdit.remove(d);
 			}
 			taskList.remove(task);
-			if (currentDisplayedTask.contains(task)) {
-				currentDisplayedTask.remove(task);
+			if (F2DisplayedList.contains(task)) {
+				F2DisplayedList.remove(task);
 			}
 			String s = task.getStartDateTime() + "" + task.getEndDateTime();
 			completedTaskIdentifier.put(s, task);
@@ -828,7 +837,7 @@ public class Logic {
 
 	// return data to show to UI
 	// @author A0112066U
-	public ArrayList<DisplayedEntry> getTaskToCome() {
+	public ArrayList<TaskData> getTaskToCome() {
 		LocalDateTime now = LocalDateTime.now();
 		int dateToday = now.getDayOfMonth();
 		int monthToday = now.getMonthValue();
@@ -836,22 +845,22 @@ public class Logic {
 		LocalDateTime today = LocalDateTime.of(yearToday, monthToday,
 				dateToday, 0, 0, 0).minusSeconds(1);
 		LocalDateTime tomorrow = today.plusSeconds(172801);
-		ArrayList<DisplayedEntry> taskToShow = new ArrayList<DisplayedEntry>();
+		ArrayList<TaskData> taskToCome = new ArrayList<TaskData>();
 		for (TaskData _task : taskList) {
 			LocalDateTime st = _task.getStartDateTime();
 			LocalDateTime et = _task.getEndDateTime();
 			if (st != null && st.isAfter(today) && st.isBefore(tomorrow)) {
-				taskToShow.add(new DisplayedEntry(_task));
+				taskToCome.add(_task);
 			} else if (et != null && et.isAfter(today) && et.isBefore(tomorrow)) {
-				taskToShow.add(new DisplayedEntry(_task));
+				taskToCome.add(_task);
 			}
 		}
-		return taskToShow;
+		return taskToCome;
 	}
 
 	// @author A0112066U
 	protected String dataToShow() throws IOException, ParseException {
-		return showToUser(currentDisplayedTask);
+		return showToUser(F2DisplayedList);
 	}
 
 	// @author A0112066U
@@ -951,13 +960,13 @@ public class Logic {
 
 	// return overdue task
 	// @author A0112066U
-	public ArrayList<DisplayedEntry> getOverdue() {
-		ArrayList<DisplayedEntry> overdue = new ArrayList<DisplayedEntry>();
+	public ArrayList<TaskData> getOverdue() {
+		ArrayList<TaskData> overdue = new ArrayList<TaskData>();
 		LocalDateTime now = LocalDateTime.now();
 		for (TaskData _task : taskList) {
 			LocalDateTime endTime = _task.getEndDateTime();
 			if (endTime != null && endTime.isBefore(now)) {
-				overdue.add(new DisplayedEntry(_task));
+				overdue.add(_task);
 			}
 		}
 		return overdue;
@@ -981,6 +990,7 @@ public class Logic {
 
 	// @author A0112066U
 	public String getData(String s) throws IOException, ParseException {
+		currentDisplayList = 2;
 		return dataToShow();
 	}
 
@@ -1000,28 +1010,48 @@ public class Logic {
 	}
 
 	// @author A0112066U
-	public ArrayList<DisplayedEntry> getRequiredTask(String userCommand,
-			int option) {
+	public ArrayList<DisplayedEntry> getRequiredTask(String userCommand) {
 		Command cmd = null;
+		F3DisplayedList = null;
 		if (userCommand != null && !userCommand.isEmpty()) {
 			cmd = parser.getAction(userCommand).getCommand();
 		}
-		if ((cmd.equals(Command.ADD) || cmd.equals(Command.DELETE)
-				|| cmd.equals(Command.MODIFY) || cmd.equals(Command.MARK))
-				&& option != 3) {
-			tobeDisplayedTaskList = new ArrayList<DisplayedEntry>();
-			tobeDisplayedTaskList.addAll(getOverdue());
-			tobeDisplayedTaskList.addAll(getTaskToCome());
-			return tobeDisplayedTaskList;
+		if (cmd.equals(Command.SEARCH)) {
+			F3DisplayedList = new ArrayList<TaskData>(searchRes);
+			
 		}
-		if (option == 3) {
-			tobeDisplayedTaskList = new ArrayList<DisplayedEntry>(searchRes);
+		if (cmd.equals(Command.ADD) || cmd.equals(Command.DELETE)
+				|| cmd.equals(Command.MODIFY) || cmd.equals(Command.MARK)) {
+			F3DisplayedList = new ArrayList<TaskData>();
+			F3DisplayedList.addAll(getOverdue());
+			F3DisplayedList.addAll(getTaskToCome());
+			
+		}
+		currentDisplayList = 3;
+		ArrayList<DisplayedEntry> tobeShown = new ArrayList<DisplayedEntry>();
+		for (TaskData t : F3DisplayedList) {
+			tobeShown.add(toDisplayedEntry(t));
+		}
+		
+		return tobeShown;
+	}
+
+	
+	public int getOverdueRow() {
+		ArrayList<TaskData> overdue = getOverdue();
+		return (overdue == null) ? 0 : overdue.size();
+	}
+	
+	private ArrayList<TaskData> getDisplayedList() {
+		if (currentDisplayList == 2) {
+			return F2DisplayedList;
+		} else if (currentDisplayList == 3) {
+			return F3DisplayedList;
 		}
 		return null;
 	}
-
-	public int getOverdueRow() {
-		ArrayList<DisplayedEntry> overdue = getOverdue();
-		return (overdue == null) ? 0 : overdue.size();
+	
+	private DisplayedEntry toDisplayedEntry(TaskData task) {
+		return new DisplayedEntry(task);
 	}
 }

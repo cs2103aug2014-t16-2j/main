@@ -75,7 +75,7 @@ public class SearchTool {
 		return d1.hashCode() == d2.hashCode();
 	}
 
-	public ArrayList<DisplayedEntry> search(ArrayList<TaskData> taskList, Task task)
+	public ArrayList<TaskData> search(ArrayList<TaskData> taskList, Task task)
 			throws IOException, ParseException {
 		if (taskList.isEmpty()) {
 			return null;
@@ -101,11 +101,7 @@ public class SearchTool {
 			searchResult = filterByPriority(searchResult, priority);
 		searchResult = filterByKeywords(searchResult, words);
 
-		ArrayList<DisplayedEntry> toReturn = new ArrayList<DisplayedEntry>();
-		for (TaskData t : searchResult) {
-			toReturn.add(new DisplayedEntry(t));
-		}
-		return toReturn;
+		return searchResult;
 	}
 
 	private ArrayList<TaskData> filterByTime(ArrayList<TaskData> taskList,
@@ -187,45 +183,6 @@ public class SearchTool {
 		return searchResult;
 	}
 
-	private String displaySearch(ArrayList<TaskData> list) {
-		String lines = "Search result:\n";
-		SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-		SimpleDateFormat f = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
-		if (!list.isEmpty()) {
-			for (TaskData t : list) {
-				lines += t.getContent() + "\n";
-				lines += "     Category : " + t.getCategory() + "\n";
-				lines += "     Priority   : " + t.getPriority() + "\n";
-				LocalDateTime start = t.getStartDateTime();
-				if (start != null) {
-					Date d;
-					try {
-						String x = start + "";
-						d = formater.parse(x);
-						String s = f.format(d);
-						lines += "     From      : " + s + "\n";
-					} catch (java.text.ParseException e) {
-						System.out.print("Mo");
-					}
-
-				}
-				LocalDateTime end = t.getEndDateTime();
-				if (end != null) {
-					Date d;
-					try {
-						d = formater.parse(end + "");
-						String s = f.format(d);
-						lines += "     To           : " + s + "\n";
-					} catch (java.text.ParseException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-				lines += "***********************************************\n";
-
-			}
-		}
-		return lines;
-	}
+	
 
 }
