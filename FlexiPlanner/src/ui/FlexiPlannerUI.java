@@ -75,10 +75,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private static JFrame schedulerFrame;
 	private JTextField inputCommand;
 	private int actualYear, actualMonth, actualDay, currentDisplayedYear,
-			currentDisplayedMonth;
+	currentDisplayedMonth;
 	private String[] months = { "January", "February", "March", "April", "May",
 			"June", "July", "August", "September", "October", "November",
-			"December" };
+	"December" };
 	private String[] columnNames = { "No:", "Priority", "Catogery", "Task",
 			"From", "To" };
 	private Object[][] dummyData = { { "", "", "", "", "", "" }, };
@@ -128,7 +128,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		schedulerPanel = new JPanel(null);
 		schedulerFrame.getContentPane().add(schedulerPanel);// add panel to
-															// frame
+		// frame
 		displaytaskTable = new JTable(new DefaultTableModel(dummyData, columnNames) {
 			public boolean isCellEditable(int rowIndex, int mColIndex) {
 				return false;
@@ -224,10 +224,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		showUserRecentAddedTaskScroll
-				.setColumnHeaderView(showUserRecentAddedTaskLabel);
+		.setColumnHeaderView(showUserRecentAddedTaskLabel);
 		showUserRecentAddedTaskCollapsePane = new JXCollapsiblePane();
 		showUserRecentAddedTaskCollapsePane
-				.setContentPane(showUserRecentAddedTaskScroll);
+		.setContentPane(showUserRecentAddedTaskScroll);
 		showUserRecentAddedTaskCollapsePane.setCollapsed(true);
 		showUserRecentAddedTaskCollapsePane.setBounds(320, 4, 570, 0);
 		showUserRecentAddedTaskCollapsePane.setPreferredSize(new Dimension(570,
@@ -352,10 +352,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 							e1.printStackTrace();
 						}
 						refreshTasksTableForDisplay(userCommand);// refresh
-																	// displayTasksTable
+						// displayTasksTable
 					} else {
 						refreshTasksTableForDisplay(userCommand);// refresh
-																	// displayTasksTable
+						// displayTasksTable
 						try {
 							showUserRecentAddedTaskCommand.setText(logic
 									.getData(userCommand));
@@ -404,38 +404,38 @@ public class FlexiPlannerUI implements HotKeyListener {
 					break;
 				case KeyEvent.VK_F5:
 					showTasksScroll.getVerticalScrollBar().getModel()
-							.setValue(tasksScrollPane - 5);
+					.setValue(tasksScrollPane - 5);
 					break;
 				case KeyEvent.VK_F6:
 					showTasksScroll.getVerticalScrollBar().getModel()
-							.setValue(tasksScrollPane + 5);
+					.setValue(tasksScrollPane + 5);
 					break;
 				case KeyEvent.VK_F7:
 					showUserRecentAddedTaskScroll.getVerticalScrollBar()
-							.getModel().setValue(valueCustomTextArea - 5);
+					.getModel().setValue(valueCustomTextArea - 5);
 					break;
 				case KeyEvent.VK_F8:
 					showUserRecentAddedTaskScroll.getVerticalScrollBar()
-							.getModel().setValue(valueCustomTextArea + 5);
+					.getModel().setValue(valueCustomTextArea + 5);
 					break;
 				case KeyEvent.VK_F9:
 					showCategoryScroll.getVerticalScrollBar().getModel()
-							.setValue(valueCategoryScrollPane - 5);
+					.setValue(valueCategoryScrollPane - 5);
 					break;
 				case KeyEvent.VK_F10:
 					showCategoryScroll.getVerticalScrollBar().getModel()
-							.setValue(valueCategoryScrollPane + 5);
+					.setValue(valueCategoryScrollPane + 5);
 					break;
 				case KeyEvent.VK_PAGE_UP:
 					if (currentDisplayedMonth == 0
-							&& currentDisplayedYear == actualYear) {
+					&& currentDisplayedYear == actualYear) {
 						break;
 					}
 					prevMth();
 					break;
 				case KeyEvent.VK_PAGE_DOWN:
 					if (currentDisplayedMonth == 11
-							&& currentDisplayedYear >= actualYear + 20) {
+					&& currentDisplayedYear >= actualYear + 20) {
 						break;
 					}
 					nextMth();
@@ -548,7 +548,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		}
 		displaytaskTable.setDefaultRenderer(displaytaskTable.getColumnClass(0),
 				new TasksTableRenderer());// using Calendar1Renderer class to
-											// set
+		// set
 	}
 
 	class TasksTableRenderer extends DefaultTableCellRenderer {
@@ -571,8 +571,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 			return this;
 		}
 	}// end of class TasksTableRenderer
+	
 	// @author A0111770R
-
 	private void refreshCalendar(int month, int year) {
 		int nod, som; // Number Of Days, Start Of Month
 		prevMonth.setEnabled(true);// enable button
@@ -611,9 +611,9 @@ public class FlexiPlannerUI implements HotKeyListener {
 				new Calendar1Renderer());// using Calendar1Renderer class to set
 		// table display
 	}// end of refreshCalendar method
-		// class Calendar1Renderer used for editting how things are displayed
-	// @author A0111770R
+	// class Calendar1Renderer used for editting how things are displayed
 
+	// @author A0111770R
 	class Calendar1Renderer extends DefaultTableCellRenderer {
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean selected, boolean focused, int row,
@@ -635,7 +635,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 					try {
 						if (logic.hasTask(date)) {
 							setBackground(Color.MAGENTA);// set colour for
-															// current day
+							// current day
 							// with task
 						} else {
 							setBackground(Color.GRAY);// set colour current
@@ -672,9 +672,9 @@ public class FlexiPlannerUI implements HotKeyListener {
 			return this;
 		}
 	}// end of class Calendar1Renderer
+
 	// Prev_Action points to the previous year
 	// @author A0111770R
-
 	class Prev_Action implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if (currentDisplayedMonth == 0) { // Back one year
@@ -686,9 +686,9 @@ public class FlexiPlannerUI implements HotKeyListener {
 			refreshCalendar(currentDisplayedMonth, currentDisplayedYear);
 		}
 	}// end of class Prev_Action
+
 	// Next_Action points to the next year
 	// @author A0111770R
-
 	class Next_Action implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if (currentDisplayedMonth == 11) { // Foward one year
@@ -700,8 +700,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 			refreshCalendar(currentDisplayedMonth, currentDisplayedYear);
 		}
 	}// end of class Next_Action
-	// @author A0111770R
 
+	// @author A0111770R
 	class Years_Action implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if (selectYear.getSelectedItem() != null) {
