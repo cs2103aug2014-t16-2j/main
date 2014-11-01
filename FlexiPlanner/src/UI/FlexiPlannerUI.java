@@ -482,7 +482,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 				+ "\n10: 'f8': Scroll down Recent added tasks"
 				+ "\n11: 'f9': Scroll up category"
 				+ "\n12: 'f10': Scroll down category"
-				+ "\n13: 'pgup': Previous month" + "\n14: 'pgdw': Next month";
+				+ "\n13: 'pgup': Previous month" 
+				+ "\n14: 'pgdw': Next month";
 		return guide;
 	}
 
