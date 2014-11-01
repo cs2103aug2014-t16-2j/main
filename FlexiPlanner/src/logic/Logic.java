@@ -160,29 +160,29 @@ public class Logic {
 	 */
 	private void getReminderDateTime(String command, TaskData t) {
 		Object obj = reminderParser.parse(command);
+		
 		if (obj == null) {
 			reminderDateTime = null;
 			reminderMinutes = null;
 		}
-		else {
-			if (obj instanceof LocalDateTime) {
-				reminderDateTime = (LocalDateTime) obj;
-			}
-			else if (obj instanceof Integer) {
-				reminderMinutes = (Integer) obj;
-				if ((t.getStartDateTime() == null) &&
-						(t.getEndDateTime() == null)) {
+		else if (obj instanceof LocalDateTime) {
+			reminderDateTime = (LocalDateTime) obj;
+		}
+		else if (obj instanceof Integer) {
+			reminderMinutes = (Integer) obj;
+			
+			if ((t.getStartDateTime() == null) &&
+					(t.getEndDateTime() == null)) {
 
-					reminderDateTime = null;
-				}
-				else if (t.getStartDateTime() != null) {
-					reminderDateTime =
-							t.getStartDateTime().minusMinutes(reminderMinutes);
-				}
-				else if (t.getEndDateTime() != null) {
-					reminderDateTime =
-							t.getEndDateTime().minusMinutes(reminderMinutes);
-				}
+				reminderDateTime = null;
+			}
+			else if (t.getStartDateTime() != null) {
+				reminderDateTime =
+						t.getStartDateTime().minusMinutes(reminderMinutes);
+			}
+			else if (t.getEndDateTime() != null) {
+				reminderDateTime =
+						t.getEndDateTime().minusMinutes(reminderMinutes);
 			}
 		}
 	}
