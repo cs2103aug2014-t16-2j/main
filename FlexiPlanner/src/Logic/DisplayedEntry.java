@@ -39,7 +39,6 @@ public class DisplayedEntry {
 		SimpleDateFormat f = new SimpleDateFormat("d MMM yyyy HH:mm");
 
 		Date d = formater.parse(startDateTime + "");
-		System.out.println(f.format(d));
 		return f.format(d);
 	}
 

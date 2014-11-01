@@ -35,7 +35,7 @@ public class Logic {
 	boolean isSuspendedAction = false;
 	Action suspendingAction;
 	ArrayList<TaskData> F3DisplayedList;
-	
+
 	int currentDisplayList;
 	static Scanner sc = new Scanner(System.in);
 
@@ -497,7 +497,6 @@ public class Logic {
 			DateInfo d = new DateInfo(st, et);
 			taskToModify = _listTaskToEdit.get(d);
 
-			
 		} else {
 			if (isSuspendedAction) {
 				DateInfo d = new DateInfo(st, et);
@@ -563,7 +562,7 @@ public class Logic {
 				taskToModify.setStartDateTime(newStartTime);
 				t.setStartDateTime(newStartTime);
 				_task.setStartDateTime(oldStartTime);
-				
+
 			} else {
 				t.setStartDateTime(oldStartTime);
 				_task.setStartDateTime(oldStartTime);
@@ -596,7 +595,7 @@ public class Logic {
 
 			newStartTime = taskToModify.getStartDateTime();
 			newEndTime = taskToModify.getEndDateTime();
-			
+
 			_listTaskToEdit.put(new DateInfo(newStartTime, newEndTime),
 					taskToModify);
 			action = new Action(Command.MODIFY, _task);
@@ -650,7 +649,7 @@ public class Logic {
 		boolean isSuccessful = false;
 		String content = _task.getContent();
 		if (isInteger(content)) {
-			
+
 		}
 		HashMap<DateInfo, TaskData> _taskToEdit = taskIdentifier.get(content);
 		TaskData task = null;
@@ -1013,38 +1012,42 @@ public class Logic {
 	}
 
 	// @author A0112066U
+	private int overdueRow = 0;
 	public ArrayList<DisplayedEntry> getRequiredTask(String userCommand) {
 		Command cmd = null;
 		if (userCommand != null && !userCommand.isEmpty()) {
 			cmd = parser.getAction(userCommand).getCommand();
 		}
-		
+
 		if (cmd != null && cmd.equals(Command.SEARCH)) {
 			F3DisplayedList = new ArrayList<TaskData>(searchRes);
-			
+			overdueRow = 0;
+
 		}
-		if (cmd == null || cmd.equals(Command.ADD) || cmd.equals(Command.DELETE)
-				|| cmd.equals(Command.MODIFY) || cmd.equals(Command.MARK) || cmd.equals("")) {
+		if (cmd == null || cmd.equals("") || cmd.equals(Command.ADD)
+				|| cmd.equals(Command.DELETE) || cmd.equals(Command.MODIFY)
+				|| cmd.equals(Command.MARK) || cmd.equals(Command.UNDO)
+				|| cmd.equals(Command.REDO)) {
 			F3DisplayedList = new ArrayList<TaskData>();
-			F3DisplayedList.addAll(getOverdue());
+			ArrayList<TaskData> overdue = getOverdue();
+			overdueRow = overdue.size();
+			F3DisplayedList.addAll(overdue);
 			F3DisplayedList.addAll(getTaskToCome());
-			
+
 		}
 		currentDisplayList = 3;
 		ArrayList<DisplayedEntry> tobeShown = new ArrayList<DisplayedEntry>();
 		for (TaskData t : F3DisplayedList) {
 			tobeShown.add(toDisplayedEntry(t));
 		}
-		
+
 		return tobeShown;
 	}
 
-	
 	public int getOverdueRow() {
-		ArrayList<TaskData> overdue = getOverdue();
-		return (overdue == null) ? 0 : overdue.size();
+		return overdueRow;
 	}
-	
+
 	private ArrayList<TaskData> getDisplayedList() {
 		if (currentDisplayList == 2) {
 			return F2DisplayedList;
@@ -1053,7 +1056,7 @@ public class Logic {
 		}
 		return null;
 	}
-	
+
 	private DisplayedEntry toDisplayedEntry(TaskData task) {
 		return new DisplayedEntry(task);
 	}
