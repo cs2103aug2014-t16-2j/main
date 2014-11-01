@@ -1,4 +1,4 @@
-package Logic;
+package logic;
 
 import java.io.IOException;
 import java.util.Date;
@@ -9,11 +9,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import logic.Logic.*;
+
 import org.json.simple.parser.ParseException;
 
-import Logic.Logic.*;
-import Parser.*;
-import Storage.*;
+import parser.*;
+import storage.*;
 
 public class SearchTool {
 

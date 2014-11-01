@@ -1,4 +1,4 @@
-package Storage;
+package storage;
 
 import java.time.LocalDateTime;
 
@@ -147,6 +147,10 @@ public class TaskData {
 		obj = coder.taskToJsonObj(this);
 		
 		return obj;
+	}
+	
+	public boolean hasReminder() {
+		return getReminder() != null;
 	}
 	
 	@Override

@@ -1,4 +1,4 @@
-package Storage;
+package storage;
 
 import java.time.LocalDateTime;
 import java.util.Calendar;

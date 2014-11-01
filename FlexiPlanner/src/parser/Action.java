@@ -1,4 +1,4 @@
-package Parser;
+package parser;
 
 /**
  * This class creates an Action object that contains a Task object and a String command for the Task object.

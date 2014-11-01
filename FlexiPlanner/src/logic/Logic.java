@@ -1,4 +1,4 @@
-package Logic;
+package logic;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -9,9 +9,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Stack;
+
 import org.json.simple.parser.ParseException;
-import Storage.*;
-import Parser.*;
+
+import parser.*;
+import storage.*;
 
 public class Logic {
 	private Command command;

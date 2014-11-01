@@ -1,4 +1,4 @@
-package UI;
+package ui;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -15,6 +15,7 @@ import java.io.PrintStream;
 import java.security.KeyStore.Entry;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+
 import javax.swing.SwingUtilities;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -31,11 +32,14 @@ import javax.swing.Timer;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+
+import logic.*;
+
 import org.json.simple.parser.ParseException;
 import org.jdesktop.swingx.JXCollapsiblePane;
+
 import com.tulskiy.keymaster.common.HotKey;
 import com.tulskiy.keymaster.common.HotKeyListener;
-import Logic.*;
 
 //import com.apple.eawt.Application;
 /**

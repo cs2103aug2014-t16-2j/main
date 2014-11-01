@@ -1,13 +1,13 @@
-package Logic;
+package logic;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import Parser.Action;
-import Parser.Task;
-import Storage.TaskData;
+import parser.Action;
+import parser.Task;
+import storage.TaskData;
 
 class DateInfo {
 	LocalDateTime start, end;

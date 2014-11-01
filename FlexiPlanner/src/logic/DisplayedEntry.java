@@ -1,11 +1,11 @@
-package Logic;
+package logic;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import Storage.TaskData;
+import storage.TaskData;
 
 public class DisplayedEntry {
 	private String content;

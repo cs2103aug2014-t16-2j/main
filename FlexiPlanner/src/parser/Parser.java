@@ -1,4 +1,4 @@
-package Parser;
+package parser;
 
 import java.text.NumberFormat;
 import java.text.ParsePosition;
