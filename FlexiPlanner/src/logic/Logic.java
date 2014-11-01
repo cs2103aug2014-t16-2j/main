@@ -74,6 +74,7 @@ public class Logic {
 		parser = new Parser();
 		searchTool = new SearchTool();
 		entry = new ActionEntry(action, null);
+		reminderParser = new ReminderPatternParser();
 		loadData();
 	}
 
@@ -159,7 +160,11 @@ public class Logic {
 	 */
 	private void getReminderDateTime(String command, TaskData t) {
 		Object obj = reminderParser.parse(command);
-		if (obj != null) {
+		if (obj == null) {
+			reminderDateTime = null;
+			reminderMinutes = null;
+		}
+		else {
 			if (obj instanceof LocalDateTime) {
 				reminderDateTime = (LocalDateTime) obj;
 			}
@@ -179,10 +184,6 @@ public class Logic {
 							t.getEndDateTime().minusMinutes(reminderMinutes);
 				}
 			}
-		}
-		else {
-			reminderDateTime = null;
-			reminderMinutes = null;
 		}
 	}
 

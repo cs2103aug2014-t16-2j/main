@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 
 public class ReminderPatternParser {
 	
-	private final String INFO_NO_COMMAND_FOR_REMINDER = "No commander to set reminder!\n";
+	private final String INFO_NO_COMMAND_FOR_REMINDER = "Command to set reminder is not found!\n";
 	
 	private final String ERROR_INVALID_DATE_TIME = "Invalid date and time!\n";
 	
