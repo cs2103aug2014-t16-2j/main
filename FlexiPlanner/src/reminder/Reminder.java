@@ -6,6 +6,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import commons.TaskData;
+
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class Reminder {
@@ -17,17 +19,17 @@ public class Reminder {
 	
 	private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 	
-	private final LocalDateTime dateTime;
-	private final String reminderText;
+	private LocalDateTime dateTime;
+	private TaskData task;
 	
-	public Reminder(final LocalDateTime dateTime, final String reminderText) {
+	public Reminder(LocalDateTime dateTime, TaskData task) {
 		this.dateTime = dateTime;
-		this.reminderText = reminderText;
+		this.task = task;
 	}
 
     public void start() {
     	long ms = getDifferenceInMilliseconds();
-    	scheduleReminder(ms, reminderText);
+    	scheduleReminder(ms, task.getActualContent());
     	
     	try {
 			TimeUnit.MILLISECONDS.sleep(5);
@@ -58,13 +60,14 @@ public class Reminder {
         return then.getTimeInMillis()-now.getTimeInMillis();
     }
 
-    private void scheduleReminder(long ms, final String reminderText) {
+    private void scheduleReminder(long ms, String reminderText) {
         scheduler.schedule(new Runnable() {
             @Override
             public void run() {
                 ReminderPopup popup = new ReminderPopup();
                 popup.reminderPopup(reminderText);
                 stop();
+                task.clearReminder();
             }
         }, ms, MILLISECONDS);
     }

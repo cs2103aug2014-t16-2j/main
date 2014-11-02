@@ -1,6 +1,7 @@
 package commons;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.json.simple.JSONObject;
 
@@ -17,6 +18,7 @@ import storage.JsonConverter;
 public class TaskData {
 	
 	private String content; 
+	private String actualContent;
 	private String category;
 	private String priority;
 	private LocalDateTime startDateTime;
@@ -46,6 +48,7 @@ public class TaskData {
 	public TaskData(String content, String category, String priority, 
 			LocalDateTime startDateTime, LocalDateTime endDateTime) {
 		this.setContent(content);
+		this.setActualContent(content);
 		this.setCategory(category);
 		this.setPriority(priority);
 		this.setStartDateTime(startDateTime);
@@ -59,6 +62,10 @@ public class TaskData {
 
 	public String getContent() {
 		return content;
+	}
+	
+	public String getActualContent() {
+		return actualContent;
 	}
 	
 	public String getCategory() {
@@ -94,6 +101,10 @@ public class TaskData {
 	public void setContent(String content) {
 		this.content = content;
 	}
+	
+	public void setActualContent(String actualContent) {
+		this.actualContent = actualContent;
+	}
 
 	public void setCategory(String category) {
 		this.category = category;
@@ -121,7 +132,9 @@ public class TaskData {
 	
 	public void setReminder() {
 		if (remindDateTime != null) {
-			this.reminder = new Reminder(this.remindDateTime, this.content);
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy HH:mm");
+			content = actualContent + " [reminder: " + remindDateTime.format(formatter) + "]"; 
+			reminder = new Reminder(remindDateTime, this);
 			reminder.start();
 		}
 	}
@@ -130,6 +143,7 @@ public class TaskData {
 		if (remindDateTime != null) {
 			reminder.stop();
 			setRemindDateTime(null);
+			content = actualContent;
 		}
 	}
 	
