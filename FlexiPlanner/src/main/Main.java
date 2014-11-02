@@ -22,7 +22,7 @@ public class Main {
 			e.printStackTrace();
 		}
 		
-		Tray systemTray = new Tray(userInterface, FlexiPlannerUI.getJFrame());
+		Tray systemTray = new Tray(userInterface);
 		systemTray.createSystemTray();
 	}
 }

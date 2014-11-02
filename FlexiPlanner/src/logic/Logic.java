@@ -943,7 +943,7 @@ public class Logic {
 	}
 
 	// @author A0112066U
-	private void saveData() throws IOException {
+	public void saveData() throws IOException {
 		storer.saveTasks(filePath, taskList);
 	}
 
