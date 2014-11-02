@@ -498,7 +498,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private void setDisplayTaskTableProperties() {
 		displaytaskTable.setModel(displayTasksTableDTM);
 		displaytaskTable.setCellSelectionEnabled(false);
-		displaytaskTable.setRowHeight(20);
+		displaytaskTable.setRowHeight(40);
 		displaytaskTable.getColumnModel().getColumn(0).setPreferredWidth(30);
 		displaytaskTable.getColumnModel().getColumn(1).setPreferredWidth(55);
 		displaytaskTable.getColumnModel().getColumn(2).setPreferredWidth(65);
