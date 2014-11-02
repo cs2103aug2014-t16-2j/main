@@ -549,7 +549,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		}
 		displaytaskTable.setDefaultRenderer(displaytaskTable.getColumnClass(0),
 				new TasksTableRenderer());// using Calendar1Renderer class to
-		// set
+											// set
 	}
 	
 	// @author A0111770R
