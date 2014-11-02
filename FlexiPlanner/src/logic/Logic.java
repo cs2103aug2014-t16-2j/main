@@ -9,13 +9,28 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.Stack;
+
 import org.json.simple.parser.ParseException;
+
 import commons.TaskData;
 import parser.*;
 import reminder.ReminderPatternParser;
 import storage.*;
 
 public class Logic {
+	private static final String MSG_ERROR = "Error. ";
+	private static final String MSG_ASK_FOR_TIME = "Please provide start and end time";
+	private static final String MSG_SUCCESSFUL = "Successful. ";
+	private static final String MSG_TIME_SPECIFIED = "You must specify start time and end time";
+	private static final String MSG_CANNOT_UNDO = "Cannot undo anymore";
+	private static final String MSG_CANNOT_REDO_ANYMORE = "Cannot redo anymore";
+	private static final String MSG_INDEX_OUT_OF_BOUND = "Index out of bound";
+	private static final String MSG_NO_TASK_FOUND = "No task found";
+	private static final String MSG_NO_TASK_SPCIFIED = "No task spcified";
+	private static final String MSG_ERROR_WHILE_SAVING_DATA = "Error while saving data";
+	private static final String MSG_EXISTING_TASK = "This task has been existing";
+	private static final String MSG_CLASHES = "This task clashes with a blocked slot";
+	private static final String MSG_EMPTY_INPUT = "Empty input";
 	private Command command;
 	private Task task;
 	private HashMap<String, HashMap<DateInfo, TaskData>> taskIdentifier;
@@ -31,12 +46,12 @@ public class Logic {
 	private ArrayList<TaskData> taskList;
 	private ArrayList<TaskData> completedTask;
 	private ArrayList<TaskData> blockedList;
-	String blockedPath = "blocked.json";
-	String filePath = "text.json";
-	String completedpath = "completed.json";
+	private String blockedPath = "blocked.json";
+	private String filePath = "text.json";
+	private String completedpath = "completed.json";
 	boolean isSuspendedAction = false;
-	Action suspendingAction;
-	ArrayList<TaskData> F3DisplayedList;
+	private Action suspendingAction;
+	private ArrayList<TaskData> F3DisplayedList;
 	private ReminderPatternParser reminderParser;
 	private LocalDateTime reminderDateTime;
 	private Integer reminderMinutes;
@@ -46,14 +61,6 @@ public class Logic {
 	// ------------------Constructor-------------------------//
 	public Logic() throws FileNotFoundException, IOException, ParseException {
 		storer = FileStorage.getInstance();
-		// Sorry Duy! I applied singleton pattern for now so I can modify
-		// storage without the need to modify
-		// logic all the way. Hope you understand.
-		// Because i feel not good modifying your part although I just wanna
-		// make your work easier.
-		// storerForCompleted = new FileStorage(); // For
-		// compeleted
-		// task
 		storer.setupDatabase(filePath); // act upon changes made in storage
 		storer.setupDatabase(completedpath); // act upon changes
 		storer.setupDatabase(blockedPath); // made in storage
@@ -73,26 +80,6 @@ public class Logic {
 		loadData();
 	}
 
-	// -------------------------------Main-----------------------------------//
-	public static void main(String[] args) {
-		try {
-			Logic logic;
-			logic = new Logic();
-			while (true) {
-				String command = sc.nextLine();
-				logic.executeInputCommand(command);
-			}
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
 	// ---------------------------------Method-----------------------------//
 	// load all data saved in the file
@@ -128,11 +115,11 @@ public class Logic {
 		boolean isSuccessful;
 		isSuccessful = executeCommand(command, task);
 		if (isSuccessful)
-			return "Successful";
+			return MSG_SUCCESSFUL;
 		else if (isSuspendedAction)
-			return "Please provide start and end time";
+			return MSG_ASK_FOR_TIME;
 		else
-			return "Error. ";
+			return MSG_ERROR;
 	}
 
 	// this method is to extract command and task from input command
@@ -235,18 +222,20 @@ public class Logic {
 	private boolean addTask(TaskData task) {
 		String content = task.getContent();
 		if (content == null || content.isEmpty()) {
-			System.out.println("Empty input");
+			System.out.println(MSG_EMPTY_INPUT);
 			return false;
 		}
 		if (task.getStartDateTime() != null && task.getEndDateTime() != null
-				&& isClashingWithBlockedSlots(task))
+				&& isClashingWithBlockedSlots(task)) {
+			System.out.println(MSG_CLASHES);
 			return false;
+		}
 		if (taskIdentifier.containsKey(content)) {
 			HashMap<DateInfo, TaskData> map = taskIdentifier.get(content);
 			TaskData t = searchTool.findExactTask(task, map);
 			// this is to determine whether the task has been added
 			if (t != null) {
-				System.out.println("Task has been created");
+				System.out.println(MSG_EXISTING_TASK);
 				return false;
 			} else {
 				map.put(new DateInfo(task.getStartDateTime(), task
@@ -271,7 +260,7 @@ public class Logic {
 		try {
 			storer.saveTasks(filePath, taskList);
 		} catch (Exception e) {
-			System.out.println("Error while saving data");
+			System.out.println(MSG_ERROR_WHILE_SAVING_DATA);
 			return false;
 		}
 		return true;
@@ -296,6 +285,7 @@ public class Logic {
 		if (isInteger(content))
 			return deleteIndex(Integer.parseInt(content), unredo);
 		if (content == null || content.isEmpty()) {
+			System.out.print(MSG_NO_TASK_SPCIFIED);
 			return false;
 		}
 		if (taskIdentifier.containsKey(content)) {
@@ -353,15 +343,17 @@ public class Logic {
 				t.setPriority(toDelete.getPriority());
 				action = new Action(Command.DELETE, t);
 			} else {
+				System.out.print(MSG_NO_TASK_FOUND);
 				return false;
 			}
 		} else {
+			System.out.print(MSG_NO_TASK_FOUND);
 			return false;
 		}
 		try {
 			saveData();
 		} catch (IOException e) {
-			System.out.println("Error while saving data");
+			System.out.println(MSG_ERROR_WHILE_SAVING_DATA);
 			return false;
 		}
 		return true;
@@ -372,7 +364,7 @@ public class Logic {
 		ArrayList<TaskData> displayedList = getDisplayedList();
 		int size = displayedList.size();
 		if (index < 1 || index > size) {
-			System.out.print("Error-----------");
+			System.out.print(MSG_INDEX_OUT_OF_BOUND);
 			return false;
 		} else {
 			TaskData task = displayedList.get(index - 1);
@@ -384,6 +376,7 @@ public class Logic {
 	// @author A0112066U
 	private boolean redo() throws IOException, ParseException {
 		if (redoList.isEmpty()) {
+			System.out.print(MSG_CANNOT_REDO_ANYMORE);
 			return false;
 		}
 		ActionEntry ae = redoList.pop();
@@ -419,6 +412,7 @@ public class Logic {
 	private boolean undo() {
 		boolean isSuccessful = false;
 		if (actionList.isEmpty()) {
+			System.out.print(MSG_CANNOT_UNDO);
 			return isSuccessful;
 		}
 		ActionEntry x = actionList.pop();
@@ -537,11 +531,12 @@ public class Logic {
 		else
 			content = task.getContent();
 		if (content == null || content.isEmpty()) {
-			System.out.print("No task to modify.");
+			System.out.print(MSG_NO_TASK_SPCIFIED);
 			return false;
 		}
 		if (task.getStartDateTime() != null && task.getEndDateTime() != null
 				&& isClashingWithBlockedSlots(toTaskData(task))) {
+			System.out.print(MSG_CLASHES);
 			return false;
 		}
 		if (!isInteger(content.substring(0, 1))) {
@@ -632,7 +627,7 @@ public class Logic {
 				toFind.setEndDateTime(oldEndTime);
 			toFind = searchTool.findExactTask(toFind, _listTaskToEdit);
 			if (toFind != null && toFind != taskToModify) {
-				System.out.print("A same task already exists");
+				System.out.print(MSG_EXISTING_TASK);
 				return false;
 			}
 			deleteTask(taskToModify, false);
@@ -675,12 +670,13 @@ public class Logic {
 			action = new Action(Command.MODIFY, _task);
 			entry = new ActionEntry(action, t);
 		} else {
+			System.out.print(MSG_NO_TASK_FOUND);
 			return false;
 		}
 		try {
 			saveData();
 		} catch (IOException e) {
-			System.out.println("Error while saving data");
+			System.out.println(MSG_ERROR_WHILE_SAVING_DATA);
 			return false;
 		}
 		return true;
@@ -693,7 +689,7 @@ public class Logic {
 		ArrayList<TaskData> displayedList = getDisplayedList();
 		int size = displayedList.size();
 		if (index < 1 || index > size) {
-			System.out.print("Error-----------");
+			System.out.print(MSG_INDEX_OUT_OF_BOUND);
 			return false;
 		} else {
 			TaskData _task = displayedList.get(index - 1);
@@ -791,7 +787,7 @@ public class Logic {
 			saveData();
 			saveCompletedTask();
 		} catch (IOException e) {
-			System.out.println("Unsuccessful");
+			System.out.println(MSG_ERROR_WHILE_SAVING_DATA);
 			return false;
 		}
 		return isSuccessful;
@@ -805,7 +801,7 @@ public class Logic {
 			saveData();
 			saveCompletedTask();
 		} catch (IOException e) {
-			System.out.println("Error while saving data");
+			System.out.println(MSG_ERROR_WHILE_SAVING_DATA);
 		}
 		return true;
 		// System.exit(0);
@@ -817,6 +813,7 @@ public class Logic {
 			LocalDateTime _start = _task.getStartDateTime();
 			LocalDateTime _end = _task.getEndDateTime();
 			if (_start == null || _end == null) {
+				System.out.print(MSG_TIME_SPECIFIED);
 				return false;
 			}
 			block.addAll(block(_task));
@@ -832,6 +829,7 @@ public class Logic {
 			LocalDateTime _start = _task.getStartDateTime();
 			LocalDateTime _end = _task.getEndDateTime();
 			if (_start == null || _end == null) {
+				System.out.print(MSG_TIME_SPECIFIED);
 				return false;
 			}
 			unblock.addAll(unblock(_task));
@@ -971,6 +969,9 @@ public class Logic {
 				taskToCome.add(_task);
 			} else if (et != null && et.isAfter(today) && et.isBefore(tomorrow)) {
 				taskToCome.add(_task);
+			} else if (st != null && et != null
+					&& isClash(st, et, today, tomorrow)) {
+				taskToCome.add(_task);
 			}
 		}
 		return taskToCome;
@@ -1041,6 +1042,9 @@ public class Logic {
 				task.add(_task);
 			} else if (et != null && et.isAfter(startTime)
 					&& et.isBefore(endTime)) {
+				task.add(_task);
+			} else if (st != null && et != null
+					&& isClash(st, et, startTime, endTime)) {
 				task.add(_task);
 			}
 		}
