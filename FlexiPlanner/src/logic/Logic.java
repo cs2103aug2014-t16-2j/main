@@ -13,8 +13,8 @@ import java.util.Stack;
 import org.json.simple.parser.ParseException;
 
 import commons.TaskData;
+
 import parser.*;
-import reminder.ReminderPatternParser;
 import storage.*;
 
 public class Logic {
@@ -39,11 +39,6 @@ public class Logic {
 	boolean isSuspendedAction = false;
 	Action suspendingAction;
 	ArrayList<TaskData> F3DisplayedList;
-	
-	private ReminderPatternParser reminderParser;
-	
-	private LocalDateTime reminderDateTime;
-	private Integer reminderMinutes;
 
 	int currentDisplayList;
 	static Scanner sc = new Scanner(System.in);
@@ -74,7 +69,6 @@ public class Logic {
 		parser = new Parser();
 		searchTool = new SearchTool();
 		entry = new ActionEntry(action, null);
-		reminderParser = new ReminderPatternParser();
 		loadData();
 	}
 
@@ -130,7 +124,6 @@ public class Logic {
 			_command = " ";
 		}
 		extractCommandandTask(_command);
-		System.out.print("here");
 		boolean isSuccessful;
 		isSuccessful = executeCommand(command, task);
 		if (isSuccessful)
@@ -152,38 +145,6 @@ public class Logic {
 			command = suspendingAction.getCommand();
 			Task t = suspendingAction.getTask();
 			task.setContent(t.getContent());
-		}
-		getReminderDateTime(_command, toTaskData(task)); // get reminder date/time
-	}
-	/**
-	 * get reminder date and time from reminder parser
-	 */
-	private void getReminderDateTime(String command, TaskData t) {
-		Object obj = reminderParser.parse(command);
-		
-		if (obj == null) {
-			reminderDateTime = null;
-			reminderMinutes = null;
-		}
-		else if (obj instanceof LocalDateTime) {
-			reminderDateTime = (LocalDateTime) obj;
-		}
-		else if (obj instanceof Integer) {
-			reminderMinutes = (Integer) obj;
-			
-			if ((t.getStartDateTime() == null) &&
-					(t.getEndDateTime() == null)) {
-
-				reminderDateTime = null;
-			}
-			else if (t.getStartDateTime() != null) {
-				reminderDateTime =
-						t.getStartDateTime().minusMinutes(reminderMinutes);
-			}
-			else if (t.getEndDateTime() != null) {
-				reminderDateTime =
-						t.getEndDateTime().minusMinutes(reminderMinutes);
-			}
 		}
 	}
 
@@ -222,12 +183,16 @@ public class Logic {
 				actionList.push(new ActionEntry(action, null));
 			return isSuccessful;
 		case BLOCK:
-			isSuccessful = block(toTaskData(task));
+			ArrayList<TaskData> block = new ArrayList<TaskData>();
+			block.add(toTaskData(task));
+			isSuccessful = block(block);
 			if (isSuccessful)
 				actionList.push(new ActionEntry(action, null));
 			return isSuccessful;
 		case UNBLOCK:
-			isSuccessful = unblock(toTaskData(task));
+			ArrayList<TaskData> unblock = new ArrayList<TaskData>();
+			unblock.add(toTaskData(task));
+			isSuccessful = unblock(unblock);
 			if (isSuccessful)
 				actionList.push(new ActionEntry(action, null));
 			return isSuccessful;
@@ -266,19 +231,6 @@ public class Logic {
 			map.put(new DateInfo(task.getStartDateTime(), task.getEndDateTime()),
 					task);
 		}
-		
-		/** set reminder **/
-
-		if (reminderDateTime != null) {
-			task.setRemindDateTime(reminderDateTime);
-			task.setReminder();
-		}
-		else {
-			System.out.println("Reminder date and time is not set!");
-		}
-		
-		/** **/
-		
 		taskList.add(task);
 		F2DisplayedList.add(0, task);
 		try {
@@ -354,7 +306,6 @@ public class Logic {
 							toDelete.getEndDateTime());
 					toDeleteList.remove(d);
 				}
-				toDelete.clearReminder(); // to kill the background reminder app
 				taskList.remove(toDelete);
 				if (F2DisplayedList.contains(toDelete)) {
 					F2DisplayedList.remove(toDelete);
@@ -415,9 +366,9 @@ public class Logic {
 		case MARK:
 			return markAsDone(task, true);
 		case BLOCK:
-			return block(_task);
+			return undoUnblock(done);
 		case UNBLOCK:
-			return unblock(_task);
+			return undoBlock(done);
 		default:
 			return false;
 		}
@@ -511,9 +462,10 @@ public class Logic {
 	}
 
 	private boolean undoBlock(Action done) {
-		Task task = done.getTask();
 		boolean isSuccessful = false;
-		isSuccessful = unblock(toTaskData(task));
+		ArrayList<TaskData> blockList = blockSlot.pop();
+		isSuccessful = unblock(blockList);
+		unblockSlot.push(blockList);
 		if (isSuccessful) {
 			redoList.push(new ActionEntry(done, null));
 		} else {
@@ -523,9 +475,10 @@ public class Logic {
 	}
 
 	private boolean undoUnblock(Action done) {
-		Task task = done.getTask();
 		boolean isSuccessful = false;
-		isSuccessful = block(toTaskData(task));
+		ArrayList<TaskData> blockList = unblockSlot.pop();
+		isSuccessful = block(blockList);
+		blockSlot.push(blockList);
 		if (isSuccessful) {
 			redoList.push(new ActionEntry(done, null));
 		} else {
@@ -839,7 +792,26 @@ public class Logic {
 			}
 			block.addAll(block(_task));
 		}
+		blockSlot.push(block);
+		storer.saveTasks(blockedPath, blockedList);
 		
+		return true;
+	}
+	
+	private boolean unblock (ArrayList<TaskData> blocks) {
+		ArrayList<TaskData> unblock = new ArrayList<TaskData>();
+		
+		for(TaskData _task : blocks) {
+			LocalDateTime _start = _task.getStartDateTime();
+			LocalDateTime _end = _task.getEndDateTime();
+			if (_start == null || _end == null) {
+				return false;
+			}
+			unblock.addAll(unblock(_task));
+		}
+		unblockSlot.push(unblock);
+		storer.saveTasks(blockedPath, blockedList);
+		return true;
 	}
 	private ArrayList<TaskData> block(TaskData task) {
 		LocalDateTime start = task.getStartDateTime();
@@ -872,9 +844,6 @@ public class Logic {
 	private ArrayList<TaskData> unblock(TaskData task) {
 		LocalDateTime start = task.getStartDateTime();
 		LocalDateTime end = task.getEndDateTime();
-		if (start == null || end == null) {
-			return null;
-		}
 		ArrayList<TaskData> copy = new ArrayList<TaskData>(blockedList);
 		ArrayList<TaskData> unblocked = new ArrayList<TaskData>();
 		for (TaskData _task : copy) {
