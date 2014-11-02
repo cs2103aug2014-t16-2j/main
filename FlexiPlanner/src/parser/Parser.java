@@ -695,7 +695,6 @@ public class Parser {
 		} else if (mayBeTime) {
 			s.add(time);
 		}
-		System.out.println(mayBeTime);
 		if (mayBeTime) {
 			lt = getTime(s, hrToAdd);
 			if (lt != null) {
@@ -934,7 +933,6 @@ public class Parser {
 			} else if (hr < 12) {
 				hr += hrToAdd;
 			}
-			System.out.println(hr+" "+min);
 			if (isValidTime(hr, min)) {
 				return LocalTime.of(hr, min);
 			}
