@@ -147,7 +147,7 @@ public class ReminderPatternParser {
 				isValid = false;
 			}
 			
-			if (matcher.group(7) != null) {
+			if ((matcher.group(7) != null) && !(matcher.group(7).isEmpty())) {
 				isValid = hour <= 12;
 				if (matcher.group(7).equalsIgnoreCase("pm")) {
 					hour += 12;
@@ -161,7 +161,7 @@ public class ReminderPatternParser {
 					}
 				}
 			}
-			
+
 			break;
 			
 		case 3: 
@@ -171,7 +171,7 @@ public class ReminderPatternParser {
 			day = Integer.valueOf(matcher.group(2));
 			month = Integer.valueOf(matcher.group(4));
 			
-			if (matcher.group(7) != null) {
+			if ((matcher.group(7) != null) && !(matcher.group(7).isEmpty())) {
 				year = Integer.valueOf(matcher.group(6)+matcher.group(7));
 			}
 			else {
@@ -180,7 +180,7 @@ public class ReminderPatternParser {
 			
 			hour = Integer.valueOf(matcher.group(8));
 			
-			if (matcher.group(10) != null) {
+			if ((matcher.group(10) != null) && !(matcher.group(10).isEmpty())) {
 				minute = Integer.valueOf(matcher.group(10));
 			}
 			else {
@@ -194,7 +194,7 @@ public class ReminderPatternParser {
 				isValid = false;
 			}
 			
-			if (matcher.group(11) != null) {
+			if ((matcher.group(11) != null) && !(matcher.group(11).isEmpty())) {
 				isValid = hour <= 12;
 				if (matcher.group(11).equalsIgnoreCase("pm")) {
 					hour += 12;

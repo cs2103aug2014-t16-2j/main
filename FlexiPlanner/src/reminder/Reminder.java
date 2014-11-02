@@ -66,8 +66,8 @@ public class Reminder {
             public void run() {
                 ReminderPopup popup = new ReminderPopup();
                 popup.reminderPopup(reminderText);
-                stop();
                 task.clearReminder();
+                stop();
             }
         }, ms, MILLISECONDS);
     }
