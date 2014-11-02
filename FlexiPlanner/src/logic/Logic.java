@@ -486,10 +486,16 @@ public class Logic {
 	// @author A0112066U
 	private boolean modifyTask(Task task, Task t, boolean unredo) {
 		String content;
-		if (t != null) content = t.getContent();
-		else content = task.getContent();
+		if (t != null)
+			content = t.getContent();
+		else
+			content = task.getContent();
 		if (content == null || content.isEmpty()) {
 			System.out.print("No task to modify.");
+			return false;
+		}
+		if (task.getStartDateTime() != null && task.getEndDateTime() != null
+				&& isClashingWithBlockedSlots(toTaskData(task))) {
 			return false;
 		}
 		if (!isInteger(content.substring(0, 1))) {
@@ -625,7 +631,7 @@ public class Logic {
 			t.setContent(newContent);
 			_task.setContent(content);
 			addTask(taskToModify);
-			
+
 			System.out.println(toTaskData(_task));
 			System.out.println(toTaskData(t));
 
@@ -770,12 +776,23 @@ public class Logic {
 		// System.exit(0);
 	}
 
-	private boolean block(TaskData task) {
+	private boolean block (ArrayList<TaskData> blocks) {
+		ArrayList<TaskData> block = new ArrayList<TaskData>();
+		
+		for(TaskData _task : blocks) {
+			LocalDateTime _start = _task.getStartDateTime();
+			LocalDateTime _end = _task.getEndDateTime();
+			if (_start == null || _end == null) {
+				return false;
+			}
+			block.addAll(block(_task));
+		}
+		
+	}
+	private ArrayList<TaskData> block(TaskData task) {
 		LocalDateTime start = task.getStartDateTime();
 		LocalDateTime end = task.getEndDateTime();
-		if (start == null || end == null) {
-			return false;
-		}
+		
 		blockedList.add(task);
 		ArrayList<TaskData> copy = new ArrayList<TaskData>(blockedList);
 		for (TaskData _task : copy) {
@@ -792,23 +809,30 @@ public class Logic {
 				blockedList.remove(_task);
 			}
 		}
-		storer.saveTasks(blockedPath, blockedList);
-		return true;
+		ArrayList<TaskData> block = new ArrayList<TaskData>();
+		block.add(new TaskData(null, null, null, start, end));
+		return block;
 	}
 
-	private boolean unblock(TaskData task) {
+	Stack<ArrayList<TaskData>> unblockSlot = new Stack<ArrayList<TaskData>>();
+	Stack<ArrayList<TaskData>> blockSlot = new Stack<ArrayList<TaskData>>();
+
+	private ArrayList<TaskData> unblock(TaskData task) {
 		LocalDateTime start = task.getStartDateTime();
 		LocalDateTime end = task.getEndDateTime();
 		if (start == null || end == null) {
-			return false;
+			return null;
 		}
 		ArrayList<TaskData> copy = new ArrayList<TaskData>(blockedList);
+		ArrayList<TaskData> unblocked = new ArrayList<TaskData>();
 		for (TaskData _task : copy) {
 			LocalDateTime _start = _task.getStartDateTime();
 			LocalDateTime _end = _task.getEndDateTime();
 			if (isClash(start, end, _start, _end)) {
-				if (start.isBefore(_start) && end.isAfter(_end)) {
+				if ((start.isBefore(_start) || start.equals(_start))
+						&& (end.isAfter(_end) || end.equals(_end))) {
 					blockedList.remove(_task);
+					unblocked.add(new TaskData(null, null, null, _start, _end));
 					continue;
 				}
 				if (_start.isBefore(start) && _end.isAfter(end)) {
@@ -820,24 +844,26 @@ public class Logic {
 					t.setEndDateTime(_end);
 					blockedList.add(0, t);
 					blockedList.add(0, _task);
+					unblocked.add(new TaskData(null, null, null, start, end));
 					continue;
 				}
 				if (start.isBefore(_start) && end.isBefore(_end)) {
 					blockedList.remove(_task);
 					_task.setStartDateTime(end);
 					blockedList.add(_task);
+					unblocked.add(new TaskData(null, null, null, _start, end));
 					continue;
 				}
 				if (_start.isBefore(start) && _end.isBefore(end)) {
 					blockedList.remove(_task);
 					_task.setEndDateTime(start);
 					blockedList.add(_task);
+					unblocked.add(new TaskData(null, null, null, start, _end));
 					continue;
 				}
 			}
 		}
-		storer.saveTasks(blockedPath, blockedList);
-		return true;
+		return unblocked;
 	}
 
 	private LocalDateTime chooseStart(LocalDateTime start1, LocalDateTime start2) {
