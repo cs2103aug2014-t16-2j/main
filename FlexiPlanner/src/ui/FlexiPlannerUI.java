@@ -46,6 +46,7 @@ import com.tulskiy.keymaster.common.HotKeyListener;
  *
  * @author Eugene Tan Teck Li(A0111770R)
  */
+//@A0111770R
 public class FlexiPlannerUI implements HotKeyListener {
 	private JLabel displayedMonth, displayedYear;
 	private JLabel showUserGuideLabel;
@@ -550,7 +551,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 				new TasksTableRenderer());// using Calendar1Renderer class to
 		// set
 	}
-
+	
+	// @author A0111770R
 	class TasksTableRenderer extends DefaultTableCellRenderer {
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean selected, boolean focused, int row,

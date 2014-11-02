@@ -21,11 +21,31 @@ import javax.swing.JLabel;
 
 public class ReminderPopup {
 	
-	private static int counter = 0;
-	
 	private float[] hsbvals = {0, 0, 0};
+	
+	private static int[] identity = {1, 2, 3, 4, 5, 6};
+	
+	private int uniqueIdentifier = 0;
+	
+	
+	public ReminderPopup() {
+		for (int i = 0; i < 6; i++) {
+			if (identity[i] != 0) {
+				uniqueIdentifier = identity[i];
+				identity[i] = 0;
+				break;
+			}
+			if (identity[i] == 0 && i == 5) {
+				for (int j = 0; j < 6; j++) {
+					identity[j] = j + 1;
+				}
+				uniqueIdentifier = 1;
+				identity[0] = 0;
+			}
+		}
+	}
 
-	public ReminderPopup(final String content) {
+	public void reminderPopup(final String content) {
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setUndecorated(true);
@@ -55,21 +75,16 @@ public class ReminderPopup {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				frame.dispose();
-				counter--;
+				identity[uniqueIdentifier - 1] = uniqueIdentifier;
 			}
 		});
 		
-		counter++;
-		if (counter == 7) {
-			counter = 1;
-		}
-		
-		frame.setLocation((int) (GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().getWidth() - 300), 30 + (((counter-1) * 110)));
+		frame.setLocation((int) (GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().getWidth() - 300), 30 + (((uniqueIdentifier - 1) * 110)));
 		frame.setAlwaysOnTop(true);
 		frame.setVisible(true);
 
 		try {
-			File soundFile = new File("reminder.wav");
+			File soundFile = new File("reminder2.wav");
 			AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
 			Clip clip = AudioSystem.getClip();
 			clip.open(audioIn);

@@ -20,25 +20,35 @@ import java.util.regex.Pattern;
  * command 1 : collect movie ticket from box office tomorrow "remind me 3hours before"
  * command 2 : tutorial paper submission tomorrow "set reminder 1h before"
  * command 3 : production meeting on 10 November "9 nov 8am"
- * command 4 : shop groceries for kitchen "remind me 10-11-14" (dd-mm-yy) or (dd-mm-yyyy)
- * command 5 : attend customer meeting next week "reminder me 10/11/14 830am"
+ * command 4 : shop groceries for kitchen "remind me 10-11-14 0700" (dd-mm-yy) or (dd-mm-yyyy)
+ * command 5 : attend customer meeting next week "reminder me 10/11/14 0830am"
+ * command 6 : submit report "reminder me on 10/11/14 8:30am"
  *
  */
 
 public class ReminderPatternParser {
 	
-	private final String INFO_NO_COMMAND_FOR_REMINDER = "No commander to set reminder!\n";
+	private final String INFO_NO_COMMAND_FOR_REMINDER = "Command to set reminder is not found!\n";
 	
 	private final String ERROR_INVALID_DATE_TIME = "Invalid date and time!\n";
 	
+	private final int NO_PATTERN = 0;
 	private final int R_PATTERN_1 = 1;
 	private final int R_PATTERN_2 = 2;
 	private final int R_PATTERN_3 = 3;
-	private final int NO_PATTERN = 0;
+	private final int YEAR_OF_TODAY = 2000;
 	
-	private final String PATTERN_1 = "(?i).*\\s*\"{1}(\\s*\\w*\\s+)*(\\d{1,2})\\s*(m|min|mins|minute|minutes|h|hr|hrs|hour|hours)(\\s+\\w*)*\"{1}(\\s+.*)*";
-	private final String PATTERN_2 = "(?i).*\\s*\"{1}(\\s*\\w*\\s+)*(\\d{1,2})\\s*(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july|aug|august|sep|september|oct|october|nov|november|dec|december|)\\s+(\\d{1,2})(\\d{1,2})*\\s*(am|pm|)(\\s+\\w*)*\"{1}(\\s+.*)*";
-	private final String PATTERN_3 = "(?i).*\\s*\"{1}(\\s*\\w*\\s+)*(\\d{1,2})(\\-|\\/|\\\\)(\\d{1,2})(\\-|\\/|\\\\)(\\d{1,2})(\\d{1,2})*\\s*(\\d{1,2})(\\d{1,2})*\\s*(am|pm|)(\\s+\\w*)*\"{1}(\\s+.*)*";
+	private final String PATTERN_1 = "(?i).*\\s*\"{1}(\\s*\\w*\\s+)*(\\d{1,2})\\s*"
+			+ "(m|min|mins|minute|minutes|h|hr|hrs|hour|hours)(\\s+\\w*)*\"{1}(\\s+.*)*";
+	
+	private final String PATTERN_2 = "(?i).*\\s*\"{1}(\\s*\\w*\\s+)*(\\d{1,2})\\s*"
+			+ "(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july"
+			+ "|aug|august|sep|september|oct|october|nov|november|dec|december|)"
+			+ "\\s+(\\d{1,2})(:)?(\\d{1,2})?\\s*(am|pm|)(\\s+\\w*)*\"{1}(\\s+.*)*";
+	
+	private final String PATTERN_3 = "(?i).*\\s*\"{1}(\\s*\\w*\\s+)*(\\d{1,2})(\\-|\\/|\\\\)"
+			+ "(\\d{1,2})(\\-|\\/|\\\\)(\\d{1,2})(\\d{1,2})?\\s*(\\d{1,2})(:)?(\\d{1,2})?\\s*"
+			+ "(am|pm|)(\\s+\\w*)*\"{1}(\\s+.*)*";
 	
 	private final String[] months = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"};
 	private final List<String> monthList = (List<String>) Arrays.asList(months);
@@ -123,8 +133,8 @@ public class ReminderPatternParser {
 			year = 2014;
 			hour = Integer.valueOf(matcher.group(4));
 			
-			if (matcher.group(5) != null) {
-				minute = Integer.valueOf(matcher.group(5));
+			if (matcher.group(6) != null) {
+				minute = Integer.valueOf(matcher.group(6));
 			}
 			else {
 				minute = 0;
@@ -137,15 +147,15 @@ public class ReminderPatternParser {
 				isValid = false;
 			}
 			
-			if (matcher.group(6) != null) {
+			if (matcher.group(7) != null) {
 				isValid = hour <= 12;
-				if (matcher.group(6).equalsIgnoreCase("pm")) {
+				if (matcher.group(7).equalsIgnoreCase("pm")) {
 					hour += 12;
 					if (hour >= 24) {
 						hour = 0;
 					}
 				}
-				else if (matcher.group(6).equalsIgnoreCase("am")) {
+				else if (matcher.group(7).equalsIgnoreCase("am")) {
 					if (hour == 12) {
 						hour = 0;
 					}
@@ -160,11 +170,18 @@ public class ReminderPatternParser {
 			
 			day = Integer.valueOf(matcher.group(2));
 			month = Integer.valueOf(matcher.group(4));
-			year = Integer.valueOf(matcher.group(6)+matcher.group(7));
+			
+			if (matcher.group(7) != null) {
+				year = Integer.valueOf(matcher.group(6)+matcher.group(7));
+			}
+			else {
+				year = Integer.valueOf(matcher.group(6)) + YEAR_OF_TODAY;
+			}
+			
 			hour = Integer.valueOf(matcher.group(8));
 			
-			if (matcher.group(9) != null) {
-				minute = Integer.valueOf(matcher.group(9));
+			if (matcher.group(10) != null) {
+				minute = Integer.valueOf(matcher.group(10));
 			}
 			else {
 				minute = 0;
@@ -177,15 +194,15 @@ public class ReminderPatternParser {
 				isValid = false;
 			}
 			
-			if (matcher.group(10) != null) {
+			if (matcher.group(11) != null) {
 				isValid = hour <= 12;
-				if (matcher.group(10).equalsIgnoreCase("pm")) {
+				if (matcher.group(11).equalsIgnoreCase("pm")) {
 					hour += 12;
 					if (hour >= 24) {
 						hour = 0;
 					}
 				}
-				else if (matcher.group(10).equalsIgnoreCase("am")) {
+				else if (matcher.group(11).equalsIgnoreCase("am")) {
 					if (hour == 12) {
 						hour = 0;
 					}

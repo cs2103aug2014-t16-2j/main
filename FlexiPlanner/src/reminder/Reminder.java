@@ -4,11 +4,14 @@ import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class Reminder {
-	private final String INFO_TIME_IS_OVER = "The schedule is over!";
+	private final String INFO_TIME_IS_OVER = "The schedule is over!\n";
+	
+	private final String WARNING_INTERRUPTED = "Thread is interrupted!\n";
 	
 	private final int ZERO = 0;
 	
@@ -25,6 +28,12 @@ public class Reminder {
     public void start() {
     	long ms = getDifferenceInMilliseconds();
     	scheduleReminder(ms, reminderText);
+    	
+    	try {
+			TimeUnit.MILLISECONDS.sleep(5);
+		} catch (InterruptedException e) {
+			report(WARNING_INTERRUPTED);
+		}
     }
     
     public void stop() {
@@ -43,7 +52,7 @@ public class Reminder {
         Calendar now = Calendar.getInstance();
         
         if (now.getTimeInMillis() > then.getTimeInMillis()) {
-            System.out.println(INFO_TIME_IS_OVER);
+            report(INFO_TIME_IS_OVER);
         }
 
         return then.getTimeInMillis()-now.getTimeInMillis();
@@ -53,9 +62,14 @@ public class Reminder {
         scheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                new ReminderPopup(reminderText);
+                ReminderPopup popup = new ReminderPopup();
+                popup.reminderPopup(reminderText);
                 stop();
             }
         }, ms, MILLISECONDS);
+    }
+    
+    private void report(final String toReport) {
+    	System.out.print(toReport);
     }
 }

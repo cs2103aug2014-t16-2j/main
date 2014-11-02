@@ -74,8 +74,9 @@ public class Parser {
 			}
 		}
 		if (endIndex != 0) {
-			for (int index = startIndex; index < endIndex + 1; index++) {
-				words.remove(index);
+			while (endIndex >= startIndex) {
+				words.remove(startIndex);
+				endIndex--;
 			}
 		}
 		
@@ -249,7 +250,9 @@ public class Parser {
 					t.setDone(true);
 				}
 				words.remove(index);
-				changeDone(words, index - 1, t);
+				if (index - 1 >= 0) {
+					changeDone(words, index - 1, t);
+				}
 				break;
 			}
 		}
@@ -264,7 +267,7 @@ public class Parser {
 			isDone = t.isDone();
 			switch (word) {
 				case "yet" :
-					if (words.get(index - 1).toLowerCase().equals("not")) {
+					if (index - 1 >= 0 && words.get(index - 1).toLowerCase().equals("not")) {
 						words.remove(index);
 						index--;
 						break;
