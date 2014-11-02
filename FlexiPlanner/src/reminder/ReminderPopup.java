@@ -45,7 +45,7 @@ public class ReminderPopup {
 		}
 	}
 
-	public void reminderPopup(final String content) {
+	public void reminderPopup(String content) {
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setUndecorated(true);
