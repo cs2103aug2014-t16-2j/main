@@ -260,7 +260,7 @@ public class Logic {
 	private boolean deleteTask(TaskData task, boolean unredo) {
 		String content = task.getContent();
 		if (isInteger(content))
-			deleteIndex(Integer.parseInt(content), unredo);
+			return deleteIndex(Integer.parseInt(content), unredo);
 		if (content == null || content.isEmpty()) {
 			return false;
 		}
@@ -320,6 +320,8 @@ public class Logic {
 			} else {
 				return false;
 			}
+		} else {
+			return false;
 		}
 		try {
 			saveData();
@@ -331,15 +333,15 @@ public class Logic {
 	}
 
 	// @author A0112066U
-	private void deleteIndex(int index, boolean unredo) {
+	private boolean deleteIndex(int index, boolean unredo) {
 		ArrayList<TaskData> displayedList = getDisplayedList();
 		int size = displayedList.size();
 		if (index < 1 || index > size) {
 			System.out.print("Error-----------");
-			return;
+			return false;
 		} else {
 			TaskData task = displayedList.get(index - 1);
-			deleteTask(task, unredo);
+			return deleteTask(task, unredo);
 		}
 	}
 
@@ -641,8 +643,6 @@ public class Logic {
 			_task.setContent(content);
 			addTask(taskToModify);
 
-			System.out.println(toTaskData(_task));
-			System.out.println(toTaskData(t));
 
 			action = new Action(Command.MODIFY, _task);
 			entry = new ActionEntry(action, t);
@@ -1110,8 +1110,13 @@ public class Logic {
 			F3DisplayedList = new ArrayList<TaskData>();
 			ArrayList<TaskData> overdue = getOverdue();
 			overdueRow = overdue.size();
+			ArrayList<TaskData> tasksToCome = getTaskToCome();
 			F3DisplayedList.addAll(overdue);
-			F3DisplayedList.addAll(getTaskToCome());
+			F3DisplayedList.addAll(tasksToCome);
+			for (TaskData t : taskList) {
+				if (!overdue.contains(t) && !tasksToCome.contains(t))
+					F3DisplayedList.add(t);
+			}
 
 		}
 		currentDisplayList = 3;
