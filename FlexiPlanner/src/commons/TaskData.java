@@ -2,6 +2,7 @@ package commons;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 
 import org.json.simple.JSONObject;
 
@@ -62,14 +63,14 @@ public class TaskData {
 
 	public String getContent() {
 		if (remindDateTime == null) {
-			return actualContent;
+			return "<html>" + actualContent + "</html>";
 		}
 		
-		return content;
+		return "<html>" + content + "</html>";
 	}
 	
 	public String getActualContent() {
-		return actualContent;
+		return "<html>" + actualContent + "</html>";
 	}
 	
 	public String getCategory() {
@@ -140,7 +141,7 @@ public class TaskData {
 	
 	public void setReminder() {
 		if (remindDateTime != null && reminder == null) {
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm");
+			DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT);
 			content = "<html>" + actualContent + " [reminder: " + remindDateTime.format(formatter) + "]" + "</html>"; 
 			reminder = new Reminder(remindDateTime, this);
 			reminder.start();

@@ -1,13 +1,14 @@
 package reminder;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Calendar;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import commons.TaskData;
-
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class Reminder {
@@ -21,15 +22,40 @@ public class Reminder {
 	
 	private LocalDateTime dateTime;
 	private TaskData task;
+	private String reminderText;
 	
 	public Reminder(LocalDateTime dateTime, TaskData task) {
 		this.dateTime = dateTime;
 		this.task = task;
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT);
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(task.getActualContent());
+		
+		if (task.getStartDateTime() != null && task.getEndDateTime() != null) {
+			sb.append("\n");
+			sb.append("From: " + task.getStartDateTime().format(formatter));
+			sb.append("\n");
+			sb.append("To  : " + task.getEndDateTime().format(formatter));
+		}
+		
+		else if (task.getStartDateTime() != null) {
+			sb.append("\n");
+			sb.append("On: " + task.getStartDateTime().format(formatter));
+		}
+		
+		else if (task.getEndDateTime() != null) {
+			sb.append("\n");
+			sb.append("By: " + task.getEndDateTime().format(formatter));
+		}
+		
+		this.reminderText = sb.toString();
 	}
 
     public void start() {
     	long ms = getDifferenceInMilliseconds();
-    	scheduleReminder(ms, task.getActualContent());
+    	scheduleReminder(ms, reminderText);
     	
     	try {
 			TimeUnit.MILLISECONDS.sleep(5);

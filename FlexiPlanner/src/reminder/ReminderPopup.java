@@ -51,7 +51,7 @@ public class ReminderPopup {
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setUndecorated(true);
-		frame.setSize(300, 100);
+		frame.setSize(400, 100);
 		
 		BorderLayout borderLayout = new BorderLayout(20, 0);
 		frame.getContentPane().setLayout(borderLayout);
@@ -67,7 +67,20 @@ public class ReminderPopup {
 		iconLabel.setIcon(icon);
 		iconLabel.setText("");
 		
-		JLabel contentLabel = new JLabel("<html>" + content + "</html>");
+		JLabel contentLabel;
+		
+		String[] lines = content.split("\\n");
+		
+		if (lines.length == 3) {
+			contentLabel = new JLabel("<html>" + lines[0].trim() + "<br>" + lines[1].trim() + "<br>"+ lines[2].trim() + "</html>");
+		}
+		else if (lines.length == 2) {
+			contentLabel = new JLabel("<html>" + lines[0].trim() + "<br>" + lines[1].trim() + "</html>");
+		}
+		else {
+			contentLabel = new JLabel("<html>" + lines[0].trim() + "</html>");
+		}
+		
 		contentLabel.setFont(new Font("", Font.PLAIN, 18));
 		
 		frame.getContentPane().add(iconLabel, BorderLayout.WEST);
@@ -82,7 +95,7 @@ public class ReminderPopup {
 			}
 		});
 		
-		frame.setLocation((int) (GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().getWidth() - 300), 30 + (((uniqueIdentifier - 1) * 110)));
+		frame.setLocation((int) (GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().getWidth() - 400), 30 + (((uniqueIdentifier - 1) * 110)));
 		frame.setAlwaysOnTop(true);
 		frame.setVisible(true);
 
