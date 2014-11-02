@@ -51,7 +51,7 @@ public class ReminderPopup {
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setUndecorated(true);
-		frame.setSize(400, 100);
+		frame.setSize(350, 100);
 		
 		BorderLayout borderLayout = new BorderLayout(20, 0);
 		frame.getContentPane().setLayout(borderLayout);

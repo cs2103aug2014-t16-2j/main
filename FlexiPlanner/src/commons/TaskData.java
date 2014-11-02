@@ -63,14 +63,14 @@ public class TaskData {
 
 	public String getContent() {
 		if (remindDateTime == null) {
-			return "<html>" + actualContent + "</html>";
+			return actualContent;
 		}
 		
-		return "<html>" + content + "</html>";
+		return content;
 	}
 	
 	public String getActualContent() {
-		return "<html>" + actualContent + "</html>";
+		return actualContent;
 	}
 	
 	public String getCategory() {
