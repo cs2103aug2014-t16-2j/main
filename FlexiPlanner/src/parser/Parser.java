@@ -295,23 +295,23 @@ public class Parser {
 		LocalDateTime endDateTime = t.getEndDateTime();
 		if (startDateTime != null) {
 			if (startDateTime.getYear() == 0) {
-				t.setStartDateTime(LocalDateTime.now().withHour(startDateTime.getHour()).withMinute(startDateTime.getMinute()).withSecond(startDateTime.getSecond()));
+				t.setStartDateTime(LocalDateTime.of(LocalDate.now(), LocalTime.of(startDateTime.getHour(), startDateTime.getMinute())));
 				startDateTime = t.getStartDateTime();
 			}
 			if (endDateTime != null) {
 				if (endDateTime.getYear() == 0) {
-					t.setEndDateTime(startDateTime.withHour(endDateTime.getHour()).withMinute(endDateTime.getMinute()).withSecond(endDateTime.getSecond()));
+					t.setEndDateTime(startDateTime.withHour(endDateTime.getHour()).withMinute(endDateTime.getMinute()));
 					endDateTime = t.getEndDateTime();
 				}
 				if (startDateTime.isAfter(endDateTime)) {
 					t.setEndDateTime(endDateTime.plusWeeks(1));
 					endDateTime = t.getEndDateTime();
 				}
-				if (endDateTime.getHour() == 0 && endDateTime.getMinute() == 0 && endDateTime.getSecond() == 0) {
-					t.setEndDateTime(endDateTime.withHour(23).withMinute(59).withSecond(59));
+				if (endDateTime.getHour() == 0 && endDateTime.getMinute() == 0) {
+					t.setEndDateTime(endDateTime.withHour(23).withMinute(59));
 				}
 			} else {
-				t.setEndDateTime(startDateTime.withHour(23).withMinute(59).withSecond(59));
+				t.setEndDateTime(startDateTime.withHour(23).withMinute(59));
 			}
 		}
 		
@@ -383,26 +383,26 @@ public class Parser {
 				t.setStartDateTime(LocalDateTime.of(ld, LocalTime.of(0, 0)));
 			} else if (endDateTime == null) {
 				if (startDateTime.getYear() == 0) {
-					t.setStartDateTime(LocalDateTime.of(ld, LocalTime.of(startDateTime.getHour(), startDateTime.getMinute(), startDateTime.getSecond())));
+					t.setStartDateTime(LocalDateTime.of(ld, LocalTime.of(startDateTime.getHour(), startDateTime.getMinute())));
 				} else {
 					t.setEndDateTime(LocalDateTime.of(ld, LocalTime.of(0, 0)));
 				}
 			} else {
-				t.setEndDateTime(LocalDateTime.of(ld, LocalTime.of(endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond())));
+				t.setEndDateTime(LocalDateTime.of(ld, LocalTime.of(endDateTime.getHour(), endDateTime.getMinute())));
 			}
 		} else {
 			if (startDateTime == null && endDateTime == null) {
 				t.setStartDateTime(LocalDateTime.of(LocalDate.of(0, 1, 1), lt));
 			} else if (endDateTime == null) {
-				if (startDateTime.getHour() == 0 && startDateTime.getMinute() == 0 && startDateTime.getSecond() == 0) {
+				if (startDateTime.getHour() == 0 && startDateTime.getMinute() == 0) {
 					t.setStartDateTime(LocalDateTime.of(LocalDate.of(startDateTime.getYear(), startDateTime.getMonthValue(), startDateTime.getDayOfMonth()), lt));
 				} else {
 					t.setEndDateTime(LocalDateTime.of(LocalDate.of(0, 1, 1), lt));
 				}
-			} else if (endDateTime.getHour() == 0 && endDateTime.getMinute() == 0 && endDateTime.getSecond() == 0) {
+			} else if (endDateTime.getHour() == 0 && endDateTime.getMinute() == 0) {
 				t.setEndDateTime(LocalDateTime.of(LocalDate.of(endDateTime.getYear(), endDateTime.getMonthValue(), endDateTime.getDayOfMonth()), lt));
-			} else if (startDateTime.getHour() == 0 && startDateTime.getMinute() == 0 && startDateTime.getSecond() == 0) {
-				t.setStartDateTime(LocalDateTime.of(startDateTime.getYear(), startDateTime.getMonthValue(), startDateTime.getDayOfMonth(), endDateTime.getHour(), endDateTime.getMinute(), endDateTime.getSecond()));
+			} else if (startDateTime.getHour() == 0 && startDateTime.getMinute() == 0) {
+				t.setStartDateTime(LocalDateTime.of(startDateTime.getYear(), startDateTime.getMonthValue(), startDateTime.getDayOfMonth(), endDateTime.getHour(), endDateTime.getMinute()));
 				t.setEndDateTime(LocalDateTime.of(LocalDate.of(endDateTime.getYear(), endDateTime.getMonthValue(), endDateTime.getDayOfMonth()), lt));
 			}
 		}
@@ -473,7 +473,7 @@ public class Parser {
 				LocalDateTime endDateTime = t.getEndDateTime();
 				if (endDateTime == null) {
 					t.setEndDateTime(startDateTime);
-					t.setStartDateTime(LocalDateTime.now());
+					t.setStartDateTime(LocalDateTime.of(LocalDate.now(), LocalTime.of(LocalTime.now().getHour(), LocalTime.now().getMinute())));
 				}
 		}
 		numOfWordsToRemove++;
@@ -819,7 +819,7 @@ public class Parser {
 			case "night" :
 				return LocalTime.of(19, 0);
 			case "midnight" :
-				return LocalTime.of(23, 59, 59);
+				return LocalTime.of(23, 59);
 			default :
 				return null;
 		}
@@ -905,10 +905,8 @@ public class Parser {
 			}
 			int hr = 0;
 			int min = 0;
-			int sec = 0;
 			switch (s.size()) {
 				case 3 :
-					sec = Integer.parseInt(s.get(2));
 				case 2 :
 					min = Integer.parseInt(s.get(1));
 				case 1 :
@@ -918,7 +916,7 @@ public class Parser {
 				hr += hrToAdd;
 			}
 			try {
-				return LocalTime.of(hr, min, sec);
+				return LocalTime.of(hr, min);
 			} catch (DateTimeException dte) {
 			}
 		}
