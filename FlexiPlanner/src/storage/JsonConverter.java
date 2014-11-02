@@ -26,6 +26,7 @@ public class JsonConverter {
 		
 		String startDateTime = null;
 		String endDateTime = null;
+		String remindDateTime = null;
 		
 		if (task.getStartDateTime() != null) {
 			startDateTime = task.getStartDateTime().toString();
@@ -33,13 +34,18 @@ public class JsonConverter {
 		if (task.getEndDateTime() != null) {
 			endDateTime = task.getEndDateTime().toString();
 		}
+		if (task.getRemindDateTime() != null) {
+			remindDateTime = task.getRemindDateTime().toString();
+		}
 		
 		jsonObjToReturn.put("taskId", task.getTaskId());
 		jsonObjToReturn.put("content", task.getContent());
+		jsonObjToReturn.put("actualContent", task.getActualContent());
 		jsonObjToReturn.put("category", task.getCategory());
 		jsonObjToReturn.put("priority", task.getPriority());
 		jsonObjToReturn.put("startDateTime", startDateTime);
 		jsonObjToReturn.put("endDateTime", endDateTime);
+		jsonObjToReturn.put("remindDateTime", remindDateTime);
 		
 		return jsonObjToReturn;
 	}
@@ -69,6 +75,7 @@ public class JsonConverter {
 		
 		taskToReturn.setTaskId((String)obj.get("taskId"));
 		taskToReturn.setContent((String)obj.get("content"));
+		taskToReturn.setActualContent((String)obj.get("actualContent"));
 		taskToReturn.setCategory((String)obj.get("category"));
 		taskToReturn.setPriority((String)obj.get("priority"));
 		
@@ -83,6 +90,12 @@ public class JsonConverter {
 		}
 		else {
 			taskToReturn.setEndDateTime(LocalDateTime.parse((String)obj.get("endDateTime")));
+		}
+		if (obj.get("remindDateTime") == null) {
+			taskToReturn.setRemindDateTime(null);
+		}
+		else {
+			taskToReturn.setRemindDateTime(LocalDateTime.parse((String)obj.get("remindDateTime")));
 		}
 		
 		return taskToReturn;

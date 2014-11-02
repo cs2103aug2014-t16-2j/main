@@ -61,6 +61,10 @@ public class TaskData {
 	/** Accessor Methods **/
 
 	public String getContent() {
+		if (remindDateTime == null) {
+			return actualContent;
+		}
+		
 		return content;
 	}
 	
@@ -100,6 +104,7 @@ public class TaskData {
 
 	public void setContent(String content) {
 		this.content = content;
+		this.actualContent = content;
 	}
 	
 	public void setActualContent(String actualContent) {
@@ -128,11 +133,14 @@ public class TaskData {
 	
 	public void setRemindDateTime(LocalDateTime remindDateTime) {
 		this.remindDateTime = remindDateTime;
+		if (this.remindDateTime != null) {
+			setReminder();
+		}
 	}
 	
 	public void setReminder() {
 		if (remindDateTime != null) {
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy HH:mm");
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm");
 			content = "<html>" + actualContent + " [reminder: " + remindDateTime.format(formatter) + "]" + "</html>"; 
 			reminder = new Reminder(remindDateTime, this);
 			reminder.start();

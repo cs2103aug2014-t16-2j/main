@@ -73,7 +73,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private JScrollPane showUserRecentAddedTaskScroll;
 	private JScrollPane showCategoryScroll;
 	private JComboBox selectYear;
-	private static JFrame schedulerFrame;
+	private JFrame schedulerFrame;
 	private JTextField inputCommand;
 	private int actualYear, actualMonth, actualDay, currentDisplayedYear,
 	currentDisplayedMonth;
@@ -325,6 +325,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 					if (userCommand.toLowerCase().startsWith("exit")) {
 						inputCommand.setText("");
 						commandFeedback.setText("");
+						save();
 						getJFrame().setVisible(false);
 						break;
 					}
@@ -721,8 +722,17 @@ public class FlexiPlannerUI implements HotKeyListener {
 	 *
 	 * @author Moe Lwin Hein (A0117989H)
 	 */
-	public static JFrame getJFrame() {
+	public JFrame getJFrame() {
 		return schedulerFrame;
+	}
+	
+	public static void save() {
+		
+		try {
+			logic.saveData();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

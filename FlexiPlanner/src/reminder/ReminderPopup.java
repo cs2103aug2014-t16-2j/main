@@ -18,6 +18,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import ui.FlexiPlannerUI;
+
 
 public class ReminderPopup {
 	
@@ -74,6 +76,7 @@ public class ReminderPopup {
 		frame.getContentPane().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
+				FlexiPlannerUI.save();
 				frame.dispose();
 				identity[uniqueIdentifier - 1] = uniqueIdentifier;
 			}

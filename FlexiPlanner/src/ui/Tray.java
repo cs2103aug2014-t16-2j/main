@@ -45,9 +45,9 @@ public class Tray {
 	private String closeShortCut = "control M";
 	private String exitShortCut = "control E";
 	
-	public Tray(FlexiPlannerUI instance, JFrame frame) {
+	public Tray(FlexiPlannerUI instance) {
 		this.instance = instance;
-		this.frame = frame;
+		this.frame = instance.getJFrame();
 		initializeShortCuts();
 	}
 	
@@ -73,6 +73,7 @@ public class Tray {
 		item.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				FlexiPlannerUI.save();
 				frame.setVisible(true);
 				frame.setExtendedState(JFrame.NORMAL);
 			}
@@ -84,6 +85,7 @@ public class Tray {
 		item.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				FlexiPlannerUI.save();
 				stopShortCuts(); // reset shortcuts when exit.
 				System.exit(0);
 			}
