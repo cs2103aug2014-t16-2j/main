@@ -2,12 +2,12 @@ package parser;
 
 import java.text.NumberFormat;
 import java.text.ParsePosition;
-import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -19,11 +19,11 @@ import java.util.List;
 public class Parser {
 
 	private final List<String> KEYWORDS_COMMAND_ADD = Arrays.asList("add", "schedule", "create", "remember");
-	private final List<String> KEYWORDS_COMMAND_MODIFY = Arrays.asList("modify", "edit", "reschedule", "change");
-	private final List<String> KEYWORDS_COMMAND_DELETE = Arrays.asList("delete", "remove", "clear");
+	private final List<String> KEYWORDS_COMMAND_MODIFY = Arrays.asList("mod", "modify", "edit", "reschedule", "change");
+	private final List<String> KEYWORDS_COMMAND_DELETE = Arrays.asList("del", "delete", "rm", "remove", "clr", "clear");
 	private final List<String> KEYWORDS_COMMAND_SEARCH = Arrays.asList("display", "show", "find", "search");
-	private final List<String> KEYWORDS_COMMAND_BLOCK = Arrays.asList("block", "reserve");
-	private final List<String> KEYWORDS_COMMAND_UNBLOCK = Arrays.asList("unblock", "unreserve", "free");
+	private final List<String> KEYWORDS_COMMAND_BLOCK = Arrays.asList("blk", "block", "reserve");
+	private final List<String> KEYWORDS_COMMAND_UNBLOCK = Arrays.asList("unblk", "unblock", "unreserve", "free");
 	private final List<String> KEYWORDS_COMMAND_OTHER = Arrays.asList("exit", "undo", "redo");
 	private final List<String> KEYWORDS_DATE_DAY = Arrays.asList("today", "tomorrow", "yesterday", "tonight");
 	private final List<String> KEYWORDS_DATE_DAY_OF_WEEK = Arrays.asList("monday","mon", "tuesday", "tue", "wednesday", "wed", "thursday", "thu", "friday", "fri", "saturday", "sat", "sunday", "sun");
@@ -538,19 +538,24 @@ public class Parser {
 			if (day > 0) {
 				int mth = getMonth(words.get(index + 1));
 				if (mth > 0) {
-					try {
-						int yr = getYear(words.get(index + 2));
+					int yr;
+					if (index + 2 < words.size()) {
+						yr = getYear(words.get(index + 2));
 						if (yr > 0) {
-							words.remove(index + 2);
-							words.remove(index + 1);
-							words.remove(index);
-							return LocalDate.of(yr, mth, day);
+							if (isValidDate(yr, mth, day)) {
+								words.remove(index + 2);
+								words.remove(index + 1);
+								words.remove(index);
+								return LocalDate.of(yr, mth, day);
+							}
 						}
-					} catch (Exception e) {
 					}
-					words.remove(index + 1);
-					words.remove(index);
-					return LocalDate.now().withMonth(mth).withDayOfMonth(day);
+					yr = LocalDate.now().getYear();
+					if (isValidDate(yr, mth, day)) {
+						words.remove(index + 1);
+						words.remove(index);
+						return LocalDate.now().withMonth(mth).withDayOfMonth(day);
+					}
 				}
 			}
 		}
@@ -565,19 +570,24 @@ public class Parser {
 			if (mth > 0) {
 				int day = getDay(words.get(index + 1));
 				if (day > 0) {
-					try {
-						int yr = getYear(words.get(index + 2));
+					int yr;
+					if (index + 2 < words.size()) {
+						yr = getYear(words.get(index + 2));
 						if (yr > 0) {
-							words.remove(index + 2);
-							words.remove(index + 1);
-							words.remove(index);
-							return LocalDate.of(yr, mth, day);
+							if (isValidDate(yr, mth, day)) {
+								words.remove(index + 2);
+								words.remove(index + 1);
+								words.remove(index);
+								return LocalDate.of(yr, mth, day);
+							}
 						}
-					} catch (Exception e) {
 					}
-					words.remove(index + 1);
-					words.remove(index);
-					return LocalDate.now().withMonth(mth).withDayOfMonth(day);
+					yr = LocalDate.now().getYear();
+					if (isValidDate(yr, mth, day)) {
+						words.remove(index + 1);
+						words.remove(index);
+						return LocalDate.of(yr, mth, day);
+					}
 				}
 			}
 		}
@@ -592,22 +602,26 @@ public class Parser {
 			if (yr > 0) {
 				int mth = getMonth(words.get(index + 1));
 				if (mth > 0) {
-					int day = getDay(words.get( + 2));
+					int day = getDay(words.get(index + 2));
 					if (day > 0) {
-						words.remove(index + 2);
-						words.remove(index + 1);
-						words.remove(index);
-						return LocalDate.of(yr, mth, day);
+						if (isValidDate(yr, mth, day)) {
+							words.remove(index + 2);
+							words.remove(index + 1);
+							words.remove(index);
+							return LocalDate.of(yr, mth, day);
+						}
 					}
 				} else {
 					int day = getDay(words.get(index + 1));
 					if (day > 0) {
 						mth = getMonth(words.get(index + 2));
 						if (mth > 0) {
-							words.remove(index + 2);
-							words.remove(index + 1);
-							words.remove(index);
-							return LocalDate.of(yr, mth, day);
+							if (isValidDate(yr, mth, day)) {
+								words.remove(index + 2);
+								words.remove(index + 1);
+								words.remove(index);
+								return LocalDate.of(yr, mth, day);
+							}
 						}
 					}
 				}
@@ -648,11 +662,10 @@ public class Parser {
 		MyStringList s = new MyStringList();
 		LocalTime lt = null;
 		int hrToAdd = 0;
-		boolean noAmPm = true;
 		boolean mayBeTime = false;
+		boolean removeNextWord = false;
 		for (String tw : KEYWORDS_TIME) {
 			if (time.toLowerCase().endsWith(tw)) {
-				noAmPm = false;
 				mayBeTime = true;
 				if (tw.equals("pm")) {
 					hrToAdd = 12;
@@ -661,14 +674,14 @@ public class Parser {
 				break;
 			}
 		}
-		if (noAmPm && index + 1 < words.size()) {
+		if (!mayBeTime && index + 1 < words.size()) {
 			for (String tw : KEYWORDS_TIME) {
 				if (words.get(index + 1).equalsIgnoreCase(tw)) {
 					mayBeTime = true;
 					if (tw.equals("pm")) {
 						hrToAdd = 12;
 					}
-					words.remove(index + 1);
+					removeNextWord = true;
 					break;
 				}
 			}
@@ -677,14 +690,18 @@ public class Parser {
 			s.addAll(Arrays.asList(time.split(":")));
 			mayBeTime = true;
 		} else if (time.contains(".")) {
-			s.addAll(Arrays.asList(time.split(".")));
+			s.addAll(Arrays.asList(time.split("\\.")));
 			mayBeTime = true;
 		} else if (mayBeTime) {
 			s.add(time);
 		}
+		System.out.println(mayBeTime);
 		if (mayBeTime) {
 			lt = getTime(s, hrToAdd);
 			if (lt != null) {
+				if (removeNextWord) {
+					words.remove(index + 1);
+				}
 				words.remove(index);
 			}
 		}
@@ -912,15 +929,36 @@ public class Parser {
 				case 1 :
 					hr = Integer.parseInt(s.get(0));
 			}
-			if (hr != 12 && hr + hrToAdd <= 24) {
+			if (hr == 12 && hrToAdd == 0) {
+				hr = 0;
+			} else if (hr < 12) {
 				hr += hrToAdd;
 			}
-			try {
+			System.out.println(hr+" "+min);
+			if (isValidTime(hr, min)) {
 				return LocalTime.of(hr, min);
-			} catch (DateTimeException dte) {
 			}
 		}
 		return null;
+		
+	}
+	
+	private boolean isValidDate(int yr, int mth, int day) {
+		
+		GregorianCalendar gc = new GregorianCalendar(yr, mth, 0);
+		if (day <= gc.getActualMaximum(GregorianCalendar.DAY_OF_MONTH)) {
+			return true;
+		}
+		return false;
+		
+	}
+	
+	private boolean isValidTime(int hr, int min) {
+		
+		if (hr >= 0 && hr <= 23 && min >= 0 && min <= 59) {
+			return true;
+		}
+		return false;
 		
 	}
 	
