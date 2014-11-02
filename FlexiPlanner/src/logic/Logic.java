@@ -366,9 +366,13 @@ public class Logic {
 		case MARK:
 			return markAsDone(task, true);
 		case BLOCK:
-			return undoUnblock(done);
+			ArrayList<TaskData> blockList = unblockSlot.pop();			
+			blockSlot.push(blockList);
+			return block(blockList);
 		case UNBLOCK:
-			return undoBlock(done);
+			ArrayList<TaskData> unblockList = blockSlot.pop();			
+			unblockSlot.push(unblockList);
+			return unblock(unblockList);
 		default:
 			return false;
 		}
@@ -814,6 +818,9 @@ public class Logic {
 		return true;
 	}
 	private ArrayList<TaskData> block(TaskData task) {
+		LocalDateTime st = task.getStartDateTime();
+		LocalDateTime et = task.getEndDateTime();
+		
 		LocalDateTime start = task.getStartDateTime();
 		LocalDateTime end = task.getEndDateTime();
 		
@@ -832,9 +839,11 @@ public class Logic {
 				task.setEndDateTime(_end);
 				blockedList.remove(_task);
 			}
+			start = task.getStartDateTime();
+			end = task.getEndDateTime();
 		}
 		ArrayList<TaskData> block = new ArrayList<TaskData>();
-		block.add(new TaskData(null, null, null, start, end));
+		block.add(new TaskData(null, null, null, st, et));
 		return block;
 	}
 
@@ -1008,25 +1017,12 @@ public class Logic {
 			LocalDateTime et = _task.getEndDateTime();
 			if (st != null && st.isAfter(startTime) && st.isBefore(endTime)) {
 				task.add(_task);
-				// System.out.print("1. " + task.toString());
 			} else if (et != null && et.isAfter(startTime)
 					&& et.isBefore(endTime)) {
 				task.add(_task);
-				// System.out.print("2. " + task.toString());
 			}
-			/*
-			 * another option to choose if (st != null && et != null) { if
-			 * ((st.isAfter(startTime) && st.isBefore(endTime)) ||
-			 * (startTime.isAfter(st) && startTime.isBefore(et)))
-			 * task.add(_task); } else if (st != null) { if
-			 * (st.isAfter(startTime) && st.isBefore(endTime)) {
-			 * task.add(_task); } } else { if (et.isAfter(startTime) &&
-			 * et.isBefore(endTime)) { task.add(_task); } }
-			 */
+			
 		}
-		// System.out.println(date + " " + startTime + " " + endTime + " "
-		// +!task.isEmpty());
-		// System.out.println(displaySearch(task));
 		return !task.isEmpty();
 		// return false;
 	}
@@ -1039,10 +1035,7 @@ public class Logic {
 		LocalDateTime endTime = task.getEndDateTime();
 		String category = task.getCategory();
 		String priority = task.getPriority();
-		// boolean isDone = task.isDone(); // removed
 		return new TaskData(content, category, priority, startTime, endTime);
-		// return new TaskData(content, category, priority, startTime, endTime,
-		// isDone); // removed isDone
 	}
 
 	// return overdue task
