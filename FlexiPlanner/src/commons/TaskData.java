@@ -139,7 +139,7 @@ public class TaskData {
 	}
 	
 	public void setReminder() {
-		if (remindDateTime != null) {
+		if (remindDateTime != null && reminder == null) {
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm");
 			content = "<html>" + actualContent + " [reminder: " + remindDateTime.format(formatter) + "]" + "</html>"; 
 			reminder = new Reminder(remindDateTime, this);
