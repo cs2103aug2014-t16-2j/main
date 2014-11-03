@@ -581,9 +581,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 				Object value, boolean selected, boolean focused, int row,
 				int column) {
 			
-			JTextArea  area = new JTextArea ();
+			JTextArea area = new JTextArea ();
 			area.setEditable(false);
 			area.setLineWrap(true);
+			area.setWrapStyleWord(true);
 			area.setText(value.toString());
 			
 			setBorder(null);
