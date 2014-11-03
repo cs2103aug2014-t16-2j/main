@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.security.KeyStore.Entry;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
@@ -499,15 +501,15 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private void setDisplayTaskTableProperties() {
 		displaytaskTable.setModel(displayTasksTableDTM);
 		displaytaskTable.setCellSelectionEnabled(false);
-		displaytaskTable.setRowHeight(40);
+		displaytaskTable.setRowHeight(60);
 		displaytaskTable.getColumnModel().getColumn(0).setCellRenderer(new TasksTableRenderer());
 		displaytaskTable.getColumnModel().getColumn(0).setPreferredWidth(30);
 		displaytaskTable.getColumnModel().getColumn(1).setPreferredWidth(55);
 		displaytaskTable.getColumnModel().getColumn(2).setPreferredWidth(65);
-		displaytaskTable.getColumnModel().getColumn(3).setPreferredWidth(180);
-		displaytaskTable.getColumnModel().getColumn(3).setMaxWidth(180);
-		displaytaskTable.getColumnModel().getColumn(4).setPreferredWidth(110);
-		displaytaskTable.getColumnModel().getColumn(5).setPreferredWidth(110);
+		displaytaskTable.getColumnModel().getColumn(3).setPreferredWidth(220);
+		displaytaskTable.getColumnModel().getColumn(3).setMaxWidth(220);
+		displaytaskTable.getColumnModel().getColumn(4).setPreferredWidth(90);
+		displaytaskTable.getColumnModel().getColumn(5).setPreferredWidth(90);
 		displaytaskTable.getColumnModel().getColumn(5).setMaxWidth(110);
 		displaytaskTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		displaytaskTable.getTableHeader().setResizingAllowed(false);
@@ -532,7 +534,17 @@ public class FlexiPlannerUI implements HotKeyListener {
 				displayTasksTableDTM.setValueAt(t.getPriority(), row, 1);
 			if (t.getCategory() != null)
 				displayTasksTableDTM.setValueAt(t.getCategory(), row, 2);
-			displayTasksTableDTM.setValueAt(t.getContent(), row, 3);
+			if (t.getRemindDateTime() != null && t.getReminder() != null) {
+				StringBuilder sb = new StringBuilder();
+				DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT);
+				String remindDateTime = t.getRemindDateTime().format(formatter);
+				sb.append(t.getContent() + " ");
+				sb.append("[reminder:" + remindDateTime+"]");
+				displayTasksTableDTM.setValueAt(sb.toString(), row, 3);
+			}
+			else {
+				displayTasksTableDTM.setValueAt(t.getContent(), row, 3);
+			}
 			try {
 				if (t.getStartDateTime() != null) {
 					displayTasksTableDTM.setValueAt(t.getStartDateTime(), row,
@@ -586,6 +598,18 @@ public class FlexiPlannerUI implements HotKeyListener {
 			area.setLineWrap(true);
 			area.setWrapStyleWord(true);
 			area.setText(value.toString());
+			
+			if (column == 3) {
+				if (value instanceof String) {
+					if (((String) value).startsWith("[reminder :")) {
+						String[] string = ((String) value).split(" ");
+						StringBuilder sb = new StringBuilder();
+						sb.append(string[0] + " ");
+						sb.append(string[1]);
+						area.setText(sb.toString());
+					}
+				}
+			}
 			
 			setBorder(null);
 			return area;

@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+import reminder.Reminder;
 import commons.TaskData;
 
 public class DisplayedEntry {
@@ -13,6 +14,8 @@ public class DisplayedEntry {
 	private String priority;
 	private LocalDateTime startDateTime;
 	private LocalDateTime endDateTime;
+	private Reminder reminder;
+	private LocalDateTime remindDateTime;
 
 	public DisplayedEntry(TaskData t) {
 		this.setContent(t.getContent());
@@ -20,6 +23,8 @@ public class DisplayedEntry {
 		this.setPriority(t.getPriority());
 		this.setStartDateTime(t.getStartDateTime());
 		this.setEndDateTime(t.getEndDateTime());
+		this.remindDateTime = t.getRemindDateTime();
+		this.reminder = t.getReminder();
 	}
 
 	public String getContent() {
@@ -48,6 +53,14 @@ public class DisplayedEntry {
 
 		Date d = formater.parse(endDateTime + "");
 		return f.format(d);
+	}
+	
+	public LocalDateTime getRemindDateTime() {
+		return remindDateTime;
+	}
+	
+	public Reminder getReminder() {
+		return reminder;
 	}
 
 	public void setContent(String content) {
