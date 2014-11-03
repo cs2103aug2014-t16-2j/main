@@ -31,7 +31,7 @@ public class Reminder {
 		DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT);
 		
 		StringBuilder sb = new StringBuilder();
-		sb.append(task.getActualContent());
+		sb.append(task.getContent());
 		
 		if (task.getStartDateTime() != null && task.getEndDateTime() != null) {
 			sb.append("\n");

@@ -40,7 +40,6 @@ public class JsonConverter {
 		
 		jsonObjToReturn.put("taskId", task.getTaskId());
 		jsonObjToReturn.put("content", task.getContent());
-		jsonObjToReturn.put("actualContent", task.getActualContent());
 		jsonObjToReturn.put("category", task.getCategory());
 		jsonObjToReturn.put("priority", task.getPriority());
 		jsonObjToReturn.put("startDateTime", startDateTime);
@@ -75,7 +74,6 @@ public class JsonConverter {
 		
 		taskToReturn.setTaskId((String)obj.get("taskId"));
 		taskToReturn.setContent((String)obj.get("content"));
-		taskToReturn.setActualContent((String)obj.get("actualContent"));
 		taskToReturn.setCategory((String)obj.get("category"));
 		taskToReturn.setPriority((String)obj.get("priority"));
 		

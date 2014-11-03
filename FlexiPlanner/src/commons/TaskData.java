@@ -17,7 +17,6 @@ import storage.JsonConverter;
 public class TaskData {
 	
 	private String content; 
-	private String actualContent;
 	private String category;
 	private String priority;
 	private LocalDateTime startDateTime;
@@ -47,7 +46,6 @@ public class TaskData {
 	public TaskData(String content, String category, String priority, 
 			LocalDateTime startDateTime, LocalDateTime endDateTime) {
 		this.setContent(content);
-		this.setActualContent(content);
 		this.setCategory(category);
 		this.setPriority(priority);
 		this.setStartDateTime(startDateTime);
@@ -60,15 +58,7 @@ public class TaskData {
 	/** Accessor Methods **/
 
 	public String getContent() {
-		if (remindDateTime == null) {
-			return actualContent;
-		}
-		
 		return content;
-	}
-	
-	public String getActualContent() {
-		return actualContent;
 	}
 	
 	public String getCategory() {
@@ -103,11 +93,6 @@ public class TaskData {
 
 	public void setContent(String content) {
 		this.content = content;
-		this.actualContent = content;
-	}
-	
-	public void setActualContent(String actualContent) {
-		this.actualContent = actualContent;
 	}
 
 	public void setCategory(String category) {
@@ -132,18 +117,18 @@ public class TaskData {
 	
 	public void setRemindDateTime(LocalDateTime remindDateTime) {
 		this.remindDateTime = remindDateTime;
+		
 		if (this.remindDateTime != null) {
 			setReminder();
-		}
-		else if (this.remindDateTime != null && this.remindDateTime.equals(LocalDateTime.MIN)) {
-			clearReminder();
 		}
 	}
 	
 	public void setReminder() {
 		if (remindDateTime != null && reminder == null) {
-			//DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT);
-			//content = "<html>" + actualContent + " [reminder: " + remindDateTime.format(formatter) + "]" + "</html>"; 
+			if (remindDateTime.equals(LocalDateTime.MIN)) {
+				remindDateTime = null;
+				return;
+			}
 			reminder = new Reminder(remindDateTime, this);
 			reminder.start();
 		}
@@ -153,7 +138,7 @@ public class TaskData {
 		if (reminder != null) {
 			reminder.stop();
 			setRemindDateTime(null);
-			//content = actualContent;
+			reminder = null;
 		}
 	}
 	
