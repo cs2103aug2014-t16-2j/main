@@ -500,6 +500,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		displaytaskTable.setModel(displayTasksTableDTM);
 		displaytaskTable.setCellSelectionEnabled(false);
 		displaytaskTable.setRowHeight(40);
+		displaytaskTable.getColumnModel().getColumn(0).setCellRenderer(new TasksTableRenderer());
 		displaytaskTable.getColumnModel().getColumn(0).setPreferredWidth(30);
 		displaytaskTable.getColumnModel().getColumn(1).setPreferredWidth(55);
 		displaytaskTable.getColumnModel().getColumn(2).setPreferredWidth(65);
@@ -549,8 +550,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 			}
 		}
 		displaytaskTable.setDefaultRenderer(displaytaskTable.getColumnClass(0),
-				new TasksTableRenderer());// using Calendar1Renderer class to
-											// set
+				new TextWrapRenderer());
 	}
 	
 	// @author A0111770R
@@ -574,6 +574,22 @@ public class FlexiPlannerUI implements HotKeyListener {
 			return this;
 		}
 	}// end of class TasksTableRenderer
+	
+	// @author A0111770R
+	class TextWrapRenderer extends DefaultTableCellRenderer {
+		public Component getTableCellRendererComponent(JTable table,
+				Object value, boolean selected, boolean focused, int row,
+				int column) {
+			
+			JTextArea  area = new JTextArea ();
+			area.setEditable(false);
+			area.setLineWrap(true);
+			area.setText(value.toString());
+			
+			setBorder(null);
+			return area;
+		}
+	}// end of class CellRenderer
 	
 	// @author A0111770R
 	private void refreshCalendar(int month, int year) {
