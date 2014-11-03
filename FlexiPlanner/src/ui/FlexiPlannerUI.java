@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.security.KeyStore.Entry;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
@@ -570,14 +571,76 @@ public class FlexiPlannerUI implements HotKeyListener {
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean selected, boolean focused, int row,
 				int column) {
-			super.getTableCellRendererComponent(table, value, selected,
+			Component c = super.getTableCellRendererComponent(table, value, selected,
 					focused, row, column);
 			if (row == overDueRow && overDueRow == 0) {
-				setBackground(Color.WHITE);
+				if (table.getModel().getValueAt(row, 4) != null && !(((String)table.getModel().getValueAt(row, 4)).equals(""))) {
+					String start = table.getModel().getValueAt(row, 4).toString();
+					LocalDateTime s = LocalDateTime.parse(start, DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"));
+					if ((s.getYear() == LocalDateTime.now().getYear()) &&
+							(s.getMonthValue() == LocalDateTime.now().getMonthValue()) &&
+							(s.getDayOfMonth() == LocalDateTime.now().getDayOfMonth())) {
+						
+						setBackground(Color.MAGENTA);
+					}
+					else {
+						setBackground(Color.ORANGE);
+					}
+				}
+				else if (table.getModel().getValueAt(row, 4) != null && !(((String)table.getModel().getValueAt(row, 5)).equals(""))) {
+					String end = table.getModel().getValueAt(row, 5).toString();
+					LocalDateTime e = LocalDateTime.parse(end, DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"));
+					if ((e.getYear() == LocalDateTime.now().getYear()) &&
+							(e.getMonthValue() == LocalDateTime.now().getMonthValue()) &&
+							(e.getDayOfMonth() == LocalDateTime.now().getDayOfMonth())) {
+						
+						setBackground(Color.MAGENTA);
+					}
+					else {
+						setBackground(Color.ORANGE);
+					}
+				}
+				else {
+					setBackground(Color.ORANGE);
+				}
+				if (table.getModel().getValueAt(row, 3) == null || (((String)table.getModel().getValueAt(row, 3)).equals(""))) {
+					setBackground(Color.WHITE);
+				}
 			} else if (row <= overDueRow-1) {
 				setBackground(Color.RED);
 			} else {
-				setBackground(Color.WHITE);
+				if (table.getModel().getValueAt(row, 4) != null && !(((String)table.getModel().getValueAt(row, 4)).equals(""))) {
+					String start = table.getModel().getValueAt(row, 4).toString();
+					LocalDateTime s = LocalDateTime.parse(start, DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"));
+					if ((s.getYear() == LocalDateTime.now().getYear()) &&
+							(s.getMonthValue() == LocalDateTime.now().getMonthValue()) &&
+							(s.getDayOfMonth() == LocalDateTime.now().getDayOfMonth())) {
+						
+						setBackground(Color.MAGENTA);
+					}
+					else {
+						setBackground(Color.ORANGE);
+					}
+				}
+				else if (table.getModel().getValueAt(row, 5) != null && !(((String)table.getModel().getValueAt(row, 5)).equals(""))) {
+					String end = table.getModel().getValueAt(row, 5).toString();
+					LocalDateTime e = LocalDateTime.parse(end, DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"));
+					if ((e.getYear() == LocalDateTime.now().getYear()) &&
+							(e.getMonthValue() == LocalDateTime.now().getMonthValue()) &&
+							(e.getDayOfMonth() == LocalDateTime.now().getDayOfMonth())) {
+						
+						setBackground(Color.MAGENTA);
+					}
+					else {
+						setBackground(Color.ORANGE);
+					}
+				}
+				else {
+					setBackground(Color.ORANGE);
+				}
+				if (table.getModel().getValueAt(row, 3) == null || (((String)table.getModel().getValueAt(row, 3)).equals(""))) {
+					setBackground(Color.WHITE);
+				}
 			}
 			if (value != null) {
 				;
