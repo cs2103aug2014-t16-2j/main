@@ -85,46 +85,35 @@ public class Parser {
 	//This methods find the word representing a command and returns the command String.
 	private Command getCommand(MyStringList words) {
 		
-		for (String c : KEYWORDS_COMMAND_ADD) {
-			if (words.containsIgnoreCase(c)) {
-				words.removeIgnoreCase(c);
+		for (int index = 0; index < words.size(); index++) {
+			String word = words.get(index).toLowerCase();
+			if (KEYWORDS_COMMAND_ADD.contains(word)) {
+				words.remove(index);
 				return Command.ADD;
 			}
-		}
-		for (String c : KEYWORDS_COMMAND_MODIFY) {
-			if (words.containsIgnoreCase(c)) {
-				words.removeIgnoreCase(c);
+			if (KEYWORDS_COMMAND_MODIFY.contains(word)) {
+				words.remove(index);
 				return Command.MODIFY;
 			}
-		}
-		for (String c : KEYWORDS_COMMAND_DELETE) {
-			if (words.containsIgnoreCase(c)) {
-				words.removeIgnoreCase(c);
+			if (KEYWORDS_COMMAND_DELETE.contains(word)) {
+				words.remove(index);
 				return Command.DELETE;
 			}
-		}
-		for (String c : KEYWORDS_COMMAND_SEARCH) {
-			if (words.containsIgnoreCase(c)) {
-				words.removeIgnoreCase(c);
+			if (KEYWORDS_COMMAND_SEARCH.contains(word)) {
+				words.remove(index);
 				return Command.SEARCH;
 			}
-		}
-		for (String c : KEYWORDS_COMMAND_BLOCK) {
-			if (words.containsIgnoreCase(c)) {
-				words.removeIgnoreCase(c);
+			if (KEYWORDS_COMMAND_BLOCK.contains(word)) {
+				words.remove(index);
 				return Command.BLOCK;
 			}
-		}
-		for (String c : KEYWORDS_COMMAND_UNBLOCK) {
-			if (words.containsIgnoreCase(c)) {
-				words.removeIgnoreCase(c);
+			if (KEYWORDS_COMMAND_UNBLOCK.contains(word)) {
+				words.remove(index);
 				return Command.UNBLOCK;
 			}
-		}
-		for (String c : KEYWORDS_COMMAND_OTHER) {
-			if (words.containsIgnoreCase(c)) {
-				words.removeIgnoreCase(c);
-				switch (c) {
+			if (KEYWORDS_COMMAND_OTHER.contains(word)) {
+				words.remove(index);
+				switch (word) {
 					case "undo" :
 						return Command.UNDO;
 					case "redo" :
@@ -298,6 +287,9 @@ public class Parser {
 				t.setStartDateTime(LocalDateTime.of(LocalDate.now(), LocalTime.of(startDateTime.getHour(), startDateTime.getMinute())));
 				startDateTime = t.getStartDateTime();
 			}
+			if (startDateTime.getSecond() == 1) {
+				t.setStartDateTime(LocalDateTime.of(startDateTime.getYear(), startDateTime.getMonthValue(), startDateTime.getDayOfMonth(), 0, 0));
+			}
 			if (endDateTime != null) {
 				if (endDateTime.getYear() == 0) {
 					t.setEndDateTime(startDateTime.withHour(endDateTime.getHour()).withMinute(endDateTime.getMinute()));
@@ -307,11 +299,11 @@ public class Parser {
 					t.setEndDateTime(endDateTime.plusWeeks(1));
 					endDateTime = t.getEndDateTime();
 				}
-				if (endDateTime.getHour() == 0 && endDateTime.getMinute() == 0) {
-					t.setEndDateTime(endDateTime.withHour(23).withMinute(59));
+				if (endDateTime.getSecond() == 1) {
+					t.setEndDateTime(LocalDateTime.of(endDateTime.getYear(), endDateTime.getMonthValue(), endDateTime.getDayOfMonth(), 23, 59));
 				}
 			} else {
-				t.setEndDateTime(startDateTime.withHour(23).withMinute(59));
+				t.setEndDateTime(LocalDateTime.of(startDateTime.getYear(), startDateTime.getMonthValue(), startDateTime.getDayOfMonth(), 23, 59));
 			}
 		}
 		
@@ -380,12 +372,12 @@ public class Parser {
 		LocalDateTime endDateTime = t.getEndDateTime();
 		if (ld != null) {
 			if (startDateTime == null && endDateTime == null) {
-				t.setStartDateTime(LocalDateTime.of(ld, LocalTime.of(0, 0)));
+				t.setStartDateTime(LocalDateTime.of(ld, LocalTime.of(0, 0, 1)));
 			} else if (endDateTime == null) {
 				if (startDateTime.getYear() == 0) {
 					t.setStartDateTime(LocalDateTime.of(ld, LocalTime.of(startDateTime.getHour(), startDateTime.getMinute())));
 				} else {
-					t.setEndDateTime(LocalDateTime.of(ld, LocalTime.of(0, 0)));
+					t.setEndDateTime(LocalDateTime.of(ld, LocalTime.of(0, 0, 1)));
 				}
 			} else {
 				t.setEndDateTime(LocalDateTime.of(ld, LocalTime.of(endDateTime.getHour(), endDateTime.getMinute())));
@@ -394,15 +386,17 @@ public class Parser {
 			if (startDateTime == null && endDateTime == null) {
 				t.setStartDateTime(LocalDateTime.of(LocalDate.of(0, 1, 1), lt));
 			} else if (endDateTime == null) {
-				if (startDateTime.getHour() == 0 && startDateTime.getMinute() == 0) {
+				if (startDateTime.getSecond() == 1) {
 					t.setStartDateTime(LocalDateTime.of(LocalDate.of(startDateTime.getYear(), startDateTime.getMonthValue(), startDateTime.getDayOfMonth()), lt));
 				} else {
 					t.setEndDateTime(LocalDateTime.of(LocalDate.of(0, 1, 1), lt));
 				}
-			} else if (endDateTime.getHour() == 0 && endDateTime.getMinute() == 0) {
+			} else if (endDateTime.getSecond() == 1) {
 				t.setEndDateTime(LocalDateTime.of(LocalDate.of(endDateTime.getYear(), endDateTime.getMonthValue(), endDateTime.getDayOfMonth()), lt));
-			} else if (startDateTime.getHour() == 0 && startDateTime.getMinute() == 0) {
+			} else if (startDateTime.getSecond() == 1) {
 				t.setStartDateTime(LocalDateTime.of(startDateTime.getYear(), startDateTime.getMonthValue(), startDateTime.getDayOfMonth(), endDateTime.getHour(), endDateTime.getMinute()));
+				t.setEndDateTime(LocalDateTime.of(LocalDate.of(endDateTime.getYear(), endDateTime.getMonthValue(), endDateTime.getDayOfMonth()), lt));
+			} else {
 				t.setEndDateTime(LocalDateTime.of(LocalDate.of(endDateTime.getYear(), endDateTime.getMonthValue(), endDateTime.getDayOfMonth()), lt));
 			}
 		}
