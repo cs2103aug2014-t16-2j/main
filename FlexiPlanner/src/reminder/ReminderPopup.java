@@ -95,7 +95,7 @@ public class ReminderPopup {
 			}
 		});
 		
-		frame.setLocation((int) (GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().getWidth() - 400), 30 + (((uniqueIdentifier - 1) * 110)));
+		frame.setLocation((int) (GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().getWidth() - 350), 30 + (((uniqueIdentifier - 1) * 110)));
 		frame.setAlwaysOnTop(true);
 		frame.setVisible(true);
 

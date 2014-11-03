@@ -1,8 +1,6 @@
 package commons;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 
 import org.json.simple.JSONObject;
 
@@ -137,22 +135,25 @@ public class TaskData {
 		if (this.remindDateTime != null) {
 			setReminder();
 		}
+		else if (this.remindDateTime != null && this.remindDateTime.equals(LocalDateTime.MIN)) {
+			clearReminder();
+		}
 	}
 	
 	public void setReminder() {
 		if (remindDateTime != null && reminder == null) {
-			DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT);
-			content = "<html>" + actualContent + " [reminder: " + remindDateTime.format(formatter) + "]" + "</html>"; 
+			//DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT);
+			//content = "<html>" + actualContent + " [reminder: " + remindDateTime.format(formatter) + "]" + "</html>"; 
 			reminder = new Reminder(remindDateTime, this);
 			reminder.start();
 		}
 	}
 	
 	public void clearReminder() {
-		if (remindDateTime != null) {
+		if (reminder != null) {
 			reminder.stop();
 			setRemindDateTime(null);
-			content = actualContent;
+			//content = actualContent;
 		}
 	}
 	

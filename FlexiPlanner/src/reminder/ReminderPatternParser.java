@@ -32,6 +32,7 @@ public class ReminderPatternParser {
 	
 	private final String ERROR_INVALID_DATE_TIME = "Invalid date and time!\n";
 	
+	private final int CLR_PATTERN = -1;
 	private final int NO_PATTERN = 0;
 	private final int R_PATTERN_1 = 1;
 	private final int R_PATTERN_2 = 2;
@@ -50,12 +51,16 @@ public class ReminderPatternParser {
 			+ "(\\d{1,2})(\\-|\\/|\\\\)(\\d{1,2})(\\d{1,2})?\\s*(\\d{1,2})(:)?(\\d{1,2})?\\s*"
 			+ "(am|pm|)(\\s+\\w*)*\"{1}(\\s+.*)*";
 	
+	private final String CLEAR_PATTERN = "(?i).*\"{1}(.*(clear).*)\"{1}.*";
+	
 	private final String[] months = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"};
 	private final List<String> monthList = (List<String>) Arrays.asList(months);
 	
 	private Pattern pattern1;
 	private Pattern pattern2;
 	private Pattern pattern3;
+	@SuppressWarnings("unused")
+	private Pattern clearPattern;
 	
 	private int day;
 	private int month;
@@ -72,6 +77,7 @@ public class ReminderPatternParser {
 		pattern1 = Pattern.compile(PATTERN_1);
 		pattern2 = Pattern.compile(PATTERN_2);
 		pattern3 = Pattern.compile(PATTERN_3);
+		clearPattern = Pattern.compile(CLEAR_PATTERN);
 	}
 	
 	public boolean hasReminderPatternInCommand(final String commandStr) {
@@ -86,6 +92,10 @@ public class ReminderPatternParser {
 			report(INFO_NO_COMMAND_FOR_REMINDER);
 			
 			return null;
+		}
+		
+		if (reminderPattern == CLR_PATTERN) {
+			return CLR_PATTERN;
 		}
 		
 		if (!isValidDateTime(reminderPattern, commandStr)) {
@@ -231,6 +241,10 @@ public class ReminderPatternParser {
 		if (commandStr.matches(PATTERN_3)) {
 			
 			return R_PATTERN_3;
+		}
+		
+		if (commandStr.matches(CLEAR_PATTERN)) {
+			return CLR_PATTERN;
 		}
 		
 		return NO_PATTERN;

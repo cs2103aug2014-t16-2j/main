@@ -150,6 +150,11 @@ public class Logic {
 			reminderDateTime = (LocalDateTime) obj;
 		} else if (obj instanceof Integer) {
 			reminderMinutes = (Integer) obj;
+			if (reminderMinutes == -1) {
+				reminderDateTime = LocalDateTime.MIN;
+				reminderMinutes = null;
+				return;
+			}
 			if ((t.getStartDateTime() == null) && (t.getEndDateTime() == null)) {
 				reminderDateTime = null;
 			} else if (t.getStartDateTime() != null) {
