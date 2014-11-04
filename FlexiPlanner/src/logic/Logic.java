@@ -312,7 +312,7 @@ public class Logic {
 		if (isInteger(content))
 			return deleteIndex(Integer.parseInt(content), unredo);
 		if (content == null || content.isEmpty()) {
-			System.out.print(MSG_NO_TASK_SPCIFIED);
+			System.out.println(MSG_NO_TASK_SPCIFIED);
 			return false;
 		}
 		if (done) {
@@ -390,11 +390,11 @@ public class Logic {
 					t.setPriority(toDelete.getPriority());
 					action = new Action(Command.DELETE, t);
 				} else {
-					System.out.print(MSG_NO_TASK_FOUND);
+					System.out.println(MSG_NO_TASK_FOUND);
 					return false;
 				}
 			} else {
-				System.out.print(MSG_NO_TASK_FOUND);
+				System.out.println(MSG_NO_TASK_FOUND);
 				return false;
 			}
 		}
@@ -413,7 +413,7 @@ public class Logic {
 		ArrayList<TaskData> displayedList = getDisplayedList();
 		int size = displayedList.size();
 		if (index < 1 || index > size) {
-			System.out.print(MSG_INDEX_OUT_OF_BOUND);
+			System.out.println(MSG_INDEX_OUT_OF_BOUND);
 			return false;
 		} else {
 			TaskData task = displayedList.get(index - 1);
@@ -425,7 +425,7 @@ public class Logic {
 	// @author A0112066U
 	private boolean redo() throws IOException, ParseException {
 		if (redoList.isEmpty()) {
-			System.out.print(MSG_CANNOT_REDO_ANYMORE);
+			System.out.println(MSG_CANNOT_REDO_ANYMORE);
 			return false;
 		}
 		ActionEntry ae = redoList.pop();
@@ -469,7 +469,7 @@ public class Logic {
 	private boolean undo() {
 		boolean isSuccessful = false;
 		if (actionList.isEmpty()) {
-			System.out.print(MSG_CANNOT_UNDO);
+			System.out.println(MSG_CANNOT_UNDO);
 			return isSuccessful;
 		}
 		ActionEntry x = actionList.pop();
@@ -595,16 +595,16 @@ public class Logic {
 			content = task.getContent();
 		}
 		if (content == null || content.isEmpty()) {
-			System.out.print(MSG_NO_TASK_SPCIFIED);
+			System.out.println(MSG_NO_TASK_SPCIFIED);
 			return false;
 		}
 		if (done) {
-			System.out.print(MSG_NOT_ALLOWED_MODIFY);
+			System.out.println(MSG_NOT_ALLOWED_MODIFY);
 			return false;
 		}
 		if (task.getStartDateTime() != null && task.getEndDateTime() != null
 				&& isClashingWithBlockedSlots(toTaskData(task))) {
-			System.out.print(MSG_CLASHES);
+			System.out.println(MSG_CLASHES);
 			return false;
 		}
 		if (!isInteger(content.substring(0, 1))) {
@@ -898,7 +898,6 @@ public class Logic {
 	}
 
 	private boolean block(ArrayList<TaskData> blocks) {
-		
 		ArrayList<TaskData> block = new ArrayList<TaskData>();
 		for (TaskData _task : blocks) {
 			LocalDateTime _start = _task.getStartDateTime();

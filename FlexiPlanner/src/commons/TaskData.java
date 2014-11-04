@@ -234,64 +234,72 @@ public class TaskData implements Comparable<TaskData> {
 		LocalDateTime start = task.getStartDateTime();
 		LocalDateTime end = task.getEndDateTime();
 
-		if (this.priority.equals(prior)) {
-
-			if (this.startDateTime == null && start != null) {
-				if (this.endDateTime == null) {
-					return 1;
-				}
-				if (this.endDateTime.isBefore(end)) {
-					return -1;
-				}
-				return 1;
-			}
-			if (this.startDateTime != null && start == null) {
-				if (end == null) {
-					return -11;
-				}
-				if (end.isBefore(this.startDateTime)) {
-					return 1;
-				}
-				return -1;
-			}
-			if (this.startDateTime != null && start != null) {
-				if (this.startDateTime.isAfter(start)) {
-					return 1;
-				}
-				if (this.startDateTime.isBefore(start)) {
-					return -1;
-				}
-			}
-			if (this.endDateTime == null && end == null) {
-				return 0;
-			}
+		if (this.startDateTime == null && start != null) {
 			if (this.endDateTime == null) {
 				return 1;
 			}
+			if (this.endDateTime.isBefore(end)) {
+				return -1;
+			}
+			return 1;
+		}
+		if (this.startDateTime != null && start == null) {
 			if (end == null) {
 				return -1;
 			}
-			if (this.endDateTime.equals(end)) {
-				return 0;
-			}
-			if (this.endDateTime.isAfter(end)) {
+			if (end.isBefore(this.startDateTime)) {
 				return 1;
 			}
 			return -1;
 		}
-		if (this.priority.equals("very high")) {
-			return -1;
+		if (this.startDateTime != null && start != null) {
+			if (this.startDateTime.isAfter(start)) {
+				return 1;
+			}
+			if (this.startDateTime.isBefore(start)) {
+				return -1;
+			}
 		}
-		if (prior.equals("very high")) {
+		if (this.endDateTime == null && end == null) {
+			if (this.getPriority().equals("very high")) {
+				return -1;
+			}
+			if (prior.equals("very high")) {
+				return 1;
+			}
+			if (this.getPriority().equals("high")) {
+				return -1;
+			}
+			if (prior.equals("high")) {
+				return 1;
+			}
+			return 0;
+ 		}
+		if (this.endDateTime == null) {
 			return 1;
 		}
-		if (this.priority.equals("high")) {
+		if (end == null) {
 			return -1;
 		}
-		if (prior.equals("high")) {
+		if (this.endDateTime.equals(end)) {
+			if (this.getPriority().equals("very high")) {
+				return -1;
+			}
+			if (prior.equals("very high")) {
+				return 1;
+			}
+			if (this.getPriority().equals("high")) {
+				return -1;
+			}
+			if (prior.equals("high")) {
+				return 1;
+			}
+			return 0;
+		}
+		if (this.endDateTime.isAfter(end)) {
 			return 1;
 		}
-		
-		return 0;
+		return -1;
+
 	}
 }
