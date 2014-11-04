@@ -83,7 +83,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private String[] months = { "January", "February", "March", "April", "May",
 			"June", "July", "August", "September", "October", "November",
 	"December" };
-	private String[] columnNames = { "No:", "Priority", "Catogery", "Task",
+	private String[] columnNames = { "No:", "Priority", "Category", "Task",
 			"From", "To" };
 	private Object[][] dummyData = { { "", "", "", "", "", "" }, };
 	private String userCommand;
