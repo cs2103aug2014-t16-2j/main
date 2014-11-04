@@ -484,8 +484,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 	// @author A0111770R
 	private String getGuide() {
 		String guide = "HotKeys:"
-				+ "\n1: 'ctrl+o':Execute FlexiPlanner from system tray"
-				+ "\n2: 'ctrl+m': Minimise FlexiPlanner to system tray"
+				+ "\n1: 'ctrl+o': Launch FlexiPlanner"
+				+ "\n2: 'ctrl+m': Close FlexiPlanner"
 				+ "\n3: 'ctrl+e': Exit FlexiPlanner" + "\n4: 'f1': Guide"
 				+ "\n5: 'f2': Recent added tasks" + "\n6: 'f3': Tasks"
 				+ "\n7: 'f5': Scroll up Tasks" + "\n8: 'f6': Scroll down Tasks"
