@@ -54,6 +54,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private JLabel displayedMonth, displayedYear;
 	private JLabel showUserGuideLabel;
 	private JLabel displayLabel;
+	private JLabel showBlockedLabel;
 	private JLabel showUserRecentAddedTaskLabel;
 	private JLabel showCategoryLabel;
 	private JPanel schedulerPanel;
@@ -66,15 +67,19 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private JXCollapsiblePane showUserGuideCollapsePane;
 	private JXCollapsiblePane showTasksCollapsePane;
 	private JXCollapsiblePane showUserRecentAddedTaskCollapsePane;
+	private JXCollapsiblePane showBlockedCollapsePane;
+	private JXCollapsiblePane showCategoryCollapsePane;
 	private JTextArea showUserRecentAddedTaskCommand;
 	private JTextArea commandFeedback;
 	private JTextArea showCategory;
 	private JTextArea showUserGuide;
+	private JTextArea showBlocked;
 	private JScrollPane calendarScroll;
 	private JScrollPane showUserGuideScroll;
 	private JScrollPane showTasksScroll;
 	private JScrollPane showUserRecentAddedTaskScroll;
 	private JScrollPane showCategoryScroll;
+	private JScrollPane showBlockedScroll;
 	private JComboBox selectYear;
 	private JFrame schedulerFrame;
 	private JTextField inputCommand;
@@ -179,6 +184,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		showUserGuide.setBackground(Color.BLUE);
 		showUserGuide.setText(getGuide());
 		showUserGuide.setLineWrap(true);
+		showUserGuide.setWrapStyleWord(true);
 		showUserGuide.setEditable(false);
 		showUserGuideScroll = new JScrollPane(showUserGuide,
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
@@ -222,6 +228,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		showUserRecentAddedTaskCommand.setText("");
 		showUserRecentAddedTaskCommand.setAutoscrolls(false);
 		showUserRecentAddedTaskCommand.setLineWrap(true);
+		showUserRecentAddedTaskCommand.setWrapStyleWord(true);
 		showUserRecentAddedTaskCommand.setEditable(false);
 		showUserRecentAddedTaskScroll = new JScrollPane(
 				showUserRecentAddedTaskCommand,
@@ -247,19 +254,58 @@ public class FlexiPlannerUI implements HotKeyListener {
 		showCategory.setForeground(Color.CYAN);
 		showCategory.setBackground(Color.BLUE);
 		showCategory.setLineWrap(true);
+		showCategory.setWrapStyleWord(true);
 		showCategory.setText(logic.getCategory());
 		showCategory.setEditable(false);
 		showCategoryScroll = new JScrollPane(showCategory,
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		showCategoryScroll.setColumnHeaderView(showCategoryLabel);
-		showCategoryScroll.setBounds(10, 325, 300, 175);
+		showCategoryCollapsePane = new JXCollapsiblePane();
+		showCategoryCollapsePane
+		.setContentPane(showCategoryScroll);
+		showCategoryCollapsePane.setCollapsed(true);
+		showCategoryCollapsePane.setCollapsed(false);
+		showCategoryCollapsePane.setBounds(10, 325, 300, 0);
+		showCategoryCollapsePane.setPreferredSize(new Dimension(300,
+				175));		
+		showBlockedLabel = new JLabel();
+		showBlockedLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
+		showBlockedLabel.setForeground(Color.BLUE);
+		showBlockedLabel.setBorder(BorderFactory
+				.createCompoundBorder(border,
+						BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+		showBlockedLabel.setText("Blocked");
+		showBlocked = new JTextArea();
+		showBlocked.setFont(new Font("Times New Roman",
+				Font.BOLD, 14));
+		showBlocked.setForeground(Color.CYAN);
+		showBlocked.setBackground(Color.BLUE);
+		showBlocked.setText("");
+		showBlocked.setAutoscrolls(false);
+		showBlocked.setLineWrap(true);
+		showBlocked.setWrapStyleWord(true);
+		showBlocked.setEditable(false);
+		showBlockedScroll = new JScrollPane(
+				showBlocked,
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		showBlockedScroll
+		.setColumnHeaderView(showBlockedLabel);
+		showBlockedCollapsePane = new JXCollapsiblePane();
+		showBlockedCollapsePane
+		.setContentPane(showBlockedScroll);
+		showBlockedCollapsePane.setCollapsed(true);
+		showBlockedCollapsePane.setBounds(10, 325, 300, 0);
+		showBlockedCollapsePane.setPreferredSize(new Dimension(300,
+				175));
 		commandFeedback = new JTextArea("");
 		commandFeedback.setBackground(new Color(240, 240, 240));
 		commandFeedback.setForeground(Color.RED);
 		commandFeedback.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		commandFeedback.setEditable(false);
 		commandFeedback.setLineWrap(true);
+		commandFeedback.setWrapStyleWord(true);
 		commandFeedback.setBounds(11, 500, 870, 40);
 		inputCommand = new JTextField();
 		inputCommand.setForeground(Color.BLUE);
@@ -276,7 +322,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 		schedulerPanel.add(showUserGuideCollapsePane);
 		schedulerPanel.add(showTasksCollapsePane);
 		schedulerPanel.add(showUserRecentAddedTaskCollapsePane);
-		schedulerPanel.add(showCategoryScroll);
+		schedulerPanel.add(showBlockedCollapsePane);
+		schedulerPanel.add(showCategoryCollapsePane);
 		schedulerPanel.add(commandFeedback);
 		schedulerPanel.add(inputCommand);
 		String[] headers = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" }; // All
@@ -299,20 +346,23 @@ public class FlexiPlannerUI implements HotKeyListener {
 		selectYear.addActionListener(new Years_Action());
 		inputCommand.requestFocusInWindow();
 		executeKeyAction(commandFeedback, showUserRecentAddedTaskCommand,
-				showCategory, showTasksScroll, showUserRecentAddedTaskScroll,
+				showCategory, showBlocked, showTasksScroll, showUserRecentAddedTaskScroll,
 				showCategoryScroll, showUserGuideCollapsePane, showTasksCollapsePane,
-				showUserRecentAddedTaskCollapsePane);
+				showUserRecentAddedTaskCollapsePane,showBlockedCollapsePane,showCategoryCollapsePane);
 	}
 
 	// @author A0111770R
 	private void executeKeyAction(final JTextArea commandFeedback,
 			final JTextArea showUserRecentAddedTaskCommand,
-			final JTextArea showCategory, final JScrollPane showTasksScroll,
+			final JTextArea showCategory, final JTextArea showBlocked,
+			final JScrollPane showTasksScroll,
 			final JScrollPane showUserRecentAddedTaskScroll,
 			final JScrollPane showCategoryScroll,
 			final JXCollapsiblePane showUserGuidePane,
 			final JXCollapsiblePane showTasksCollapsePane,
-			final JXCollapsiblePane showUserRecentAddedTaskCollapsePane) {
+			final JXCollapsiblePane showUserRecentAddedTaskCollapsePane,
+			final JXCollapsiblePane showBlockedCollapsePane,
+			final JXCollapsiblePane showCategoryCollapsePane) {
 		inputCommand.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				int key = e.getKeyCode();
@@ -407,6 +457,15 @@ public class FlexiPlannerUI implements HotKeyListener {
 					showUserRecentAddedTaskCollapsePane.setCollapsed(true);
 					showUserGuidePane.setCollapsed(true);
 					break;
+				case KeyEvent.VK_F4:
+					if(showBlockedCollapsePane.isCollapsed()){
+						showBlockedCollapsePane.setCollapsed(false);
+						showCategoryCollapsePane.setCollapsed(true);
+					}else{
+						showBlockedCollapsePane.setCollapsed(true);
+						showCategoryCollapsePane.setCollapsed(false);
+					}
+					break;
 				case KeyEvent.VK_F5:
 					showTasksScroll.getVerticalScrollBar().getModel()
 					.setValue(tasksScrollPane - 5);
@@ -488,6 +547,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 				+ "\n2: 'ctrl+m': Close FlexiPlanner"
 				+ "\n3: 'ctrl+e': Exit FlexiPlanner" + "\n4: 'f1': Guide"
 				+ "\n5: 'f2': Recent added tasks" + "\n6: 'f3': Tasks"
+				+ "\n5: 'f4': Categories / Blocked"
 				+ "\n7: 'f5': Scroll up Tasks" + "\n8: 'f6': Scroll down Tasks"
 				+ "\n9: 'f7': Scroll up Recent added tasks"
 				+ "\n10: 'f8': Scroll down Recent added tasks"
