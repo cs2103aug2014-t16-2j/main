@@ -58,12 +58,12 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private JLabel showCategoryLabel;
 	private JPanel schedulerPanel;
 	private JButton prevMonth, nextMonth;
-	private JTable calendar1;
+	private JTable calendar;
 	private JTable displaytaskTable;
-	private DefaultTableModel calendar2;
+	private DefaultTableModel calendarDTM;
 	private DefaultTableModel displayTasksTableDTM;
 	private Border border;
-	private JXCollapsiblePane showUserGuidePane;
+	private JXCollapsiblePane showUserGuideCollapsePane;
 	private JXCollapsiblePane showTasksCollapsePane;
 	private JXCollapsiblePane showUserRecentAddedTaskCollapsePane;
 	private JTextArea showUserRecentAddedTaskCommand;
@@ -121,13 +121,13 @@ public class FlexiPlannerUI implements HotKeyListener {
 		schedulerFrame.setResizable(false);
 		schedulerFrame.setLocationRelativeTo(null);
 		schedulerFrame.setVisible(true);
-		calendar2 = new DefaultTableModel() {
+		calendarDTM = new DefaultTableModel() {
 			public boolean isCellEditable(int rowIndex, int mColIndex) {
 				return false;
 			}
 		};// get default table model for calendar
-		calendar1 = new JTable(calendar2);// create new table
-		calendarScroll = new JScrollPane(calendar1,
+		calendar = new JTable(calendarDTM);// create new table
+		calendarScroll = new JScrollPane(calendar,
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		schedulerPanel = new JPanel(null);
@@ -184,12 +184,12 @@ public class FlexiPlannerUI implements HotKeyListener {
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		showUserGuideScroll.setColumnHeaderView(showUserGuideLabel);
-		showUserGuidePane = new JXCollapsiblePane();
-		showUserGuidePane.setContentPane(showUserGuideScroll);
-		showUserGuidePane.setCollapsed(true);
-		showUserGuidePane.setBounds(320, 4, 570, 0);
-		showUserGuidePane.setPreferredSize(new Dimension(570, 495));
-		showUserGuidePane.setCollapsed(false);
+		showUserGuideCollapsePane = new JXCollapsiblePane();
+		showUserGuideCollapsePane.setContentPane(showUserGuideScroll);
+		showUserGuideCollapsePane.setCollapsed(true);
+		showUserGuideCollapsePane.setBounds(320, 4, 570, 0);
+		showUserGuideCollapsePane.setPreferredSize(new Dimension(570, 495));
+		showUserGuideCollapsePane.setCollapsed(false);
 		displayLabel = new JLabel();
 		displayLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		displayLabel.setForeground(Color.BLUE);
@@ -273,7 +273,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		schedulerPanel.add(prevMonth);
 		schedulerPanel.add(nextMonth);
 		schedulerPanel.add(calendarScroll);
-		schedulerPanel.add(showUserGuidePane);
+		schedulerPanel.add(showUserGuideCollapsePane);
 		schedulerPanel.add(showTasksCollapsePane);
 		schedulerPanel.add(showUserRecentAddedTaskCollapsePane);
 		schedulerPanel.add(showCategoryScroll);
@@ -282,16 +282,16 @@ public class FlexiPlannerUI implements HotKeyListener {
 		String[] headers = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" }; // All
 		// headers
 		for (int i = 0; i < 7; i++) {
-			calendar2.addColumn(headers[i]);// add it on top column(left to
+			calendarDTM.addColumn(headers[i]);// add it on top column(left to
 			// right)
 		}
-		calendar1.getTableHeader().setResizingAllowed(false);
-		calendar1.getTableHeader().setReorderingAllowed(false);
-		calendar1.setColumnSelectionAllowed(false);
-		calendar1.setRowSelectionAllowed(false);
-		calendar1.setRowHeight(40);
-		calendar2.setColumnCount(7);// set no of columns of calendar(inner)
-		calendar2.setRowCount(6);// set no of rows of calendar(inner)
+		calendar.getTableHeader().setResizingAllowed(false);
+		calendar.getTableHeader().setReorderingAllowed(false);
+		calendar.setColumnSelectionAllowed(false);
+		calendar.setRowSelectionAllowed(false);
+		calendar.setRowHeight(40);
+		calendarDTM.setColumnCount(7);// set no of columns of calendar(inner)
+		calendarDTM.setRowCount(6);// set no of rows of calendar(inner)
 		setValuesCombox();// combo box for selectYear
 		refreshCalendar(actualMonth, actualYear); // Refresh calendar
 		prevMonth.addActionListener(new Prev_Year());
@@ -300,7 +300,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		inputCommand.requestFocusInWindow();
 		executeKeyAction(commandFeedback, showUserRecentAddedTaskCommand,
 				showCategory, showTasksScroll, showUserRecentAddedTaskScroll,
-				showCategoryScroll, showUserGuidePane, showTasksCollapsePane,
+				showCategoryScroll, showUserGuideCollapsePane, showTasksCollapsePane,
 				showUserRecentAddedTaskCollapsePane);
 	}
 
@@ -707,7 +707,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		// Clear table
 		for (int i = 0; i < 6; i++) {
 			for (int j = 0; j < 7; j++) {
-				calendar2.setValueAt(null, i, j);
+				calendarDTM.setValueAt(null, i, j);
 			}
 		}
 		GregorianCalendar cal = new GregorianCalendar(year, month, 1);
@@ -716,16 +716,16 @@ public class FlexiPlannerUI implements HotKeyListener {
 		for (int i = 1; i <= nod; i++) {
 			int row = new Integer((i + som - 2) / 7);
 			int column = (i + som - 2) % 7;
-			calendar2.setValueAt(i, row, column);
+			calendarDTM.setValueAt(i, row, column);
 		}// set value for the days displayed
-		calendar1.setDefaultRenderer(calendar1.getColumnClass(0),
-				new Calendar1Renderer());// using Calendar1Renderer class to set
+		calendar.setDefaultRenderer(calendar.getColumnClass(0),
+				new CalendarRenderer());// using Calendar1Renderer class to set
 		// table display
 	}// end of refreshCalendar method
 	// class Calendar1Renderer used for editting how things are displayed
 
 	// @author A0111770R
-	class Calendar1Renderer extends DefaultTableCellRenderer {
+	class CalendarRenderer extends DefaultTableCellRenderer {
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean selected, boolean focused, int row,
 				int column) {
