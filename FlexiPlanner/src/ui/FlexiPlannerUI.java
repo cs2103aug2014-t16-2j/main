@@ -294,8 +294,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 		calendar2.setRowCount(6);// set no of rows of calendar(inner)
 		setValuesCombox();// combo box for selectYear
 		refreshCalendar(actualMonth, actualYear); // Refresh calendar
-		prevMonth.addActionListener(new Prev_Action());
-		nextMonth.addActionListener(new Next_Action());
+		prevMonth.addActionListener(new Prev_Year());
+		nextMonth.addActionListener(new Next_Year());
 		selectYear.addActionListener(new Years_Action());
 		inputCommand.requestFocusInWindow();
 		executeKeyAction(commandFeedback, showUserRecentAddedTaskCommand,
@@ -786,7 +786,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 
 	// Prev_Action points to the previous year
 	// @author A0111770R
-	class Prev_Action implements ActionListener {
+	class Prev_Year implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if (currentDisplayedMonth == 0) { // Back one year
 				currentDisplayedMonth = 11;
@@ -800,7 +800,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 
 	// Next_Action points to the next year
 	// @author A0111770R
-	class Next_Action implements ActionListener {
+	class Next_Year implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if (currentDisplayedMonth == 11) { // Foward one year
 				currentDisplayedMonth = 0;
