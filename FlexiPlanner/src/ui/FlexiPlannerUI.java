@@ -565,7 +565,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		displaytaskTable.setDefaultRenderer(displaytaskTable.getColumnClass(0),
 				new TextWrapRenderer());
 	}
-	
+
 	// @author A0111770R
 	class TasksTableRenderer extends DefaultTableCellRenderer {
 		public Component getTableCellRendererComponent(JTable table,
@@ -580,10 +580,11 @@ public class FlexiPlannerUI implements HotKeyListener {
 					if ((s.getYear() == LocalDateTime.now().getYear()) &&
 							(s.getMonthValue() == LocalDateTime.now().getMonthValue()) &&
 							(s.getDayOfMonth() == LocalDateTime.now().getDayOfMonth())) {
-						
+
 						setBackground(Color.MAGENTA);
-					}
-					else {
+					}else if(s.isBefore(LocalDateTime.now())){
+						setBackground(Color.RED);
+					}else{
 						setBackground(Color.ORANGE);
 					}
 				}
@@ -593,10 +594,11 @@ public class FlexiPlannerUI implements HotKeyListener {
 					if ((e.getYear() == LocalDateTime.now().getYear()) &&
 							(e.getMonthValue() == LocalDateTime.now().getMonthValue()) &&
 							(e.getDayOfMonth() == LocalDateTime.now().getDayOfMonth())) {
-						
+
 						setBackground(Color.MAGENTA);
-					}
-					else {
+					}else if(e.isBefore(LocalDateTime.now())){
+						setBackground(Color.RED);
+					}else {
 						setBackground(Color.ORANGE);
 					}
 				}
@@ -615,10 +617,11 @@ public class FlexiPlannerUI implements HotKeyListener {
 					if ((s.getYear() == LocalDateTime.now().getYear()) &&
 							(s.getMonthValue() == LocalDateTime.now().getMonthValue()) &&
 							(s.getDayOfMonth() == LocalDateTime.now().getDayOfMonth())) {
-						
+
 						setBackground(Color.MAGENTA);
-					}
-					else {
+					}else if(s.isBefore(LocalDateTime.now())){
+						setBackground(Color.RED);
+					}else {
 						setBackground(Color.ORANGE);
 					}
 				}
@@ -628,10 +631,11 @@ public class FlexiPlannerUI implements HotKeyListener {
 					if ((e.getYear() == LocalDateTime.now().getYear()) &&
 							(e.getMonthValue() == LocalDateTime.now().getMonthValue()) &&
 							(e.getDayOfMonth() == LocalDateTime.now().getDayOfMonth())) {
-						
+
 						setBackground(Color.MAGENTA);
-					}
-					else {
+					}else if(e.isBefore(LocalDateTime.now())){
+						setBackground(Color.RED);
+					}else {
 						setBackground(Color.ORANGE);
 					}
 				}
@@ -649,19 +653,19 @@ public class FlexiPlannerUI implements HotKeyListener {
 			return this;
 		}
 	}// end of class TasksTableRenderer
-	
+
 	// @author A0111770R
 	class TextWrapRenderer extends DefaultTableCellRenderer {
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean selected, boolean focused, int row,
 				int column) {
-			
+
 			JTextArea area = new JTextArea ();
 			area.setEditable(false);
 			area.setLineWrap(true);
 			area.setWrapStyleWord(true);
 			area.setText(value.toString());
-			
+
 			if (column == 3) {
 				if (value instanceof String) {
 					if (((String) value).startsWith("[reminder :")) {
@@ -673,12 +677,12 @@ public class FlexiPlannerUI implements HotKeyListener {
 					}
 				}
 			}
-			
+
 			setBorder(null);
 			return area;
 		}
 	}// end of class CellRenderer
-	
+
 	// @author A0111770R
 	private void refreshCalendar(int month, int year) {
 		int nod, som; // Number Of Days, Start Of Month
@@ -829,9 +833,9 @@ public class FlexiPlannerUI implements HotKeyListener {
 	public JFrame getJFrame() {
 		return schedulerFrame;
 	}
-	
+
 	public static void save() {
-		
+
 		try {
 			logic.saveData();
 		} catch (IOException e) {
