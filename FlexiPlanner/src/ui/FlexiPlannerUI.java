@@ -264,11 +264,11 @@ public class FlexiPlannerUI implements HotKeyListener {
 		showCategoryCollapsePane = new JXCollapsiblePane();
 		showCategoryCollapsePane
 		.setContentPane(showCategoryScroll);
-		showCategoryCollapsePane.setCollapsed(true);
-		showCategoryCollapsePane.setCollapsed(false);
 		showCategoryCollapsePane.setBounds(10, 325, 300, 0);
 		showCategoryCollapsePane.setPreferredSize(new Dimension(300,
-				175));		
+				175));
+		showCategoryCollapsePane.setCollapsed(true);
+		showCategoryCollapsePane.setCollapsed(false);
 		showBlockedLabel = new JLabel();
 		showBlockedLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		showBlockedLabel.setForeground(Color.BLUE);
