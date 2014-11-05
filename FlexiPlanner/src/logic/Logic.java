@@ -1102,9 +1102,10 @@ public class Logic {
 			}
 		}
 		if (searchResult != null) {
-
 			return true;
 		}
+
+		overdueRow = 0;
 		return false;
 	}
 
@@ -1319,7 +1320,8 @@ public class Logic {
 			cmd = parser.getAction(userCommand).getCommand();
 		}
 		if (cmd != null && cmd.equals(Command.SEARCH)) {
-			F3DisplayedList = new ArrayList<TaskData>(searchResult);
+
+			F3DisplayedList = searchResult;
 			overdueRow = 0;
 		}
 		if (cmd == null || cmd.equals("") || cmd.equals(Command.ADD)
@@ -1340,8 +1342,10 @@ public class Logic {
 		}
 		currentDisplayList = 3;
 		ArrayList<DisplayedEntry> tobeShown = new ArrayList<DisplayedEntry>();
-		for (TaskData t : F3DisplayedList) {
-			tobeShown.add(toDisplayedEntry(t));
+		if (F3DisplayedList != null) {
+			for (TaskData t : F3DisplayedList) {
+				tobeShown.add(toDisplayedEntry(t));
+			}
 		}
 		return tobeShown;
 	}

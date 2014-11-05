@@ -43,7 +43,7 @@ import com.tulskiy.keymaster.common.HotKeyListener;
  *
  * @author Eugene Tan Teck Li(A0111770R)
  */
-//@A0111770R
+// @A0111770R
 public class FlexiPlannerUI implements HotKeyListener {
 	private JLabel displayedMonth, displayedYear;
 	private JLabel showUserGuideLabel;
@@ -79,10 +79,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private JFrame schedulerFrame;
 	private JTextField inputCommand;
 	private int actualYear, actualMonth, actualDay, currentDisplayedYear,
-	currentDisplayedMonth;
+			currentDisplayedMonth;
 	private String[] months = { "January", "February", "March", "April", "May",
 			"June", "July", "August", "September", "October", "November",
-	"December" };
+			"December" };
 	private String[] columnNames = { "No:", "Priority", "Category", "Task",
 			"From", "To" };
 	private Object[][] dummyData = { { "", "", "", "", "", "" }, };
@@ -134,7 +134,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 		schedulerPanel = new JPanel(null);
 		schedulerFrame.getContentPane().add(schedulerPanel);// add panel to
 		// frame
-		displaytaskTable = new JTable(new DefaultTableModel(dummyData, columnNames) {
+		displaytaskTable = new JTable(new DefaultTableModel(dummyData,
+				columnNames) {
 			public boolean isCellEditable(int rowIndex, int mColIndex) {
 				return false;
 			}
@@ -231,10 +232,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		showUserRecentAddedTaskScroll
-		.setColumnHeaderView(showUserRecentAddedTaskLabel);
+				.setColumnHeaderView(showUserRecentAddedTaskLabel);
 		showUserRecentAddedTaskCollapsePane = new JXCollapsiblePane();
 		showUserRecentAddedTaskCollapsePane
-		.setContentPane(showUserRecentAddedTaskScroll);
+				.setContentPane(showUserRecentAddedTaskScroll);
 		showUserRecentAddedTaskCollapsePane.setCollapsed(true);
 		showUserRecentAddedTaskCollapsePane.setBounds(320, 4, 570, 0);
 		showUserRecentAddedTaskCollapsePane.setPreferredSize(new Dimension(570,
@@ -258,23 +259,19 @@ public class FlexiPlannerUI implements HotKeyListener {
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		showCategoryScroll.setColumnHeaderView(showCategoryLabel);
 		showCategoryCollapsePane = new JXCollapsiblePane();
-		showCategoryCollapsePane
-		.setContentPane(showCategoryScroll);
+		showCategoryCollapsePane.setContentPane(showCategoryScroll);
 		showCategoryCollapsePane.setBounds(10, 325, 300, 0);
-		showCategoryCollapsePane.setPreferredSize(new Dimension(300,
-				175));
+		showCategoryCollapsePane.setPreferredSize(new Dimension(300, 175));
 		showCategoryCollapsePane.setCollapsed(true);
 		showCategoryCollapsePane.setCollapsed(false);
 		showBlockedLabel = new JLabel();
 		showBlockedLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		showBlockedLabel.setForeground(Color.BLUE);
-		showBlockedLabel.setBorder(BorderFactory
-				.createCompoundBorder(border,
-						BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+		showBlockedLabel.setBorder(BorderFactory.createCompoundBorder(border,
+				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		showBlockedLabel.setText("Blocked");
 		showBlocked = new JTextArea();
-		showBlocked.setFont(new Font("Times New Roman",
-				Font.BOLD, 14));
+		showBlocked.setFont(new Font("Times New Roman", Font.BOLD, 14));
 		showBlocked.setForeground(Color.CYAN);
 		showBlocked.setBackground(Color.BLUE);
 		showBlocked.setText("");
@@ -282,19 +279,15 @@ public class FlexiPlannerUI implements HotKeyListener {
 		showBlocked.setLineWrap(true);
 		showBlocked.setWrapStyleWord(true);
 		showBlocked.setEditable(false);
-		showBlockedScroll = new JScrollPane(
-				showBlocked,
+		showBlockedScroll = new JScrollPane(showBlocked,
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		showBlockedScroll
-		.setColumnHeaderView(showBlockedLabel);
+		showBlockedScroll.setColumnHeaderView(showBlockedLabel);
 		showBlockedCollapsePane = new JXCollapsiblePane();
-		showBlockedCollapsePane
-		.setContentPane(showBlockedScroll);
+		showBlockedCollapsePane.setContentPane(showBlockedScroll);
 		showBlockedCollapsePane.setCollapsed(true);
 		showBlockedCollapsePane.setBounds(10, 325, 300, 0);
-		showBlockedCollapsePane.setPreferredSize(new Dimension(300,
-				175));
+		showBlockedCollapsePane.setPreferredSize(new Dimension(300, 175));
 		commandFeedback = new JTextArea("");
 		commandFeedback.setBackground(new Color(240, 240, 240));
 		commandFeedback.setForeground(Color.RED);
@@ -342,9 +335,11 @@ public class FlexiPlannerUI implements HotKeyListener {
 		selectYear.addActionListener(new Years_Action());
 		inputCommand.requestFocusInWindow();
 		executeKeyAction(commandFeedback, showUserRecentAddedTaskCommand,
-				showCategory, showBlocked, showTasksScroll, showUserRecentAddedTaskScroll,
-				showCategoryScroll, showUserGuideCollapsePane, showTasksCollapsePane,
-				showUserRecentAddedTaskCollapsePane,showBlockedCollapsePane,showCategoryCollapsePane);
+				showCategory, showBlocked, showTasksScroll,
+				showUserRecentAddedTaskScroll, showCategoryScroll,
+				showUserGuideCollapsePane, showTasksCollapsePane,
+				showUserRecentAddedTaskCollapsePane, showBlockedCollapsePane,
+				showCategoryCollapsePane);
 	}
 
 	// @author A0111770R
@@ -454,48 +449,48 @@ public class FlexiPlannerUI implements HotKeyListener {
 					showUserGuidePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F4:
-					if(showBlockedCollapsePane.isCollapsed()){
+					if (showBlockedCollapsePane.isCollapsed()) {
 						showBlockedCollapsePane.setCollapsed(false);
 						showCategoryCollapsePane.setCollapsed(true);
-					}else{
+					} else {
 						showBlockedCollapsePane.setCollapsed(true);
 						showCategoryCollapsePane.setCollapsed(false);
 					}
 					break;
 				case KeyEvent.VK_F5:
 					showTasksScroll.getVerticalScrollBar().getModel()
-					.setValue(tasksScrollPane - 5);
+							.setValue(tasksScrollPane - 5);
 					break;
 				case KeyEvent.VK_F6:
 					showTasksScroll.getVerticalScrollBar().getModel()
-					.setValue(tasksScrollPane + 5);
+							.setValue(tasksScrollPane + 5);
 					break;
 				case KeyEvent.VK_F7:
 					showUserRecentAddedTaskScroll.getVerticalScrollBar()
-					.getModel().setValue(valueCustomTextArea - 5);
+							.getModel().setValue(valueCustomTextArea - 5);
 					break;
 				case KeyEvent.VK_F8:
 					showUserRecentAddedTaskScroll.getVerticalScrollBar()
-					.getModel().setValue(valueCustomTextArea + 5);
+							.getModel().setValue(valueCustomTextArea + 5);
 					break;
 				case KeyEvent.VK_F9:
 					showCategoryScroll.getVerticalScrollBar().getModel()
-					.setValue(valueCategoryScrollPane - 5);
+							.setValue(valueCategoryScrollPane - 5);
 					break;
 				case KeyEvent.VK_F10:
 					showCategoryScroll.getVerticalScrollBar().getModel()
-					.setValue(valueCategoryScrollPane + 5);
+							.setValue(valueCategoryScrollPane + 5);
 					break;
 				case KeyEvent.VK_PAGE_UP:
 					if (currentDisplayedMonth == 0
-					&& currentDisplayedYear == actualYear) {
+							&& currentDisplayedYear == actualYear) {
 						break;
 					}
 					prevMth();
 					break;
 				case KeyEvent.VK_PAGE_DOWN:
 					if (currentDisplayedMonth == 11
-					&& currentDisplayedYear >= actualYear + 20) {
+							&& currentDisplayedYear >= actualYear + 20) {
 						break;
 					}
 					nextMth();
@@ -539,8 +534,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 
 	// @author A0111770R
 	private String getGuide() {
-		String guide = "HotKeys:"
-				+ "\n1: 'ctrl+o': Launch FlexiPlanner"
+		String guide = "HotKeys:" + "\n1: 'ctrl+o': Launch FlexiPlanner"
 				+ "\n2: 'ctrl+m': Close FlexiPlanner"
 				+ "\n3: 'ctrl+e': Exit FlexiPlanner" + "\n4: 'f1': Guide"
 				+ "\n5: 'f2': Recent added tasks" + "\n6: 'f3': Tasks"
@@ -550,8 +544,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 				+ "\n10: 'f8': Scroll down Recent added tasks"
 				+ "\n11: 'f9': Scroll up category"
 				+ "\n12: 'f10': Scroll down category"
-				+ "\n13: 'pgup': Previous month" 
-				+ "\n14: 'pgdw': Next month";
+				+ "\n13: 'pgup': Previous month" + "\n14: 'pgdw': Next month";
 		return guide;
 	}
 
@@ -560,7 +553,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 		displaytaskTable.setModel(displayTasksTableDTM);
 		displaytaskTable.setCellSelectionEnabled(false);
 		displaytaskTable.setRowHeight(60);
-		displaytaskTable.getColumnModel().getColumn(0).setCellRenderer(new TasksTableRenderer());
+		displaytaskTable.getColumnModel().getColumn(0)
+				.setCellRenderer(new TasksTableRenderer());
 		displaytaskTable.getColumnModel().getColumn(0).setPreferredWidth(30);
 		displaytaskTable.getColumnModel().getColumn(1).setPreferredWidth(55);
 		displaytaskTable.getColumnModel().getColumn(2).setPreferredWidth(65);
@@ -584,39 +578,44 @@ public class FlexiPlannerUI implements HotKeyListener {
 				displayTasksTableDTM.setValueAt("", i, j);
 			}
 		}
-		overDueRow=logic.getOverdueRow();
+		overDueRow = logic.getOverdueRow();
 		int row = 0;
-		for (DisplayedEntry t : logic.getRequiredTask(userCommand)) {
-			displayTasksTableDTM.setValueAt(row + 1, row, 0);
-			if (t.getPriority() != null)
-				displayTasksTableDTM.setValueAt(t.getPriority(), row, 1);
-			if (t.getCategory() != null)
-				displayTasksTableDTM.setValueAt(t.getCategory(), row, 2);
-			if (t.getRemindDateTime() != null && t.getReminder() != null) {
-				StringBuilder sb = new StringBuilder();
-				DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT);
-				String remindDateTime = t.getRemindDateTime().format(formatter);
-				sb.append(t.getContent() + " ");
-				sb.append("[reminder:" + remindDateTime+"]");
-				displayTasksTableDTM.setValueAt(sb.toString(), row, 3);
-			}
-			else {
-				displayTasksTableDTM.setValueAt(t.getContent(), row, 3);
-			}
-			try {
-				if (t.getStartDateTime() != null) {
-					displayTasksTableDTM.setValueAt(t.getStartDateTime(), row,
-							4);
+		if (logic.getRequiredTask(userCommand) != null) {
+			for (DisplayedEntry t : logic.getRequiredTask(userCommand)) {
+				displayTasksTableDTM.setValueAt(row + 1, row, 0);
+				if (t.getPriority() != null)
+					displayTasksTableDTM.setValueAt(t.getPriority(), row, 1);
+				if (t.getCategory() != null)
+					displayTasksTableDTM.setValueAt(t.getCategory(), row, 2);
+				if (t.getRemindDateTime() != null && t.getReminder() != null) {
+					StringBuilder sb = new StringBuilder();
+					DateTimeFormatter formatter = DateTimeFormatter
+							.ofLocalizedDateTime(FormatStyle.MEDIUM,
+									FormatStyle.SHORT);
+					String remindDateTime = t.getRemindDateTime().format(
+							formatter);
+					sb.append(t.getContent() + " ");
+					sb.append("[reminder:" + remindDateTime + "]");
+					displayTasksTableDTM.setValueAt(sb.toString(), row, 3);
+				} else {
+					displayTasksTableDTM.setValueAt(t.getContent(), row, 3);
 				}
-				if (t.getEndDateTime() != null) {
-					displayTasksTableDTM.setValueAt(t.getEndDateTime(), row, 5);
+				try {
+					if (t.getStartDateTime() != null) {
+						displayTasksTableDTM.setValueAt(t.getStartDateTime(),
+								row, 4);
+					}
+					if (t.getEndDateTime() != null) {
+						displayTasksTableDTM.setValueAt(t.getEndDateTime(),
+								row, 5);
+					}
+				} catch (java.text.ParseException e) {
+					System.out.println("");
 				}
-			} catch (java.text.ParseException e) {
-				System.out.println("");
-			}
-			row++;
-			if (row == 50) {
-				break;
+				row++;
+				if (row == 50) {
+					break;
+				}
 			}
 		}
 		displaytaskTable.setDefaultRenderer(displaytaskTable.getColumnClass(0),
@@ -630,78 +629,100 @@ public class FlexiPlannerUI implements HotKeyListener {
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean selected, boolean focused, int row,
 				int column) {
-			Component c = super.getTableCellRendererComponent(table, value, selected,
-					focused, row, column);
+			Component c = super.getTableCellRendererComponent(table, value,
+					selected, focused, row, column);
 			if (row == overDueRow && overDueRow == 0) {
-				if (table.getModel().getValueAt(row, 4) != null && !(((String)table.getModel().getValueAt(row, 4)).equals(""))) {
-					String start = table.getModel().getValueAt(row, 4).toString();
-					LocalDateTime s = LocalDateTime.parse(start, DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"));
-					if ((s.getYear() == LocalDateTime.now().getYear()) &&
-							(s.getMonthValue() == LocalDateTime.now().getMonthValue()) &&
-							(s.getDayOfMonth() == LocalDateTime.now().getDayOfMonth())) {
+				if (table.getModel().getValueAt(row, 4) != null
+						&& !(((String) table.getModel().getValueAt(row, 4))
+								.equals(""))) {
+					String start = table.getModel().getValueAt(row, 4)
+							.toString();
+					LocalDateTime s = LocalDateTime.parse(start,
+							DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"));
+					if ((s.getYear() == LocalDateTime.now().getYear())
+							&& (s.getMonthValue() == LocalDateTime.now()
+									.getMonthValue())
+							&& (s.getDayOfMonth() == LocalDateTime.now()
+									.getDayOfMonth())) {
 
 						setBackground(Color.MAGENTA);
-					}else if(s.isBefore(LocalDateTime.now())){
+					} else if (s.isBefore(LocalDateTime.now())) {
 						setBackground(Color.RED);
-					}else{
+					} else {
 						setBackground(Color.ORANGE);
 					}
-				}
-				else if (table.getModel().getValueAt(row, 4) != null && !(((String)table.getModel().getValueAt(row, 5)).equals(""))) {
+				} else if (table.getModel().getValueAt(row, 4) != null
+						&& !(((String) table.getModel().getValueAt(row, 5))
+								.equals(""))) {
 					String end = table.getModel().getValueAt(row, 5).toString();
-					LocalDateTime e = LocalDateTime.parse(end, DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"));
-					if ((e.getYear() == LocalDateTime.now().getYear()) &&
-							(e.getMonthValue() == LocalDateTime.now().getMonthValue()) &&
-							(e.getDayOfMonth() == LocalDateTime.now().getDayOfMonth())) {
+					LocalDateTime e = LocalDateTime.parse(end,
+							DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"));
+					if ((e.getYear() == LocalDateTime.now().getYear())
+							&& (e.getMonthValue() == LocalDateTime.now()
+									.getMonthValue())
+							&& (e.getDayOfMonth() == LocalDateTime.now()
+									.getDayOfMonth())) {
 
 						setBackground(Color.MAGENTA);
-					}else if(e.isBefore(LocalDateTime.now())){
+					} else if (e.isBefore(LocalDateTime.now())) {
 						setBackground(Color.RED);
-					}else {
+					} else {
 						setBackground(Color.ORANGE);
 					}
-				}
-				else {
+				} else {
 					setBackground(Color.ORANGE);
 				}
-				if (table.getModel().getValueAt(row, 3) == null || (((String)table.getModel().getValueAt(row, 3)).equals(""))) {
+				if (table.getModel().getValueAt(row, 3) == null
+						|| (((String) table.getModel().getValueAt(row, 3))
+								.equals(""))) {
 					setBackground(Color.WHITE);
 				}
-			} else if (row <= overDueRow-1) {
+			} else if (row <= overDueRow - 1) {
 				setBackground(Color.RED);
 			} else {
-				if (table.getModel().getValueAt(row, 4) != null && !(((String)table.getModel().getValueAt(row, 4)).equals(""))) {
-					String start = table.getModel().getValueAt(row, 4).toString();
-					LocalDateTime s = LocalDateTime.parse(start, DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"));
-					if ((s.getYear() == LocalDateTime.now().getYear()) &&
-							(s.getMonthValue() == LocalDateTime.now().getMonthValue()) &&
-							(s.getDayOfMonth() == LocalDateTime.now().getDayOfMonth())) {
+				if (table.getModel().getValueAt(row, 4) != null
+						&& !(((String) table.getModel().getValueAt(row, 4))
+								.equals(""))) {
+					String start = table.getModel().getValueAt(row, 4)
+							.toString();
+					LocalDateTime s = LocalDateTime.parse(start,
+							DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"));
+					if ((s.getYear() == LocalDateTime.now().getYear())
+							&& (s.getMonthValue() == LocalDateTime.now()
+									.getMonthValue())
+							&& (s.getDayOfMonth() == LocalDateTime.now()
+									.getDayOfMonth())) {
 
 						setBackground(Color.MAGENTA);
-					}else if(s.isBefore(LocalDateTime.now())){
+					} else if (s.isBefore(LocalDateTime.now())) {
 						setBackground(Color.RED);
-					}else {
+					} else {
 						setBackground(Color.ORANGE);
 					}
-				}
-				else if (table.getModel().getValueAt(row, 5) != null && !(((String)table.getModel().getValueAt(row, 5)).equals(""))) {
+				} else if (table.getModel().getValueAt(row, 5) != null
+						&& !(((String) table.getModel().getValueAt(row, 5))
+								.equals(""))) {
 					String end = table.getModel().getValueAt(row, 5).toString();
-					LocalDateTime e = LocalDateTime.parse(end, DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"));
-					if ((e.getYear() == LocalDateTime.now().getYear()) &&
-							(e.getMonthValue() == LocalDateTime.now().getMonthValue()) &&
-							(e.getDayOfMonth() == LocalDateTime.now().getDayOfMonth())) {
+					LocalDateTime e = LocalDateTime.parse(end,
+							DateTimeFormatter.ofPattern("d MMM yyyy HH:mm"));
+					if ((e.getYear() == LocalDateTime.now().getYear())
+							&& (e.getMonthValue() == LocalDateTime.now()
+									.getMonthValue())
+							&& (e.getDayOfMonth() == LocalDateTime.now()
+									.getDayOfMonth())) {
 
 						setBackground(Color.MAGENTA);
-					}else if(e.isBefore(LocalDateTime.now())){
+					} else if (e.isBefore(LocalDateTime.now())) {
 						setBackground(Color.RED);
-					}else {
+					} else {
 						setBackground(Color.ORANGE);
 					}
-				}
-				else {
+				} else {
 					setBackground(Color.ORANGE);
 				}
-				if (table.getModel().getValueAt(row, 3) == null || (((String)table.getModel().getValueAt(row, 3)).equals(""))) {
+				if (table.getModel().getValueAt(row, 3) == null
+						|| (((String) table.getModel().getValueAt(row, 3))
+								.equals(""))) {
 					setBackground(Color.WHITE);
 				}
 			}
@@ -720,7 +741,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 				Object value, boolean selected, boolean focused, int row,
 				int column) {
 
-			JTextArea area = new JTextArea ();
+			JTextArea area = new JTextArea();
 			area.setEditable(false);
 			area.setLineWrap(true);
 			area.setWrapStyleWord(true);
@@ -782,7 +803,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 				new CalendarRenderer());// using Calendar1Renderer class to set
 		// table display
 	}// end of refreshCalendar method
-	// class Calendar1Renderer used for editting how things are displayed
+		// class Calendar1Renderer used for editting how things are displayed
 
 	// @author A0111770R
 	@SuppressWarnings("serial")
