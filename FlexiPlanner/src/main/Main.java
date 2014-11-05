@@ -15,7 +15,6 @@ public class Main {
 		
 		try {
 			userInterface.loadInterfaceandData();
-			//userInterface.redirectSystemStreams();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ParseException e) {
