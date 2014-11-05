@@ -321,12 +321,12 @@ public class Parser {
 	private void setDateTime(MyStringList words, Task t) {
 		
 		for (int index = 0; index < words.size(); index++) {
-			index = findDateTime(words, t, index);
+			index = findDateTime(words, index, t);
 		}
 		
 	}
 
-	private int findDateTime(MyStringList words, Task t, int index) {
+	private int findDateTime(MyStringList words, int index, Task t) {
 		
 		LocalDate ld = null;
 		LocalTime lt = null;
@@ -346,7 +346,7 @@ public class Parser {
 			ld = findDate(words, index);
 		}
 		if (ld == null) {
-			ld = findDateWithWord(words, index);//get date with dayofweek or "next" or "last" or "by"
+			ld = findDateWithWord(words, index);
 		}
 		if (ld == null) {
 			ld = findDateWithKeyWord(words, index);
@@ -359,7 +359,7 @@ public class Parser {
 		}
 		if (ld != null || lt != null) {
 			setDateTimeToTask(t, ld, lt);
-			index -= adjustDateTimeOfTask(t, words, index - 1);
+			index -= adjustDateTimeOfTask(words, index - 1, t);
 			index -= 1 + removeUselessWord(words, index - 1);
 		}
 		return index;
@@ -403,12 +403,12 @@ public class Parser {
 		
 	}
 	
-	private int adjustDateTimeOfTask(Task t, MyStringList words, int index) {
+	private int adjustDateTimeOfTask(MyStringList words, int index, Task t) {
 
 		if (index >= 0) {
 			String word = words.get(index).toLowerCase();
 			if (SECONDARY_KEYWORDS_DATE_TIME.contains(word)) {
-				return changeDateTimeOfTask(t, words, index);
+				return changeDateTimeOfTask(words, index, t);
 			}
 		}
 		return 0;
@@ -449,16 +449,16 @@ public class Parser {
 		
 	}
 	
-	private int changeDateTimeOfTask(Task t, MyStringList words, int index) {
+	private int changeDateTimeOfTask(MyStringList words, int index, Task t) {
 		
 		String word = words.get(index).toLowerCase();
 		int numOfWordsToRemove = 0;
 		switch (word) {
 			case "after" :
-				numOfWordsToRemove = changeDateTimeWithPeriodWord(t, words, index - 1, 1);
+				numOfWordsToRemove = changeDateTimeWithPeriodWord(words, index - 1, t, 1);
 				break;
 			case "before" :
-				numOfWordsToRemove = changeDateTimeWithPeriodWord(t, words, index - 1, -1);
+				numOfWordsToRemove = changeDateTimeWithPeriodWord(words, index - 1, t, -1);
 				if (numOfWordsToRemove != 0) {
 					break;
 				}
@@ -483,7 +483,7 @@ public class Parser {
 		
 	}
 	
-	private int changeDateTimeWithPeriodWord(Task t, MyStringList words, int index, int multiplier) {
+	private int changeDateTimeWithPeriodWord(MyStringList words, int index, Task t, int multiplier) {
 		
 		if (index >= 0 && KEYWORDS_DATE_PERIOD.contains(words.get(index))) {
 			String word = words.get(index).toLowerCase();
