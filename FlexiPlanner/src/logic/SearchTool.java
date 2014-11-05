@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-
 import org.json.simple.parser.ParseException;
 
 import commons.TaskData;
@@ -18,6 +17,14 @@ public class SearchTool {
 
 	private final String message = "xxxxxxxxxxxxxxxxxxxx";
 
+	// This message tells that there exists two similar tasks
+
+	/**
+	 * This method find the task by its description (content and date/time It
+	 * will return a special message if more than one tasks have same content
+	 * when no time is specified
+	 */
+	// @author A0112066
 	public TaskData findTaskByContentandDate(TaskData task,
 			HashMap<DateInfo, TaskData> toFindList) {
 
@@ -52,6 +59,8 @@ public class SearchTool {
 		return taskFound;
 	}
 
+	/** This method finds the task with exact info (content and time) **/
+	// @author A0112066
 	public TaskData findExactTask(TaskData task,
 			HashMap<DateInfo, TaskData> toFindList) {
 		TaskData taskFound = null;
@@ -74,6 +83,8 @@ public class SearchTool {
 		return d1.hashCode() == d2.hashCode();
 	}
 
+	/** This method search for a task bby given info **/
+	// @author A0112066
 	public ArrayList<TaskData> search(ArrayList<TaskData> taskList, Task task)
 			throws IOException, ParseException {
 		if (taskList.isEmpty()) {
@@ -103,6 +114,7 @@ public class SearchTool {
 		return searchResult;
 	}
 
+	// @author A0112066
 	private ArrayList<TaskData> filterByTime(ArrayList<TaskData> taskList,
 			LocalDateTime startTime, LocalDateTime endTime) {
 		ArrayList<TaskData> searchResult = new ArrayList<TaskData>();
@@ -135,6 +147,7 @@ public class SearchTool {
 		return searchResult;
 	}
 
+	// @author A0112066
 	private ArrayList<TaskData> filterByCategory(ArrayList<TaskData> taskList,
 			String[] _category) {
 		ArrayList<TaskData> searchResult = new ArrayList<TaskData>();
@@ -150,6 +163,7 @@ public class SearchTool {
 		}
 	}
 
+	// @author A0112066
 	private ArrayList<TaskData> filterByPriority(ArrayList<TaskData> taskList,
 			String _priority) {
 		ArrayList<TaskData> searchResult = new ArrayList<TaskData>();
@@ -162,6 +176,7 @@ public class SearchTool {
 
 	}
 
+	// @author A0112066
 	private ArrayList<TaskData> filterByKeywords(ArrayList<TaskData> taskList,
 			String[] _words) {
 		ArrayList<TaskData> searchResult = new ArrayList<TaskData>();
@@ -181,7 +196,5 @@ public class SearchTool {
 		}
 		return searchResult;
 	}
-
-	
 
 }

@@ -1,5 +1,10 @@
 package logic;
 
+/**
+ * This class represents an entry that is to be displayed in UI
+ * It is constructed from corresponding TaskData
+ * @author A0112066
+ */
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
