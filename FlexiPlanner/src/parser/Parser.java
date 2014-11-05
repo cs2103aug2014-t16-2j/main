@@ -60,13 +60,13 @@ public class Parser {
 		int startIndex = 0;
 		int endIndex = 0;
 		for (int index = 0; index < words.size(); index++) {
-			if (words.get(index).startsWith("\"")) {
+			if (words.get(index).startsWith("[")) {
 				startIndex = index;
 				break;
 			}
 		}
 		for (int index = 0; index < words.size(); index++) {
-			if (words.get(index).endsWith("\"")) {
+			if (words.get(index).endsWith("]")) {
 				if (index > startIndex) {
 					endIndex = index;
 					break;

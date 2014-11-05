@@ -39,19 +39,19 @@ public class ReminderPatternParser {
 	private final int R_PATTERN_3 = 3;
 	private final int YEAR_OF_TODAY = 2000;
 	
-	private final String PATTERN_1 = "(?i).*\\s*\"{1}(\\s*\\w*\\s+)*(\\d{1,2})\\s*"
-			+ "(m|min|mins|minute|minutes|h|hr|hrs|hour|hours)(\\s+\\w*)*\"{1}(\\s+.*)*";
+	private final String PATTERN_1 = "(?i).*\\s*\\[{1}(\\s*\\w*\\s+)*(\\d{1,2})\\s*"
+			+ "(m|min|mins|minute|minutes|h|hr|hrs|hour|hours)(\\s+\\w*)*\\]{1}(\\s+.*)*";
 	
-	private final String PATTERN_2 = "(?i).*\\s*\"{1}(\\s*\\w*\\s+)*(\\d{1,2})\\s*"
+	private final String PATTERN_2 = "(?i).*\\s*\\[{1}(\\s*\\w*\\s+)*(\\d{1,2})\\s*"
 			+ "(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july"
 			+ "|aug|august|sep|september|oct|october|nov|november|dec|december|)"
-			+ "\\s+(\\d{1,2})(:)?(\\d{1,2})?\\s*(am|pm|)(\\s+\\w*)*\"{1}(\\s+.*)*";
+			+ "\\s+(\\d{1,2})(:)?(\\d{1,2})?\\s*(am|pm|)(\\s+\\w*)*\\]{1}(\\s+.*)*";
 	
-	private final String PATTERN_3 = "(?i).*\\s*\"{1}(\\s*\\w*\\s+)*(\\d{1,2})(\\-|\\/|\\\\)"
+	private final String PATTERN_3 = "(?i).*\\s*\\[{1}(\\s*\\w*\\s+)*(\\d{1,2})(\\-|\\/|\\\\)"
 			+ "(\\d{1,2})(\\-|\\/|\\\\)(\\d{1,2})(\\d{1,2})?\\s*(\\d{1,2})(:)?(\\d{1,2})?\\s*"
-			+ "(am|pm|)(\\s+\\w*)*\"{1}(\\s+.*)*";
+			+ "(am|pm|)(\\s+\\w*)*\\]{1}(\\s+.*)*";
 	
-	private final String CLEAR_PATTERN = "(?i).*\"{1}(.*(clear).*)\"{1}.*";
+	private final String CLEAR_PATTERN = "(?i).*\\[{1}(.*(clear).*)\\]{1}.*";
 	
 	private final String[] months = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"};
 	private final List<String> monthList = (List<String>) Arrays.asList(months);
