@@ -10,16 +10,11 @@ import java.awt.event.KeyEvent;
 import java.awt.Dimension;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.security.KeyStore.Entry;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.ArrayList;
 import java.util.GregorianCalendar;
 
-import javax.swing.SwingUtilities;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -31,7 +26,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.Timer;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -80,6 +74,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private JScrollPane showUserRecentAddedTaskScroll;
 	private JScrollPane showCategoryScroll;
 	private JScrollPane showBlockedScroll;
+	@SuppressWarnings("rawtypes")
 	private JComboBox selectYear;
 	private JFrame schedulerFrame;
 	private JTextField inputCommand;
@@ -110,6 +105,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	}
 
 	// @author A0111770R
+	@SuppressWarnings({ "serial", "rawtypes" })
 	public void loadInterfaceandData() throws IOException, ParseException {
 		JFrame.setDefaultLookAndFeelDecorated(false);
 		schedulerFrame.setUndecorated(false);
@@ -512,6 +508,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	}
 
 	// @author A0111770R
+	@SuppressWarnings("unchecked")
 	private void setValuesCombox() {
 		for (int i = actualYear; i <= actualYear + 20; i++) {
 			selectYear.addItem(String.valueOf(i));
@@ -627,7 +624,9 @@ public class FlexiPlannerUI implements HotKeyListener {
 	}
 
 	// @author A0111770R
+	@SuppressWarnings("serial")
 	class TasksTableRenderer extends DefaultTableCellRenderer {
+		@SuppressWarnings("unused")
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean selected, boolean focused, int row,
 				int column) {
@@ -715,6 +714,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	}// end of class TasksTableRenderer
 
 	// @author A0111770R
+	@SuppressWarnings("serial")
 	class TextWrapRenderer extends DefaultTableCellRenderer {
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean selected, boolean focused, int row,
@@ -785,6 +785,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	// class Calendar1Renderer used for editting how things are displayed
 
 	// @author A0111770R
+	@SuppressWarnings("serial")
 	class CalendarRenderer extends DefaultTableCellRenderer {
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean selected, boolean focused, int row,
