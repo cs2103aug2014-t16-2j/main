@@ -1049,6 +1049,7 @@ public class Parser {
 	}
 }
 
+@SuppressWarnings("serial")
 class MyStringList extends ArrayList<String>{
 	
 	public boolean containsIgnoreCase(String param) {
