@@ -6,9 +6,9 @@ import parser.Action;
 import parser.Task;
 
 class DateInfo {
-	LocalDateTime start, end;
+	private LocalDateTime start, end;
 
-	DateInfo(LocalDateTime _start, LocalDateTime _end) {
+	public DateInfo(LocalDateTime _start, LocalDateTime _end) {
 		if (_start == null) {
 			this.start = LocalDateTime.MIN;
 		} else {
@@ -21,11 +21,11 @@ class DateInfo {
 		}
 	}
 
-	LocalDateTime getStartDateTime()  {
+	public LocalDateTime getStartDateTime()  {
 		return start;
 	}
 
-	LocalDateTime getEndDateTime()  {
+	public LocalDateTime getEndDateTime()  {
 		return end;
 	}
 
@@ -50,7 +50,7 @@ class ActionEntry {
 	private Action action;
 	private Task task;
 
-	ActionEntry(Action action, Task task) {
+	public ActionEntry(Action action, Task task) {
 		this.action = action;
 		this.task = task;
 	}
