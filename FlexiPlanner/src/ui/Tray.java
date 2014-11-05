@@ -64,7 +64,7 @@ public class Tray {
 		
 		final SystemTray tray = SystemTray.getSystemTray();
 		final PopupMenu popupMenu = new PopupMenu();
-		Image icon = Toolkit.getDefaultToolkit().getImage("logo.png");
+		Image icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/resources/logo.png"));
 		final TrayIcon trayIcon = new TrayIcon(icon, "FlexiPlanner", popupMenu);
 		trayIcon.setImageAutoSize(true);
 		

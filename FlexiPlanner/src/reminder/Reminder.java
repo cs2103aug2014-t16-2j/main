@@ -90,9 +90,9 @@ public class Reminder {
         scheduler.schedule(new Runnable() {
             @Override
             public void run() {
+            	task.clearReminder();
                 ReminderPopup popup = new ReminderPopup();
                 popup.reminderPopup(reminderText);
-                task.clearReminder();
                 stop();
             }
         }, ms, MILLISECONDS);

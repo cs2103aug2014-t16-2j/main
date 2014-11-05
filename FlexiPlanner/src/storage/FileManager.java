@@ -32,9 +32,14 @@ public class FileManager {
 	private final String FILE_NAME_PATTERN = "^[\\w,\\s-]+$";
 	private final String VALID_EXTENSION_TASKS_FILE = "json";
 	private final String VALID_EXTENSION_NORMAL_FILE = "txt";
+	private final String FOLDER_NAME = "Task Folder";
 	
 	public boolean create(String filePath) throws IOException {
 		boolean isCreated = false;
+		File folder = new File(FOLDER_NAME);
+		if (!folder.exists()) {
+			folder.mkdir();
+		}
 		File file = new File(filePath);
 		if (!file.exists()) {
 			file.createNewFile();

@@ -37,13 +37,13 @@ import org.jdesktop.swingx.JXCollapsiblePane;
 
 import com.tulskiy.keymaster.common.HotKey;
 import com.tulskiy.keymaster.common.HotKeyListener;
-
-//import com.apple.eawt.Application;
+import com.apple.eawt.Application;
 /**
  *
  * @author Eugene Tan Teck Li(A0111770R)
  */
 // @A0111770R
+@SuppressWarnings("restriction")
 public class FlexiPlannerUI implements HotKeyListener {
 	private JLabel displayedMonth, displayedYear;
 	private JLabel showUserGuideLabel;
@@ -103,10 +103,22 @@ public class FlexiPlannerUI implements HotKeyListener {
 			e.printStackTrace();
 		}
 	}
+	
+	public void loadUI() {
+		try {
+			loadInterfaceandData();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	// @author A0111770R
 	@SuppressWarnings({ "serial", "rawtypes" })
-	public void loadInterfaceandData() throws IOException, ParseException {
+	private void loadInterfaceandData() throws IOException, ParseException {
 		JFrame.setDefaultLookAndFeelDecorated(false);
 		schedulerFrame.setUndecorated(false);
 		/**
@@ -114,10 +126,12 @@ public class FlexiPlannerUI implements HotKeyListener {
 		 * pressed.
 		 **/
 		schedulerFrame.setDefaultCloseOperation(JFrame.ICONIFIED);
-		ImageIcon img = new ImageIcon("logo.png");
+		ImageIcon img = new ImageIcon(getClass().getResource("/resources/logo.png"));
 		schedulerFrame.setIconImage(img.getImage());
-		// Application.getApplication().setDockIconImage(new
-		// ImageIcon("logo.png").getImage());
+		if (System.getProperty("os.name").equals("Mac OS X")) {
+			Application.getApplication().setDockIconImage(new
+			ImageIcon(getClass().getResource("/resources/logo.png")).getImage());
+		}
 		schedulerFrame.setSize(900, 620);// set frame size
 		schedulerFrame.setResizable(false);
 		schedulerFrame.setLocationRelativeTo(null);

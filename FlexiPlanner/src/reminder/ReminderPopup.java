@@ -61,7 +61,7 @@ public class ReminderPopup {
 		frame.getContentPane().setBackground(Color.getHSBColor(hsbvals[0], hsbvals[1], hsbvals[2]));
 		
 		JLabel iconLabel = new JLabel();
-		ImageIcon icon = new ImageIcon("reminder-icon.png");
+		ImageIcon icon = new ImageIcon(getClass().getResource("/resources/reminder-icon.png"));
 		Image image = icon.getImage().getScaledInstance(50, 50,  java.awt.Image.SCALE_SMOOTH);
 		icon = new ImageIcon(image);
 		iconLabel.setIcon(icon);
@@ -100,8 +100,7 @@ public class ReminderPopup {
 		frame.setVisible(true);
 
 		try {
-			File soundFile = new File("reminder2.wav");
-			AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+			AudioInputStream audioIn = AudioSystem.getAudioInputStream(getClass().getResource("/resources/reminder2.wav"));
 			Clip clip = AudioSystem.getClip();
 			clip.open(audioIn);
 			clip.start();
