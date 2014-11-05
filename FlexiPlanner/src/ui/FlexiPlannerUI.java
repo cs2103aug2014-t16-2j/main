@@ -926,12 +926,4 @@ public class FlexiPlannerUI implements HotKeyListener {
 		}
 	}
 
-	private void updateTextArea(final String text) {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				commandFeedback.append(text);
-			}
-		});
-	}
-
 }// end of class FlexiPlannerUI
