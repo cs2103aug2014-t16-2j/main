@@ -373,7 +373,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	 * @param showTasksScroll
 	 * @param showUserRecentAddedTaskScroll
 	 * @param showCategoryScroll
-	 * @param showUserGuidePane
+	 * @param showUserGuideCollapsePane
 	 * @param showTasksCollapsePane
 	 * @param showUserRecentAddedTaskCollapsePane
 	 * @param showBlockedCollapsePane
@@ -385,7 +385,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 			final JScrollPane showTasksScroll,
 			final JScrollPane showUserRecentAddedTaskScroll,
 			final JScrollPane showCategoryScroll,
-			final JXCollapsiblePane showUserGuidePane,
+			final JXCollapsiblePane showUserGuideCollapsePane,
 			final JXCollapsiblePane showTasksCollapsePane,
 			final JXCollapsiblePane showUserRecentAddedTaskCollapsePane,
 			final JXCollapsiblePane showBlockedCollapsePane,
@@ -420,7 +420,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 						e1.printStackTrace();
 					}
 					if (showUserRecentAddedTaskCollapsePane.isCollapsed()) {
-						showUserGuidePane.setCollapsed(true);
+						showUserGuideCollapsePane.setCollapsed(true);
 						showUserRecentAddedTaskCollapsePane.setCollapsed(true);
 						showTasksCollapsePane.setCollapsed(false);
 						try {
@@ -456,7 +456,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 					break;
 				case KeyEvent.VK_F1:
 					commandFeedback.setText("");
-					showUserGuidePane.setCollapsed(false);
+					showUserGuideCollapsePane.setCollapsed(false);
 					showUserRecentAddedTaskCollapsePane.setCollapsed(true);
 					showTasksCollapsePane.setCollapsed(true);
 					break;
@@ -473,7 +473,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 						e1.printStackTrace();
 					}
 					showUserRecentAddedTaskCollapsePane.setCollapsed(false);
-					showUserGuidePane.setCollapsed(true);
+					showUserGuideCollapsePane.setCollapsed(true);
 					showTasksCollapsePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F3:
@@ -482,7 +482,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 					refreshTasksTableForDisplay("");
 					showTasksCollapsePane.setCollapsed(false);
 					showUserRecentAddedTaskCollapsePane.setCollapsed(true);
-					showUserGuidePane.setCollapsed(true);
+					showUserGuideCollapsePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F4:
 					if (showBlockedCollapsePane.isCollapsed()) {
@@ -977,6 +977,56 @@ public class FlexiPlannerUI implements HotKeyListener {
 		}
 	}// end of class Years_Action
 
+	
+	/**
+	*@author A0111770R
+	 * @return
+	 */
+	public boolean getUserGuideCollapseOrNot() {
+		return showUserGuideCollapsePane.isCollapsed();
+	}
+	/**
+	*@author A0111770R
+	 * @return
+	 */
+	public boolean getBlockedCollapseOrNot() {
+		return showBlockedCollapsePane.isCollapsed();
+	}
+	/**
+	*@author A0111770R
+	 * @param text
+	 */
+	public void setTextField(String text) {
+		inputCommand.setText(text);
+	}
+	/**
+	*@author A0111770R
+	 * @return
+	 */
+	public String getTextField() {
+		return inputCommand.getText();
+	}
+	/**
+	*@author A0111770R
+	 * @return
+	 */
+	public String getCategoryLabel() {
+		return showCategoryLabel.getText();
+	}
+	/**
+	*@author A0111770R
+	 * @return
+	 */
+	public String getCommandFeedback() {
+		return commandFeedback.getText();
+	}
+	/**
+	*@author A0111770R
+	 * @return
+	 */
+	public Object getSelectYear() {
+		return selectYear.getSelectedItem();
+	}
 	/**
 	 * This method return a current JFrame. Implemented for global shortcuts.
 	 *
