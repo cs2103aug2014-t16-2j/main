@@ -454,7 +454,7 @@ public class Logic {
 			messageToUser = MSG_CLASHES;
 			return false;
 		}
-		if (!isInteger(content.substring(0, 1))) {
+		if (!isInteger(content.split(" ")[0])) {
 			return modifyTask(task, t, content, unredo);
 		} else {
 			return modifyIndex(task, content, unredo);
@@ -640,7 +640,7 @@ public class Logic {
 	 **/
 	// @author A0112066U
 	private boolean modifyIndex(Task task, String content, boolean unredo) {
-		int index = Integer.parseInt(content.substring(0,content.indexOf(" ")));
+		int index = Integer.parseInt(content.split(" ")[0]);
 		System.out.println(index);
 		content = content.substring(content.indexOf(" ")).trim();
 		ArrayList<TaskData> displayedList = getDisplayedList();
@@ -1322,7 +1322,7 @@ public class Logic {
 		}
 		if (cmd != null && cmd.equals(Command.SEARCH)) {
 
-			F3DisplayedList = searchResult;
+			F3DisplayedList = new ArrayList<TaskData>(searchResult);
 			overdueRow = 0;
 		}
 		if (cmd == null || cmd.equals("") || cmd.equals(Command.ADD)
