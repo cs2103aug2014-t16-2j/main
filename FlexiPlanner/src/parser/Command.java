@@ -1,10 +1,7 @@
 package parser;
 
-/**
- * These are the commands used by Action, Parser and Logic
- * 
- * @author Choo Xin Min (A0111887Y)
- */
+//@author A0111887Y
+//These are the commands used by Action, Parser and Logic.
 
 public enum Command {
 

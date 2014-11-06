@@ -10,11 +10,8 @@ import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-/**
- * This class translates an input String into Task data.
- * 
- * @author Choo Xin Min (A0111887Y)
- */
+//@author A0111887Y
+//This class translates an input String into Task data.
 
 public class Parser {
 
