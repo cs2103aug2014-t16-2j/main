@@ -295,12 +295,13 @@ public class Parser {
 					t.setEndDateTime(startDateTime.withHour(endDateTime.getHour()).withMinute(endDateTime.getMinute()));
 					endDateTime = t.getEndDateTime();
 				}
+				if (endDateTime.getSecond() == 1) {
+					t.setEndDateTime(LocalDateTime.of(endDateTime.getYear(), endDateTime.getMonthValue(), endDateTime.getDayOfMonth(), 23, 59));
+					endDateTime = t.getEndDateTime();
+				}
 				if (startDateTime.isAfter(endDateTime)) {
 					t.setEndDateTime(endDateTime.plusWeeks(1));
 					endDateTime = t.getEndDateTime();
-				}
-				if (endDateTime.getSecond() == 1) {
-					t.setEndDateTime(LocalDateTime.of(endDateTime.getYear(), endDateTime.getMonthValue(), endDateTime.getDayOfMonth(), 23, 59));
 				}
 			} else {
 				t.setEndDateTime(LocalDateTime.of(startDateTime.getYear(), startDateTime.getMonthValue(), startDateTime.getDayOfMonth(), 23, 59));
