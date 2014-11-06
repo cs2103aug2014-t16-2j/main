@@ -39,8 +39,8 @@ import com.tulskiy.keymaster.common.HotKey;
 import com.tulskiy.keymaster.common.HotKeyListener;
 import com.apple.eawt.Application;
 /**
+ * @author A0111770R
  *
- * @author Eugene Tan Teck Li(A0111770R)
  */
 public class FlexiPlannerUI implements HotKeyListener {
 	private JLabel displayedMonth, displayedYear;
@@ -88,7 +88,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 	private int overDueRow = 0;
 	private static Logic logic;
 
-	// @author A0111770R
+	
+	/**
+	*@author A0111770R
+	 */
 	public FlexiPlannerUI() {
 		try {
 			logic = new Logic();
@@ -102,6 +105,9 @@ public class FlexiPlannerUI implements HotKeyListener {
 		}
 	}
 	
+	/**
+	*@author A0111770R
+	 */
 	public void loadUI() {
 		try {
 			loadInterfaceandData();
@@ -114,7 +120,11 @@ public class FlexiPlannerUI implements HotKeyListener {
 		}
 	}
 
-	// @author A0111770R
+	/**
+	*@author A0111770R
+	 * @throws IOException
+	 * @throws ParseException
+	 */
 	@SuppressWarnings({ "serial", "rawtypes" })
 	private void loadInterfaceandData() throws IOException, ParseException {
 		JFrame.setDefaultLookAndFeelDecorated(false);
@@ -354,14 +364,28 @@ public class FlexiPlannerUI implements HotKeyListener {
 				showCategoryCollapsePane);
 	}
 
-	// @author A0111770R
+	/**
+	*@author A0111770R
+	 * @param commandFeedback
+	 * @param showUserRecentAddedTaskCommand
+	 * @param showCategory
+	 * @param showBlocked
+	 * @param showTasksScroll
+	 * @param showUserRecentAddedTaskScroll
+	 * @param showCategoryScroll
+	 * @param showUserGuideCollapsePane
+	 * @param showTasksCollapsePane
+	 * @param showUserRecentAddedTaskCollapsePane
+	 * @param showBlockedCollapsePane
+	 * @param showCategoryCollapsePane
+	 */
 	private void executeKeyAction(final JTextArea commandFeedback,
 			final JTextArea showUserRecentAddedTaskCommand,
 			final JTextArea showCategory, final JTextArea showBlocked,
 			final JScrollPane showTasksScroll,
 			final JScrollPane showUserRecentAddedTaskScroll,
 			final JScrollPane showCategoryScroll,
-			final JXCollapsiblePane showUserGuidePane,
+			final JXCollapsiblePane showUserGuideCollapsePane,
 			final JXCollapsiblePane showTasksCollapsePane,
 			final JXCollapsiblePane showUserRecentAddedTaskCollapsePane,
 			final JXCollapsiblePane showBlockedCollapsePane,
@@ -396,7 +420,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 						e1.printStackTrace();
 					}
 					if (showUserRecentAddedTaskCollapsePane.isCollapsed()) {
-						showUserGuidePane.setCollapsed(true);
+						showUserGuideCollapsePane.setCollapsed(true);
 						showUserRecentAddedTaskCollapsePane.setCollapsed(true);
 						showTasksCollapsePane.setCollapsed(false);
 						try {
@@ -432,7 +456,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 					break;
 				case KeyEvent.VK_F1:
 					commandFeedback.setText("");
-					showUserGuidePane.setCollapsed(false);
+					showUserGuideCollapsePane.setCollapsed(false);
 					showUserRecentAddedTaskCollapsePane.setCollapsed(true);
 					showTasksCollapsePane.setCollapsed(true);
 					break;
@@ -449,7 +473,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 						e1.printStackTrace();
 					}
 					showUserRecentAddedTaskCollapsePane.setCollapsed(false);
-					showUserGuidePane.setCollapsed(true);
+					showUserGuideCollapsePane.setCollapsed(true);
 					showTasksCollapsePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F3:
@@ -458,7 +482,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 					refreshTasksTableForDisplay("");
 					showTasksCollapsePane.setCollapsed(false);
 					showUserRecentAddedTaskCollapsePane.setCollapsed(true);
-					showUserGuidePane.setCollapsed(true);
+					showUserGuideCollapsePane.setCollapsed(true);
 					break;
 				case KeyEvent.VK_F4:
 					if (showBlockedCollapsePane.isCollapsed()) {
@@ -514,7 +538,9 @@ public class FlexiPlannerUI implements HotKeyListener {
 		});
 	}
 
-	// @author A0111770R
+	/**
+	*@author A0111770R
+	 */
 	@SuppressWarnings("unchecked")
 	private void setValuesCombox() {
 		for (int i = actualYear; i <= actualYear + 20; i++) {
@@ -522,7 +548,9 @@ public class FlexiPlannerUI implements HotKeyListener {
 		}
 	}
 
-	// @author A0111770R
+	/**
+	*@author A0111770R
+	 */
 	private void prevMth() {
 		if (currentDisplayedMonth == 0) { // Back one year
 			currentDisplayedMonth = 11;
@@ -533,7 +561,9 @@ public class FlexiPlannerUI implements HotKeyListener {
 		refreshCalendar(currentDisplayedMonth, currentDisplayedYear);
 	}
 
-	// @author A0111770R
+	/**
+	*@author A0111770R
+	 */
 	private void nextMth() {
 		if (currentDisplayedMonth == 11) { // Foward one year
 			currentDisplayedMonth = 0;
@@ -544,7 +574,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 		refreshCalendar(currentDisplayedMonth, currentDisplayedYear);
 	}
 
-	// @author A0111770R
+	/**
+	*@author A0111770R
+	 * @return
+	 */
 	private String getGuide() {
 		String guide = "HotKeys:" + "\n1: 'ctrl+o': Launch FlexiPlanner"
 				+ "\n2: 'ctrl+m': Close FlexiPlanner"
@@ -560,7 +593,9 @@ public class FlexiPlannerUI implements HotKeyListener {
 		return guide;
 	}
 
-	// @author A0111770R
+	/**
+	*@author A0111770R
+	 */
 	private void setDisplayTaskTableProperties() {
 		displaytaskTable.setModel(displayTasksTableDTM);
 		displaytaskTable.setCellSelectionEnabled(false);
@@ -582,7 +617,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 		displaytaskTable.setRowSelectionAllowed(false);
 	}
 
-	// @author A0111770R
+	/**
+	*@author A0111770R
+	 * @param userCommand
+	 */
 	private void refreshTasksTableForDisplay(String userCommand) {
 		// Clear table
 		for (int i = 0; i < displayTasksTableDTM.getRowCount(); i++) {
@@ -634,7 +672,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 				new TextWrapRenderer());
 	}
 
-	// @author A0111770R
+	/**
+	 * @author A0111770R
+	 *
+	 */
 	@SuppressWarnings("serial")
 	class TasksTableRenderer extends DefaultTableCellRenderer {
 		@SuppressWarnings("unused")
@@ -746,7 +787,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 		}
 	}// end of class TasksTableRenderer
 
-	// @author A0111770R
+	/**
+	 * @author A0111770R
+	 *
+	 */
 	@SuppressWarnings("serial")
 	class TextWrapRenderer extends DefaultTableCellRenderer {
 		public Component getTableCellRendererComponent(JTable table,
@@ -776,7 +820,11 @@ public class FlexiPlannerUI implements HotKeyListener {
 		}
 	}// end of class CellRenderer
 
-	// @author A0111770R
+	/**
+	*@author A0111770R
+	 * @param month
+	 * @param year
+	 */
 	private void refreshCalendar(int month, int year) {
 		int nod, som; // Number Of Days, Start Of Month
 		prevMonth.setEnabled(true);// enable button
@@ -817,7 +865,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 	}// end of refreshCalendar method
 		// class Calendar1Renderer used for editting how things are displayed
 
-	// @author A0111770R
+	/**
+	 * @author A0111770R
+	 *
+	 */
 	@SuppressWarnings("serial")
 	class CalendarRenderer extends DefaultTableCellRenderer {
 		public Component getTableCellRendererComponent(JTable table,
@@ -879,7 +930,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 	}// end of class Calendar1Renderer
 
 	// Prev_Action points to the previous year
-	// @author A0111770R
+	/**
+	 * @author A0111770R
+	 *
+	 */
 	class Prev_Year implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if (currentDisplayedMonth == 0) { // Back one year
@@ -893,7 +947,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 	}// end of class Prev_Action
 
 	// Next_Action points to the next year
-	// @author A0111770R
+	/**
+	 * @author A0111770R
+	 *
+	 */
 	class Next_Year implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if (currentDisplayedMonth == 11) { // Foward one year
@@ -906,7 +963,10 @@ public class FlexiPlannerUI implements HotKeyListener {
 		}
 	}// end of class Next_Action
 
-	// @author A0111770R
+	/**
+	 * @author A0111770R
+	 *
+	 */
 	class Years_Action implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if (selectYear.getSelectedItem() != null) {
@@ -917,6 +977,56 @@ public class FlexiPlannerUI implements HotKeyListener {
 		}
 	}// end of class Years_Action
 
+	
+	/**
+	*@author A0111770R
+	 * @return
+	 */
+	public boolean getUserGuideCollapseOrNot() {
+		return showUserGuideCollapsePane.isCollapsed();
+	}
+	/**
+	*@author A0111770R
+	 * @return
+	 */
+	public boolean getBlockedCollapseOrNot() {
+		return showBlockedCollapsePane.isCollapsed();
+	}
+	/**
+	*@author A0111770R
+	 * @param text
+	 */
+	public void setTextField(String text) {
+		inputCommand.setText(text);
+	}
+	/**
+	*@author A0111770R
+	 * @return
+	 */
+	public String getTextField() {
+		return inputCommand.getText();
+	}
+	/**
+	*@author A0111770R
+	 * @return
+	 */
+	public String getCategoryLabel() {
+		return showCategoryLabel.getText();
+	}
+	/**
+	*@author A0111770R
+	 * @return
+	 */
+	public String getCommandFeedback() {
+		return commandFeedback.getText();
+	}
+	/**
+	*@author A0111770R
+	 * @return
+	 */
+	public Object getSelectYear() {
+		return selectYear.getSelectedItem();
+	}
 	/**
 	 * This method return a current JFrame. Implemented for global shortcuts.
 	 *
