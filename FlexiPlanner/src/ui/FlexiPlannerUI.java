@@ -42,8 +42,6 @@ import com.apple.eawt.Application;
  *
  * @author Eugene Tan Teck Li(A0111770R)
  */
-// @A0111770R
-@SuppressWarnings("restriction")
 public class FlexiPlannerUI implements HotKeyListener {
 	private JLabel displayedMonth, displayedYear;
 	private JLabel showUserGuideLabel;
