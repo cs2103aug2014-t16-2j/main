@@ -640,8 +640,9 @@ public class Logic {
 	 **/
 	// @author A0112066U
 	private boolean modifyIndex(Task task, String content, boolean unredo) {
-		int index = Integer.parseInt(content.substring(0, 1));
-		content = content.substring(1).trim();
+		int index = Integer.parseInt(content.substring(0,content.indexOf(" ")));
+		System.out.println(index);
+		content = content.substring(content.indexOf(" ")).trim();
 		ArrayList<TaskData> displayedList = getDisplayedList();
 		int size = displayedList.size();
 		if (index < 1 || index > size) {
