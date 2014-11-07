@@ -7,14 +7,23 @@ import org.json.simple.JSONObject;
 import reminder.Reminder;
 import storage.JsonConverter;
 
+//@author A0117989H
+
 /**
  * This class creates a task object representing an actual task.
- * 
- * @author Moe Lwin Hein (A0117989H)
- *
  */
 
 public class TaskData implements Comparable<TaskData> {
+	
+	private static final int MIN_ID = 10;
+	private static final int MAX_ID = 100;
+	
+	//to extract numbers only from LocalDateTime string
+	private final String REGEX_LDT = "[-:.T]";
+	
+	//priorities
+	private final String HIGH_PRI = "high";
+	private final String VERY_HIGH_PRI = "very high";
 
 	private String content;
 	private String category;
@@ -22,7 +31,7 @@ public class TaskData implements Comparable<TaskData> {
 	private LocalDateTime startDateTime;
 	private LocalDateTime endDateTime;
 	private String taskId;
-	private static int id = 10;
+	private static int id = MIN_ID;
 
 	private Reminder reminder;
 	private LocalDateTime remindDateTime;
@@ -124,11 +133,14 @@ public class TaskData implements Comparable<TaskData> {
 	}
 
 	public void setReminder() {
+		//check that when app exited, there is reminder still on
 		if (remindDateTime != null && reminder == null) {
+			//LocalDateTime.Min is an instruction to clear the reminder
 			if (remindDateTime.equals(LocalDateTime.MIN)) {
 				remindDateTime = null;
 				return;
 			}
+			//continue the reminder clock
 			reminder = new Reminder(remindDateTime, this);
 			reminder.start();
 		}
@@ -141,29 +153,30 @@ public class TaskData implements Comparable<TaskData> {
 			reminder = null;
 		}
 	}
+	
+	public boolean hasReminder() {
+		return getReminder() != null;
+	}
 
 	/** Other Methods **/
 
 	public void generateTaskId() {
-		if (id == 100) {
-			id = 10;
+		//to make sure each ID is unique
+		if (id == MAX_ID) {
+			id = MIN_ID;
 		}
 
 		taskId = LocalDateTime.now().toString() + (++id);
-		taskId = taskId.replaceAll("[-:.T]", "");
+		taskId = taskId.replaceAll(REGEX_LDT, "");
 	}
 
 	public JSONObject convertToJsonObject() {
-		JsonConverter coder = new JsonConverter();
+		JsonConverter converter = new JsonConverter();
 		JSONObject obj = new JSONObject();
 
-		obj = coder.taskToJsonObj(this);
+		obj = converter.taskToJsonObj(this);
 
 		return obj;
-	}
-
-	public boolean hasReminder() {
-		return getReminder() != null;
 	}
 
 	@Override
@@ -222,12 +235,15 @@ public class TaskData implements Comparable<TaskData> {
 		sb.append("Category   =   " + this.getCategory() + "\n");
 		sb.append("Priority   =   " + this.getPriority() + "\n");
 		sb.append("Start Date =   " + this.getStartDateTime() + "\n");
-		sb.append("Deadline   =   " + this.getEndDateTime());
+		sb.append("Deadline   =   " + this.getEndDateTime() + "\n");
+		sb.append("Remind Time=   " + this.getRemindDateTime());
 		sb.append("\n******************************************");
 
 		return sb.toString();
 	}
 
+	 //@author A0112066U
+	
 	@Override
 	public int compareTo(TaskData task) {
 		String prior = task.getPriority();
@@ -261,16 +277,16 @@ public class TaskData implements Comparable<TaskData> {
 			}
 		}
 		if (this.endDateTime == null && end == null) {
-			if (this.getPriority().equals("very high")) {
+			if (this.getPriority().equals(VERY_HIGH_PRI)) {
 				return -1;
 			}
-			if (prior.equals("very high")) {
+			if (prior.equals(VERY_HIGH_PRI)) {
 				return 1;
 			}
-			if (this.getPriority().equals("high")) {
+			if (this.getPriority().equals(HIGH_PRI)) {
 				return -1;
 			}
-			if (prior.equals("high")) {
+			if (prior.equals(HIGH_PRI)) {
 				return 1;
 			}
 			return 0;
@@ -282,16 +298,16 @@ public class TaskData implements Comparable<TaskData> {
 			return -1;
 		}
 		if (this.endDateTime.equals(end)) {
-			if (this.getPriority().equals("very high")) {
+			if (this.getPriority().equals(VERY_HIGH_PRI)) {
 				return -1;
 			}
-			if (prior.equals("very high")) {
+			if (prior.equals(VERY_HIGH_PRI)) {
 				return 1;
 			}
-			if (this.getPriority().equals("high")) {
+			if (this.getPriority().equals(HIGH_PRI)) {
 				return -1;
 			}
-			if (prior.equals("high")) {
+			if (prior.equals(HIGH_PRI)) {
 				return 1;
 			}
 			return 0;

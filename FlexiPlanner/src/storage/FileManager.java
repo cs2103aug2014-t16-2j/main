@@ -52,8 +52,7 @@ public class FileManager {
 	}
 	
 	public void writeInJsonFormat(String filePath, JSONObject jsonObj, boolean isAppendable) throws IOException, FileNotFoundException {
-		JsonFormatter formatter = new JsonFormatter();
-		write(filePath, formatter.toPrettyFormat(jsonObj), isAppendable);
+		write(filePath, new JsonConverter().toPrettyFormat(jsonObj), isAppendable);
 	}
 	
 	public void write(String filePath, String content, boolean isAppendable) throws IOException, FileNotFoundException {

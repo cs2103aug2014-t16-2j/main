@@ -17,6 +17,8 @@ import javax.swing.KeyStroke;
 
 import com.tulskiy.keymaster.common.Provider;
 
+//@author A0117989H
+
 /**
  * This class create the icon in the system tray.
  * It also creates global shortcuts to be used with GUI in pair.
@@ -31,19 +33,26 @@ import com.tulskiy.keymaster.common.Provider;
  * to be ICONIFIED, except this class. Only this class can execute the 
  * system exit. 
  * 
- * @author Moe Lwin Hein (A0117989H)
- *
  */
 
 public class Tray {
+	
 	private FlexiPlannerUI instance;
 	private JFrame frame;
 	
+	private final String ERROR_NOT_SUPPORTED = "SystemTray is not supported.\n";
+	
+	private final String TITLE = "FlexiPlanner";
+	private final String PATH_ICON = "/resources/logo.png";
+	private final String MENUITEM_OPEN = "Open";
+	private final String MENUITEM_EXIT = "Exit";
+	
 	/** Global Shortcuts **/
 	private static Provider keyShortCuts = null;
-	private String openShortCut = "control O";
-	private String closeShortCut = "control M";
-	private String exitShortCut = "control E";
+	
+	private final String SHORTCUT_LAUNCH = "control O";
+	private final String SHORTCUT_CLOSE = "control M";
+	private final String SHORTCUT_EXIT = "control E";
 	
 	public Tray(FlexiPlannerUI instance) {
 		this.instance = instance;
@@ -58,17 +67,19 @@ public class Tray {
 	 */
 	public void createSystemTray() {
 		if (!SystemTray.isSupported()) {
-            System.out.println("SystemTray is not supported");
+            report(ERROR_NOT_SUPPORTED);
             return;
         }
 		
+		Image icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource(PATH_ICON));
+		
 		final SystemTray tray = SystemTray.getSystemTray();
 		final PopupMenu popupMenu = new PopupMenu();
-		Image icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/resources/logo.png"));
-		final TrayIcon trayIcon = new TrayIcon(icon, "FlexiPlanner", popupMenu);
+		final TrayIcon trayIcon = new TrayIcon(icon, TITLE, popupMenu);
 		trayIcon.setImageAutoSize(true);
 		
-		MenuItem item = new MenuItem("Open");
+		// add "Open" to tray menu
+		MenuItem item = new MenuItem(MENUITEM_OPEN);
 		item.setShortcut(new MenuShortcut(KeyEvent.VK_O, false));
 		item.addActionListener(new ActionListener() {
 			@Override
@@ -80,7 +91,9 @@ public class Tray {
 		});
 		popupMenu.add(item);
 		popupMenu.addSeparator();
-		item = new MenuItem("Exit");
+		
+		// add "Exit" to tray menu
+		item = new MenuItem(MENUITEM_EXIT);
 		item.setShortcut(new MenuShortcut(KeyEvent.VK_E, false));
 		item.addActionListener(new ActionListener() {
 			@Override
@@ -110,9 +123,9 @@ public class Tray {
 					keyShortCuts = Provider.getCurrentProvider(false);
 				}
 				keyShortCuts.reset();
-				keyShortCuts.register(KeyStroke.getKeyStroke(openShortCut), instance);
-				keyShortCuts.register(KeyStroke.getKeyStroke(closeShortCut), instance);
-				keyShortCuts.register(KeyStroke.getKeyStroke(exitShortCut), instance);
+				keyShortCuts.register(KeyStroke.getKeyStroke(SHORTCUT_LAUNCH), instance);
+				keyShortCuts.register(KeyStroke.getKeyStroke(SHORTCUT_CLOSE), instance);
+				keyShortCuts.register(KeyStroke.getKeyStroke(SHORTCUT_EXIT), instance);
 			}
 		}).start();
 	}
@@ -130,5 +143,9 @@ public class Tray {
 				}
 			}
 		}).start();
+	}
+	
+	private void report(final String toReport) {
+		System.out.print(toReport);
 	}
 }
