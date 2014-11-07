@@ -35,6 +35,7 @@ public class FileManager {
 	private final String VALID_EXTENSION_TASKS_FILE = "json";
 	private final String VALID_EXTENSION_NORMAL_FILE = "txt";
 	private final String NOTHING = "";
+	private final String SEPERATOR = "//";
 	
 	public boolean createFolder(String folderName) throws IOException {
 		boolean isCreated = false;
@@ -184,5 +185,30 @@ public class FileManager {
 		File folder = new File(folderName);
 		
 		return folder.exists() && !folder.isFile();
+	}
+	
+	/** ******************** **/
+	
+	public String createFilePath(String folderName, final String fileName) {
+		return folderName + SEPERATOR + fileName;
+	}
+	
+	/** ******************** **/
+	
+	public String extractFileName(String filePath) {
+		String[] s = filePath.split(SEPERATOR);
+		return s[s.length - 1];
+	}
+	
+	/** ******************** **/
+	
+	public int numOfFilesIn(String folderName) {
+		File folder = new File(folderName);
+		if (!folder.exists() || (folder.exists() && folder.isFile())) {
+			return -1;
+		}
+		else {
+			return folder.list().length;
+		}
 	}
 }

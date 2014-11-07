@@ -33,7 +33,6 @@ public class FileStorage implements Storage {
 	
 	private final String BASE_FOLDER_NAME = "FlexiPlanner Database";
 	private final String NEXT_LINE = "\n";
-	private final String SEPERATOR = "//";
 	
 	private final int MAX_ITERATION = 10000;
 	
@@ -72,7 +71,7 @@ public class FileStorage implements Storage {
 		if (manager.isValidFileName(fileName)) {
 			try {
 				//redirect file to be created into the folder
-				final String filePath = createFilePath(fileName);
+				final String filePath = manager.createFilePath(folderName, fileName);
 				
 				isSetup = manager.createFile(filePath);
 				
@@ -104,7 +103,7 @@ public class FileStorage implements Storage {
 	public boolean saveTasks(final String fileName, ArrayList<TaskData> taskList) {
 		boolean isSaveSuccess = false;
 		
-		final String filePath = createFilePath(fileName);
+		final String filePath = manager.createFilePath(folderName, fileName);
 		
 		if (path.isEmpty() || !path.contains(filePath)) {
 			report(ERROR_NOT_SETUP_YET);
@@ -132,6 +131,9 @@ public class FileStorage implements Storage {
 		} catch (IOException e) {
 			report(ERROR_IO);
 			isSaveSuccess = false;
+			//check if folder and all files are found to be deleted accidentally
+			//all data written back as long as application does not quit abnormally
+			recreateFolderIfFolderNotFound();
 		}
 		
 		return isSaveSuccess;
@@ -143,7 +145,7 @@ public class FileStorage implements Storage {
 	public ArrayList<TaskData> loadTasks(final String fileName) {
 		ArrayList<TaskData> tasksToReturn = new ArrayList<TaskData>();
 		
-		final String filePath = createFilePath(fileName);
+		final String filePath = manager.createFilePath(folderName, fileName);
 		
 		if (path.isEmpty() || !path.contains(filePath)) {
 			report(ERROR_NOT_SETUP_YET);
@@ -165,6 +167,9 @@ public class FileStorage implements Storage {
 		} catch (IOException e) {
 			report(ERROR_IO);
 			tasksToReturn.clear();
+			//check if folder and all files are found to be deleted accidentally
+			//all data written back as long as application does not quit abnormally
+			recreateFolderIfFolderNotFound();
 		} catch (ParseException pe) {
 			report(ERROR_PARSE);
 			tasksToReturn.clear();
@@ -179,10 +184,11 @@ public class FileStorage implements Storage {
 	public boolean saveFile(final String fileName, ArrayList<String> list) {
 		boolean isSaveSuccess = false;
 		
-		final String filePath = createFilePath(fileName);
+		final String filePath = manager.createFilePath(folderName, fileName);
 		
 		if (path.isEmpty() || !path.contains(filePath)) {
 			report(ERROR_NOT_SETUP_YET);
+			
 			return isSaveSuccess;
 		}
 		
@@ -200,6 +206,9 @@ public class FileStorage implements Storage {
 		} catch (IOException e) {
 			report(ERROR_IO);
 			isSaveSuccess = false;
+			//check if folder and all files are found to be deleted accidentally
+			//all data written back as long as application does not quit abnormally
+			recreateFolderIfFolderNotFound();
 		}
 		
 		return isSaveSuccess;
@@ -209,27 +218,30 @@ public class FileStorage implements Storage {
 
 	@Override
 	public ArrayList<String> loadFile(final String fileName) {
-		ArrayList<String> categories = new ArrayList<String>();
+		ArrayList<String> list = new ArrayList<String>();
 		
-		final String filePath = createFilePath(fileName);
+		final String filePath = manager.createFilePath(folderName, fileName);
 		
 		if (path.isEmpty() || !path.contains(filePath)) {
 			report(ERROR_NOT_SETUP_YET);
-			return categories;
+			return list;
 		}
 		
 		try {
 			if (manager.isEmptyFile(filePath)) {
-				return categories;
+				return list;
 			}
 			
-			categories = manager.read(filePath);
+			list = manager.read(filePath);
 		} catch (IOException e) {
 			report(ERROR_IO);
-			categories.clear();
+			list.clear();
+			//check if folder and all files are found to be deleted accidentally
+			//all data written back as long as application does not quit abnormally
+			recreateFolderIfFolderNotFound();
 		}
 		
-		return categories;
+		return list;
 	}
 	
 	/** ******************** **/
@@ -270,8 +282,15 @@ public class FileStorage implements Storage {
 	
 	/** ******************** **/
 	
-	private String createFilePath(final String fileName) {
-		return folderName + SEPERATOR + fileName;
+	private void recreateFolderIfFolderNotFound() {
+		if (!manager.hasFolder(folderName)) {
+			createFolder();
+			List<String> clonedPath = new ArrayList<String>(path);
+			path.clear();
+			for (int i = 0; i < clonedPath.size(); i++) {
+				setupDatabase(manager.extractFileName(clonedPath.get(i)));
+			}
+		}
 	}
 	
 	/** ******************** **/
