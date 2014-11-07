@@ -14,6 +14,8 @@ public class Task{
 	private String priority;
 	private int index;
 	private boolean isDone;
+
+	//@author A0111887Y
 	
 	public Task(){
 		
@@ -27,6 +29,7 @@ public class Task{
 	
 	}
 	
+	//@author A0117989H
 	/**
 	 * Added this constructor class for convenience in unit testing. 
 	 * 
@@ -36,7 +39,6 @@ public class Task{
 	 * @param startDateTime
 	 * @param endDateTime
 	 * 
-	 * @author Moe Lwin Hein (A0117989H)
 	 */
 	public Task(String content, String category, String priority, 
 			LocalDateTime startDateTime, LocalDateTime endDateTime) {
@@ -56,30 +58,40 @@ public class Task{
 		content = c;
 	
 	}
+
+	//@author A0111887Y
 	
 	public String getContent(){
 		
 		return content;
 	
 	}
+
+	//@author A0111887Y
 	
 	public void setStartDateTime(LocalDateTime ldt) {
 		
 		startDateTime = ldt;
 		
 	}
+
+	//@author A0111887Y
 	
 	public void setEndDateTime(LocalDateTime ldt) {
 		
 		endDateTime = ldt;
 		
 	}
+
+	//@author A0111887Y
 	
 	public LocalDateTime getStartDateTime() {
 		
 		return startDateTime;
 	
 	}
+
+	//@author A0111887Y
 	
 	public LocalDateTime getEndDateTime() {
 		
@@ -87,23 +99,31 @@ public class Task{
 	
 	}
 
+	//@author A0111887Y
+	
 	public void setPriority(String p) {
 	
 		priority = p;
 	
 	}
+
+	//@author A0111887Y
 	
 	public String getPriority() {
 	
 		return priority;
 	
 	}
+
+	//@author A0111887Y
 	
 	public void setIndex(int i) {
 		
 		index = i;
 		
 	}
+
+	//@author A0111887Y
 	
 	public int getIndex() {
 		
@@ -111,11 +131,15 @@ public class Task{
 
 	}
 
+	//@author A0111887Y
+	
 	public void setDone(boolean d) {
 	
 		isDone = d;
 	
 	}
+
+	//@author A0111887Y
 	
 	public boolean isDone() {
 	
@@ -123,11 +147,15 @@ public class Task{
 	
 	}
 
+	//@author A0111887Y
+	
 	public void setCategory(String c) {
 	
 		category = c;
 	
 	}
+
+	//@author A0111887Y
 	
 	public String getCategory() {
 	
@@ -135,11 +163,8 @@ public class Task{
 	
 	}
 	
-	/**
-	 * Added this override method for convenience in testing.
-	 * 
-	 * @author Moe Lwin Hein (A0117989H)
-	 */
+	//@author A0117989H
+	//Added this override method for convenience in testing.
 	
 	@Override
 	public boolean equals(Object object) {
