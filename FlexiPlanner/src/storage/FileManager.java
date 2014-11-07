@@ -11,6 +11,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,6 +40,7 @@ public class FileManager {
 	private final String VALID_EXTENSION_NORMAL_FILE = "txt";
 	private final String NOTHING = "";
 	private final String SEPERATOR = "//";
+	private final String LINUX_HIDDEN_IND = ".";
 	
 	public boolean createFolder(String folderName) throws IOException {
 		boolean isCreated = false;
@@ -69,6 +74,24 @@ public class FileManager {
 		}
 		else {
 			isCreated = false;
+		}
+		
+		return isCreated;
+	}
+	
+	public boolean createHiddenFile(String folderName, String fileName) throws IOException {
+		boolean isCreated = false;
+		
+		if (isWindows()) {
+			isCreated = createFile(folderName + SEPERATOR + fileName);
+			Path path = FileSystems.getDefault().getPath(folderName, fileName);
+			Boolean hidden = (Boolean) Files.getAttribute(path, "dos:hidden", LinkOption.NOFOLLOW_LINKS);
+			if ((hidden != null) && !hidden) {
+				Files.setAttribute(path, "dos:hidden", true, LinkOption.NOFOLLOW_LINKS);
+			}
+		}
+		else if (isMac()) {
+			isCreated = createFile(folderName + SEPERATOR + LINUX_HIDDEN_IND + fileName);
 		}
 		
 		return isCreated;
@@ -210,5 +233,19 @@ public class FileManager {
 		else {
 			return folder.list().length;
 		}
+	}
+	
+	/** ******************** **/
+	
+	public boolean isWindows() {
+		String OS = System.getProperty("os.name").toLowerCase();
+		return OS.indexOf("win") >= 0;
+	}
+	
+	/** ******************** **/
+	
+	public boolean isMac() {
+		String OS = System.getProperty("os.name").toLowerCase();
+		return OS.indexOf("mac") >= 0;
 	}
 }
