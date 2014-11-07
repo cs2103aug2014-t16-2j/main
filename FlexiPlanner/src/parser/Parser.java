@@ -10,11 +10,8 @@ import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-/**
- * This class translates an input String into Task data.
- * 
- * @author Choo Xin Min (A0111887Y)
- */
+//@author A0111887Y
+//This class translates an input String into Task data.
 
 public class Parser {
 
@@ -295,12 +292,13 @@ public class Parser {
 					t.setEndDateTime(startDateTime.withHour(endDateTime.getHour()).withMinute(endDateTime.getMinute()));
 					endDateTime = t.getEndDateTime();
 				}
+				if (endDateTime.getSecond() == 1) {
+					t.setEndDateTime(LocalDateTime.of(endDateTime.getYear(), endDateTime.getMonthValue(), endDateTime.getDayOfMonth(), 23, 59));
+					endDateTime = t.getEndDateTime();
+				}
 				if (startDateTime.isAfter(endDateTime)) {
 					t.setEndDateTime(endDateTime.plusWeeks(1));
 					endDateTime = t.getEndDateTime();
-				}
-				if (endDateTime.getSecond() == 1) {
-					t.setEndDateTime(LocalDateTime.of(endDateTime.getYear(), endDateTime.getMonthValue(), endDateTime.getDayOfMonth(), 23, 59));
 				}
 			} else {
 				t.setEndDateTime(LocalDateTime.of(startDateTime.getYear(), startDateTime.getMonthValue(), startDateTime.getDayOfMonth(), 23, 59));
@@ -802,7 +800,7 @@ public class Parser {
 	
 	private LocalDate getDateWithDayOfWeekWord(MyStringList words, int index) {
 		
-		if (index < words.size()) {
+		if (index < words.size() && KEYWORDS_DATE_DAY_OF_WEEK.contains(words.get(index).toLowerCase())) {
 			int day = getNumeric(words.get(index).toLowerCase());
 			int daysToAdd = day - LocalDate.now().getDayOfWeek().getValue();
 			if (daysToAdd < 0) {
@@ -838,8 +836,10 @@ public class Parser {
 	
 	private LocalDate getDateWithPeriodWord(MyStringList words, int index, int multiplier) {
 		
-		if (index < words.size() && KEYWORDS_DATE_PERIOD.contains(words.get(index))) {
-			switch (words.get(index).toLowerCase()) {
+		if (index < words.size() && KEYWORDS_DATE_PERIOD.contains(words.get(index).toLowerCase())) {
+			String word = words.get(index).toLowerCase();
+			words.remove(index);
+			switch (word) {
 				case "day" :
 					return LocalDate.now().plusDays(multiplier);
 				case "week" :

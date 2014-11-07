@@ -2,11 +2,8 @@ package parser;
 
 import java.time.LocalDateTime;
 
-/**
- * This class creates a Task object that contains the Task data translated by the Parser class.
- * 
- * @author Choo Xin Min (A0111887Y)
- */
+//@author A0111887Y
+//This class creates a Task object that contains the Task data translated by the Parser class.
 
 public class Task{
 	
@@ -52,6 +49,7 @@ public class Task{
 	}
 	
 	/** end **/
+	//@author A0111887Y
 	
 	public void setContent(String c){
 	
