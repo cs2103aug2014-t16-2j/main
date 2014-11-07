@@ -20,10 +20,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+//@author A0117989H
+
 /**
  * This class handles file related operations.
- * 
- * @author Moe Lwin Hein (A0117989H)
  *
  */
 
@@ -32,15 +32,33 @@ public class FileManager {
 	private final String FILE_NAME_PATTERN = "^[\\w,\\s-]+$";
 	private final String VALID_EXTENSION_TASKS_FILE = "json";
 	private final String VALID_EXTENSION_NORMAL_FILE = "txt";
-	private final String FOLDER_NAME = "Task Folder";
 	
-	public boolean create(String filePath) throws IOException {
+	public boolean createFolder(String folderName) throws IOException {
 		boolean isCreated = false;
-		File folder = new File(FOLDER_NAME);
-		if (!folder.exists()) {
-			folder.mkdir();
+		
+		File folder = new File(folderName);
+		
+		if (folder.exists() && folder.isFile()) {
+			return isCreated;
 		}
+		else if (!folder.exists()) {
+			folder.mkdir();
+			isCreated = true;
+		}
+		else {
+			isCreated = true;
+		}
+		
+		return isCreated;
+	}
+	
+	/** ******************** **/
+	
+	public boolean createFile(String filePath) throws IOException {
+		boolean isCreated = false;
+
 		File file = new File(filePath);
+		
 		if (!file.exists()) {
 			file.createNewFile();
 			isCreated = true;
@@ -48,8 +66,11 @@ public class FileManager {
 		else {
 			isCreated = false;
 		}
+		
 		return isCreated;
 	}
+	
+	/** ******************** **/
 	
 	public void writeInJsonFormat(String filePath, JSONObject jsonObj, boolean isAppendable) throws IOException, FileNotFoundException {
 		write(filePath, new JsonConverter().toPrettyFormat(jsonObj), isAppendable);
@@ -131,5 +152,10 @@ public class FileManager {
 		isEmpty = reader.readLine() == null;
 		reader.close();
 		return isEmpty;
+	}
+	
+	public boolean hasFolder(String folderName) {
+		File folder = new File(folderName);
+		return folder.exists() && !folder.isFile();
 	}
 }

@@ -14,8 +14,6 @@ import commons.TaskData;
  * This class implements functions of saving and loading
  * tasks from respective files.
  * The files must only contain task data in JSON format.
- * 
- * @author Moe Lwin Hein (A0117989H)
  *
  */
 
@@ -30,7 +28,14 @@ public class FileStorage implements Storage {
 	private final String INFO_FILE_ALD_EXISTS = "File exists!\n";
 	private final String INFO_FILE_CREATED = "Database setup completed for : ";
 	
+	private final String BASE_FOLDER_NAME = "FlexiPlanner Database";
+	
 	private final String NEXT_LINE = "\n";
+	private final String SEPERATOR = "//";
+	
+	private final int MAX_ITERATION = 10000;
+	
+	private String folderName;
 	
 	private List<String> path;
 	
@@ -52,17 +57,21 @@ public class FileStorage implements Storage {
 	private FileStorage() {
 		manager = new FileManager();
 		converter = new JsonConverter();
-		
 		path = new ArrayList<String>();
+		
+		createFolder();
 	}
 	
 	@Override
-	public boolean setupDatabase(final String filePath) {
+	public boolean setupDatabase(final String fileName) {
 		boolean isSetup = false;
 		
-		if (manager.isValidFileName(filePath)) {
+		if (manager.isValidFileName(fileName)) {
 			try {
-				isSetup = manager.create(filePath);
+				final String filePath = createFilePath(fileName);
+				
+				isSetup = manager.createFile(filePath);
+				
 				if (isSetup) {
 					path.add(filePath);
 					report(INFO_FILE_CREATED + filePath + NEXT_LINE);
@@ -83,12 +92,12 @@ public class FileStorage implements Storage {
 		
 		return isSetup;
 	}
-	
-	
 
 	@Override
-	public boolean saveTasks(final String filePath, ArrayList<TaskData> taskList) {
+	public boolean saveTasks(final String fileName, ArrayList<TaskData> taskList) {
 		boolean isSaveSuccess = false;
+		
+		final String filePath = createFilePath(fileName);
 		
 		if (path.isEmpty() || !path.contains(filePath)) {
 			report(ERROR_NOT_SETUP_YET);
@@ -117,8 +126,10 @@ public class FileStorage implements Storage {
 	}
 
 	@Override
-	public ArrayList<TaskData> loadTasks(final String filePath) {
+	public ArrayList<TaskData> loadTasks(final String fileName) {
 		ArrayList<TaskData> tasksToReturn = new ArrayList<TaskData>();
+		
+		final String filePath = createFilePath(fileName);
 		
 		if (path.isEmpty() || !path.contains(filePath)) {
 			report(ERROR_NOT_SETUP_YET);
@@ -147,8 +158,10 @@ public class FileStorage implements Storage {
 	}
 	
 	@Override
-	public boolean saveFile(final String filePath, ArrayList<String> list) {
+	public boolean saveFile(final String fileName, ArrayList<String> list) {
 		boolean isSaveSuccess = false;
+		
+		final String filePath = createFilePath(fileName);
 		
 		if (path.isEmpty() || !path.contains(filePath)) {
 			report(ERROR_NOT_SETUP_YET);
@@ -175,8 +188,10 @@ public class FileStorage implements Storage {
 	}
 
 	@Override
-	public ArrayList<String> loadFile(final String filePath) {
+	public ArrayList<String> loadFile(final String fileName) {
 		ArrayList<String> categories = new ArrayList<String>();
+		
+		final String filePath = createFilePath(fileName);
 		
 		if (path.isEmpty() || !path.contains(filePath)) {
 			report(ERROR_NOT_SETUP_YET);
@@ -196,6 +211,43 @@ public class FileStorage implements Storage {
 		
 		return categories;
 	}
+	
+	private void createFolder() {
+		boolean isCreated = false;
+		folderName = BASE_FOLDER_NAME;
+		
+		if (manager.hasFolder(folderName)) {
+			return;
+		}
+		else {
+			for (int i = 1; i < MAX_ITERATION; i++) {
+				if (manager.hasFolder(folderName + i)) {
+					folderName = folderName + i;
+					return;
+				}
+			}
+		}
+		
+		try {
+			isCreated = manager.createFolder(folderName);
+			
+			if (!isCreated) {
+				for (int i = 1; i < MAX_ITERATION; i++) {
+					if (manager.createFolder(folderName + i)) {
+						folderName = folderName + i;
+						break;
+					}
+				}
+			}
+		} catch (IOException e) {
+			report(ERROR_IO);
+		}
+	}
+	
+	private String createFilePath(final String fileName) {
+		return folderName + SEPERATOR + fileName;
+	}
+	
 	
 	private void report(final String toReport) {
 		System.out.print(toReport);

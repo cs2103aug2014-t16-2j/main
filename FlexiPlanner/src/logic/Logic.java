@@ -49,9 +49,9 @@ public class Logic {
 	private ArrayList<TaskData> taskList;
 	private ArrayList<TaskData> completedTask;
 	private ArrayList<TaskData> blockedList;
-	private String blockedPath = "Task Folder//blocked.json";
-	private String taskFilePath = "Task Folder//text.json";
-	private String completedTaskFilePath = "Task Folder//completed.json";
+	private String blockedPath = "blocked.json";
+	private String taskFilePath = "text.json";
+	private String completedTaskFilePath = "completed.json";
 	private boolean isSuspendedAction = false;
 	private Action suspendingAction;
 	private ReminderPatternParser reminderParser;
