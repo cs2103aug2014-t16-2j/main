@@ -24,7 +24,7 @@ public class SearchTool {
 	 * will return a special message if more than one tasks have same content
 	 * when no time is specified
 	 */
-	// @author A0112066
+	//@author A0112066U
 	public TaskData findTaskByContentandDate(TaskData task,
 			HashMap<DateInfo, TaskData> toFindList) {
 
@@ -60,7 +60,7 @@ public class SearchTool {
 	}
 
 	/** This method finds the task with exact info (content and time) **/
-	// @author A0112066
+	//@author A0112066U
 	public TaskData findExactTask(TaskData task,
 			HashMap<DateInfo, TaskData> toFindList) {
 		TaskData taskFound = null;
@@ -84,7 +84,7 @@ public class SearchTool {
 	}
 
 	/** This method search for a task bby given info **/
-	// @author A0112066
+	//@author A0112066U
 	public ArrayList<TaskData> search(ArrayList<TaskData> taskList, Task task)
 			throws IOException, ParseException {
 		if (taskList.isEmpty()) {
@@ -114,7 +114,7 @@ public class SearchTool {
 		return searchResult;
 	}
 
-	// @author A0112066
+	//@author A0112066U
 	private ArrayList<TaskData> filterByTime(ArrayList<TaskData> taskList,
 			LocalDateTime startTime, LocalDateTime endTime) {
 		ArrayList<TaskData> searchResult = new ArrayList<TaskData>();
@@ -147,7 +147,7 @@ public class SearchTool {
 		return searchResult;
 	}
 
-	// @author A0112066
+	//@author A0112066U
 	private ArrayList<TaskData> filterByCategory(ArrayList<TaskData> taskList,
 			String[] _category) {
 		ArrayList<TaskData> searchResult = new ArrayList<TaskData>();
@@ -163,7 +163,7 @@ public class SearchTool {
 		}
 	}
 
-	// @author A0112066
+	//@author A0112066U
 	private ArrayList<TaskData> filterByPriority(ArrayList<TaskData> taskList,
 			String _priority) {
 		ArrayList<TaskData> searchResult = new ArrayList<TaskData>();
@@ -176,7 +176,7 @@ public class SearchTool {
 
 	}
 
-	// @author A0112066
+	//@author A0112066U
 	private ArrayList<TaskData> filterByKeywords(ArrayList<TaskData> taskList,
 			String[] _words) {
 		ArrayList<TaskData> searchResult = new ArrayList<TaskData>();

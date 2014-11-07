@@ -80,7 +80,7 @@ public class Logic {
 
 	// ---------------------------------Method-----------------------------//
 	/** This method sets up all file needed **/
-	// @author A0112066U
+	//@author A0112066U
 	private void setupDatabase() {
 		storer = FileStorage.getInstance();
 		storer.setupDatabase(taskFilePath); // act upon changes made in storage
@@ -89,7 +89,7 @@ public class Logic {
 	}
 
 	/** This methods is to initialise all variables **/
-	// @author A0112066U
+	//@author A0112066U
 	private void initialiseVariables() {
 		command = null;
 		task = null;
@@ -108,7 +108,7 @@ public class Logic {
 	}
 
 	/** This method is to load all data saved in the files **/
-	// @author A0112066U
+	//@author A0112066U
 	private void loadData() throws IOException, ParseException {
 		taskList = new ArrayList<TaskData>(storer.loadTasks(taskFilePath));
 		for (TaskData t : taskList) {
@@ -134,7 +134,7 @@ public class Logic {
 	 * 
 	 * @return message to user
 	 */
-	// @author A0112066U
+	//@author A0112066U
 	public String executeInputCommand(String _command) throws IOException,
 			ParseException {
 		if (_command == null || _command.isEmpty()) {
@@ -159,7 +159,7 @@ public class Logic {
 	 * this method is to extract command and task from input command using
 	 * parser
 	 */
-	// @author A0112066U
+	//@author A0112066U
 	private void extractCommandandTask(String _command) {
 		action = parser.getAction(_command);
 		command = action.getCommand();
@@ -204,7 +204,7 @@ public class Logic {
 	 * This method is to execute each specific type of command if successfulled
 	 * executed, action is push to undo/redo stack
 	 **/
-	// @author A0112066U
+	//@author A0112066U
 	private boolean executeCommand(Command command, Task task)
 			throws IOException, ParseException {
 		boolean isSuccessful;
@@ -260,7 +260,7 @@ public class Logic {
 	}
 
 	/** This method is for adding a task */
-	// @author A0112066U
+	//@author A0112066U
 	private boolean addTask(TaskData task, boolean unredo) {
 		String content = task.getContent();
 		if (content == null || content.isEmpty()) {
@@ -326,7 +326,7 @@ public class Logic {
 	}
 
 	/** This method determines of a task clashes with a blocked time **/
-	// @author A0112066
+	//@author A0112066U
 
 	private boolean isClashingWithBlockedSlots(TaskData task) {
 		LocalDateTime start = task.getStartDateTime();
@@ -341,7 +341,7 @@ public class Logic {
 	}
 
 	/** This method is to delete a task described by content **/
-	// @author A0112066U
+	//@author A0112066U
 	private boolean deleteTask(TaskData task, boolean unredo) {
 		String content = task.getContent();
 		if (isInteger(content)) {
@@ -406,7 +406,7 @@ public class Logic {
 	}
 
 	/** This method determines the task to be deleted **/
-	// @author A0112066
+	//@author A0112066U
 	private TaskData getTaskToDelete(TaskData task, boolean unredo,
 			HashMap<DateInfo, TaskData> toDeleteList, LocalDateTime st,
 			LocalDateTime et) {
@@ -419,7 +419,7 @@ public class Logic {
 	 * This method is for deleting the task specified by its index on display
 	 * panel
 	 **/
-	// @author A0112066U
+	//@author A0112066U
 	private boolean deleteIndex(int index, boolean unredo) {
 		ArrayList<TaskData> displayedList = getDisplayedList();
 		int size = displayedList.size();
@@ -433,7 +433,7 @@ public class Logic {
 	}
 
 	/** This method is to modify a task **/
-	// @author A0112066U
+	//@author A0112066U
 	private boolean modifyTask(Task task, Task t, boolean unredo) {
 		String content;
 		if (t != null) {
@@ -465,7 +465,7 @@ public class Logic {
 	 * This method is to modify a task specified by its content into another
 	 * tasks
 	 **/
-	// @author A0112066U
+	//@author A0112066U
 	private boolean modifyTask(Task _task, Task t, String content,
 			boolean unredo) {
 		LocalDateTime newStartTime = _task.getStartDateTime();
@@ -565,7 +565,7 @@ public class Logic {
 	}
 
 	/** This method does modifying the task with known information **/
-	// author A0112066
+	//author A0112066U
 	private void doModify(Task _task, Task t, boolean unredo,
 			LocalDateTime newStartTime, LocalDateTime newEndTime,
 			String newCategory, String newPriority, TaskData taskToModify,
@@ -606,7 +606,7 @@ public class Logic {
 	}
 
 	/** This method checks if the task after modifying exists **/
-	// @author A0112066
+	//@author A0112066U
 	private boolean checkExisting(LocalDateTime newStartTime,
 			LocalDateTime newEndTime, String newCategory, String newPriority,
 			String newContent, HashMap<DateInfo, TaskData> _listTaskToEdit,
@@ -638,7 +638,7 @@ public class Logic {
 	 * This method is for modifying the task specified by its index on display
 	 * panel with new description
 	 **/
-	// @author A0112066U
+	//@author A0112066U
 	private boolean modifyIndex(Task task, String content, boolean unredo) {
 		int index = Integer.parseInt(content.split(" ")[0]);
 		System.out.println(index);
@@ -660,7 +660,7 @@ public class Logic {
 	}
 
 	/** This method is to mark a task as done **/
-	// @author A0112066U
+	//@author A0112066U
 	private boolean markAsDone(TaskData _task, boolean unredo) {
 		boolean isSuccessful = false;
 		String content = _task.getContent();
@@ -711,7 +711,7 @@ public class Logic {
 	}
 
 	/** This method is to find the task to modify **/
-	// @author A0112066
+	//@author A0112066U
 
 	private TaskData getTaskToMark(TaskData _task, boolean unredo,
 			HashMap<DateInfo, TaskData> _taskToEdit, LocalDateTime st,
@@ -750,7 +750,7 @@ public class Logic {
 	/**
 	 * This method is for marking a task specified by its index on display panel
 	 **/
-	// @author A0112066
+	//@author A0112066U
 
 	private boolean markAsDoneByIndex(int index, boolean unredo) {
 		ArrayList<TaskData> displayedList = getDisplayedList();
@@ -766,7 +766,7 @@ public class Logic {
 	}
 
 	/** This method is to block a list of slots **/
-	// @author A0112066
+	//@author A0112066U
 
 	private boolean block(ArrayList<TaskData> blocks) {
 		ArrayList<TaskData> block = new ArrayList<TaskData>();
@@ -785,7 +785,7 @@ public class Logic {
 	}
 
 	/** This method is to unblock a list of slots **/
-	// @author A0112066
+	//@author A0112066U
 	private boolean unblock(ArrayList<TaskData> blocks) {
 
 		ArrayList<TaskData> unblock = new ArrayList<TaskData>();
@@ -804,7 +804,7 @@ public class Logic {
 	}
 
 	/** This method is to block a slot **/
-	// @author A0112066
+	//@author A0112066U
 	private ArrayList<TaskData> block(TaskData slot) {
 
 		LocalDateTime st = slot.getStartDateTime();
@@ -836,7 +836,7 @@ public class Logic {
 	}
 
 	/** This method is to unblock a slot **/
-	// @author A0112066
+	//@author A0112066U
 	private ArrayList<TaskData> unblock(TaskData task) {
 		LocalDateTime start = task.getStartDateTime();
 		LocalDateTime end = task.getEndDateTime();
@@ -891,8 +891,8 @@ public class Logic {
 		return (end1.isAfter(end2)) ? end1 : end2;
 	}
 
-	/** This methos check if two periods of time clash with each other **/
-	// @author A0112066
+	/** This method checks if two periods of time clash with each other **/
+	//@author A0112066U
 
 	private boolean isClash(LocalDateTime start1, LocalDateTime end1,
 			LocalDateTime start2, LocalDateTime end2) {
@@ -907,8 +907,8 @@ public class Logic {
 		return false;
 	}
 
-	/** This methos check if two periods of time are sequential **/
-	// @author A0112066
+	/** This method checks if two periods of time are sequential **/
+	//@author A0112066U
 
 	private boolean isSequential(LocalDateTime start1, LocalDateTime end1,
 			LocalDateTime start2, LocalDateTime end2) {
@@ -916,7 +916,7 @@ public class Logic {
 	}
 
 	/** This method is for redoing an action **/
-	// @author A0112066U
+	//@author A0112066U
 	private boolean redo() throws IOException, ParseException {
 		if (redoList.isEmpty()) {
 			messageToUser = MSG_CANNOT_REDO_ANYMORE;
@@ -960,7 +960,7 @@ public class Logic {
 	}
 
 	/** This method is for undoing an action **/
-	// @author A0112066U
+	//@author A0112066U
 	private boolean undo() {
 		boolean isSuccessful = false;
 		if (actionList.isEmpty()) {
@@ -996,7 +996,7 @@ public class Logic {
 		return isSuccessful;
 	}
 
-	// @author A0112066U
+	//@author A0112066U
 	private boolean undoDelete(Action done) {
 		if (done.getTask().isDone()) {
 			this.done = true;
@@ -1009,7 +1009,7 @@ public class Logic {
 		return isSuccessful;
 	}
 
-	// @author A0112066U
+	//@author A0112066U
 	private boolean undoAdd(Action done) {
 		if (done.getTask().isDone()) {
 			this.done = true;
@@ -1022,7 +1022,7 @@ public class Logic {
 		return isSuccessful;
 	}
 
-	// @author A0112066U
+	//@author A0112066U
 	private boolean undoModify(Action done, Task t) {
 		boolean isSuccessful = modifyTask(done.getTask(), t, true);
 		if (isSuccessful)
@@ -1032,7 +1032,7 @@ public class Logic {
 		return isSuccessful;
 	}
 
-	// @author A0112066U
+	//@author A0112066U
 	private boolean undoMark(Action done) {
 		Task task = done.getTask();
 		boolean isSuccessful = false;
@@ -1083,7 +1083,7 @@ public class Logic {
 	 * This method is to search for a task or a block slot, return in
 	 * searchResult
 	 **/
-	// @author A0112066U
+	//@author A0112066U
 
 	private boolean search(Task task) throws IOException, ParseException {
 		searchResult = new ArrayList<TaskData>();
@@ -1111,7 +1111,7 @@ public class Logic {
 	}
 
 	/** This method is to exit, data is saved and jframe is minimised to tray **/
-	// @author A0112066U
+	//@author A0112066U
 	private boolean exit() {
 		// store when exit
 		try {
@@ -1124,18 +1124,18 @@ public class Logic {
 		// System.exit(0);
 	}
 
-	// @author A0112066U
+	//@author A0112066U
 	public void saveData() throws IOException {
 		storer.saveTasks(taskFilePath, taskList);
 	}
 
-	// @author A0112066U
+	//@author A0112066U
 	private void saveCompletedTask() throws IOException {
 		storer.saveTasks(completedTaskFilePath, completedTask);
 	}
 
 	/** This method returns tasks to come **/
-	// @author A0112066U
+	//@author A0112066U
 	public ArrayList<TaskData> getTaskToCome() {
 		LocalDateTime now = LocalDateTime.now();
 		int dateToday = now.getDayOfMonth();
@@ -1162,7 +1162,7 @@ public class Logic {
 	}
 
 	/** This methods answers UI, checks if a date has task **/
-	// @author A0112066U
+	//@author A0112066U
 	public boolean hasTask(String date) throws IOException, ParseException {
 		Task testTask = parser.getAction(date).getTask();
 		LocalDateTime time = testTask.getStartDateTime();
@@ -1191,7 +1191,7 @@ public class Logic {
 	}
 
 	/** This method returns overdue task to UI **/
-	// @author A0112066U
+	//@author A0112066U
 	public ArrayList<TaskData> getOverdue() {
 		ArrayList<TaskData> overdue = new ArrayList<TaskData>();
 		LocalDateTime now = LocalDateTime.now();
@@ -1206,7 +1206,7 @@ public class Logic {
 	}
 
 	/** This methods return all categories to UI **/
-	// @author A0112066U
+	//@author A0112066U
 	public String getCategory() {
 		ArrayList<String> category = new ArrayList<String>();
 		for (TaskData _task : taskList) {
@@ -1222,18 +1222,18 @@ public class Logic {
 	}
 
 	/** This methods return data of recently added tasks to UI **/
-	// @author A0112066U
+	//@author A0112066U
 	public String getData(String s) throws IOException, ParseException {
 		currentDisplayList = 2;
 		return dataToShow();
 	}
 
-	// @author A0112066U
+	//@author A0112066U
 	private String dataToShow() throws IOException, ParseException {
 		return showToUser(F2DisplayedList);
 	}
 
-	// @author A0112066U
+	//@author A0112066U
 	private String showToUser(ArrayList<TaskData> taskToShow) {
 		String text = "";
 		SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
@@ -1271,14 +1271,14 @@ public class Logic {
 	}
 
 	/* clear all data */
-	// author A0112066
+	//author A0112066U
 	public void clear() throws IOException {
 		taskList.clear();
 		saveData();
 	}
 
 	/** This method translates a Task to TaskData for storage **/
-	// @author A0112066U
+	//@author A0112066U
 	private TaskData toTaskData(Task task) {
 		String content = task.getContent();
 		LocalDateTime startTime = task.getStartDateTime();
@@ -1289,7 +1289,7 @@ public class Logic {
 	}
 
 	/** This method translates a TaskData to Task **/
-	// @author A0112066U
+	//@author A0112066U
 	private Task toTask(TaskData task, boolean done) {
 		Task t = new Task();
 		t.setContent(task.getContent());
@@ -1302,7 +1302,7 @@ public class Logic {
 	}
 
 	/** This method is to check whether a string provided is an integer **/
-	// @author A0112066
+	//@author A0112066U
 	private static boolean isInteger(String index) {
 		try {
 			Integer.parseInt(index);
@@ -1313,7 +1313,7 @@ public class Logic {
 	}
 
 	/** This method returns to UI the list of tasks it requires **/
-	// @author A0112066U
+	//@author A0112066U
 
 	public ArrayList<DisplayedEntry> getRequiredTask(String userCommand) {
 		Command cmd = null;
@@ -1356,7 +1356,7 @@ public class Logic {
 	}
 
 	/** This method is to determined what list of tasks is being displayed **/
-	// @author A0112066
+	//@author A0112066U
 	private ArrayList<TaskData> getDisplayedList() {
 		if (currentDisplayList == 2) {
 			return F2DisplayedList;
@@ -1370,7 +1370,7 @@ public class Logic {
 	 * This method translates a TaskData to a DisplayedEntry for displaying in
 	 * UI
 	 **/
-	// @author A0112066U
+	//@author A0112066U
 	private DisplayedEntry toDisplayedEntry(TaskData task) {
 		return new DisplayedEntry(task);
 	}

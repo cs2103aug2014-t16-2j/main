@@ -1,5 +1,10 @@
 package logic;
 
+/**
+ * other necessary classes
+ * @author A0112066U
+ */
+
 import java.time.LocalDateTime;
 
 import parser.Action;
@@ -21,11 +26,11 @@ class DateInfo {
 		}
 	}
 
-	public LocalDateTime getStartDateTime()  {
+	public LocalDateTime getStartDateTime() {
 		return start;
 	}
 
-	public LocalDateTime getEndDateTime()  {
+	public LocalDateTime getEndDateTime() {
 		return end;
 	}
 
@@ -63,4 +68,3 @@ class ActionEntry {
 		return task;
 	}
 }
-
