@@ -36,6 +36,7 @@ public class FileStorage implements Storage {
 	private final String NEXT_LINE = "\n";
 	private final String HIDDEN = "-backup.";
 	private final String LINUX_HIDDEN_IND = ".";
+	private final String NOTHING = "";
 	
 	private final int MAX_ITERATION = 10000;
 	
@@ -77,6 +78,8 @@ public class FileStorage implements Storage {
 				final String filePath = manager.createFilePath(folderName, fileName);
 				
 				isSetup = manager.createFile(filePath);
+				
+				//data automatic backup
 				isSetup = manager.createHiddenFile(folderName, 
 						FilenameUtils.getBaseName(fileName) + HIDDEN + 
 						FilenameUtils.getExtension(fileName));
@@ -110,17 +113,7 @@ public class FileStorage implements Storage {
 		boolean isSaveSuccess = false;
 		
 		String filePath = manager.createFilePath(folderName, fileName);
-		String hiddenFilePath = "";
-		if (manager.isMac()) {
-			hiddenFilePath = manager.createFilePath(folderName, 
-					LINUX_HIDDEN_IND + FilenameUtils.getBaseName(fileName) + HIDDEN + 
-							FilenameUtils.getExtension(fileName));
-		}
-		else if (manager.isWindows()) {
-			hiddenFilePath = manager.createFilePath(folderName, 
-					FilenameUtils.getBaseName(fileName) + HIDDEN + 
-							FilenameUtils.getExtension(fileName));
-		}
+		String hiddenFilePath = getHiddenFilePath(fileName);
 		
 		if (path.isEmpty() || !path.contains(filePath)) {
 			report(ERROR_NOT_SETUP_YET);
@@ -143,7 +136,8 @@ public class FileStorage implements Storage {
 			
 			manager.writeInJsonFormat(filePath, jObjToSave, false);
 			
-			if (!hiddenFilePath.equals("")) {
+			//data auto backup
+			if (!hiddenFilePath.equals(NOTHING)) {
 				manager.writeInJsonFormat(hiddenFilePath, jObjToSave, false);
 			}
 			
@@ -175,19 +169,10 @@ public class FileStorage implements Storage {
 		
 		try {
 			if (manager.isEmptyFile(filePath)) {
+				String hiddenFilePath = getHiddenFilePath(fileName);
 				
-				String hiddenFilePath = "";
-				if (manager.isMac()) {
-					hiddenFilePath = manager.createFilePath(folderName, 
-							LINUX_HIDDEN_IND + FilenameUtils.getBaseName(fileName) + HIDDEN + 
-									FilenameUtils.getExtension(fileName));
-				}
-				else if (manager.isWindows()) {
-					hiddenFilePath = manager.createFilePath(folderName, 
-							FilenameUtils.getBaseName(fileName) + HIDDEN + 
-									FilenameUtils.getExtension(fileName));
-				}
-				if (!manager.isEmptyFile(hiddenFilePath)) {
+				//check back-up file to observe discrepancies to choose loading file path
+				if (!hiddenFilePath.equals(NOTHING) && !manager.isEmptyFile(hiddenFilePath)) {
 					filePath = hiddenFilePath;
 				}
 				else {
@@ -203,52 +188,25 @@ public class FileStorage implements Storage {
 		} catch (IOException e) {
 			report(ERROR_IO);
 			tasksToReturn.clear();
+			
 			//check if folder and all files are found to be deleted accidentally
 			//all data written back as long as application does not quit abnormally
 			recreateFolderIfFolderNotFound();
+			
 		} catch (ParseException pe) {
 			report(ERROR_PARSE);
 			tasksToReturn.clear();
-			String hiddenFilePath = "";
-			if (manager.isMac()) {
-				hiddenFilePath = manager.createFilePath(folderName, 
-						LINUX_HIDDEN_IND + FilenameUtils.getBaseName(fileName) + HIDDEN + 
-								FilenameUtils.getExtension(fileName));
-			}
-			else if (manager.isWindows()) {
-				hiddenFilePath = manager.createFilePath(folderName, 
-						FilenameUtils.getBaseName(fileName) + HIDDEN + 
-								FilenameUtils.getExtension(fileName));
-			}
+			//get tasks from backup file
+			String hiddenFilePath = getHiddenFilePath(fileName);
 			
 			if (!hiddenFilePath.equals("")) {
-				try {
-					if (manager.isEmptyFile(hiddenFilePath)) {
-						
-						return tasksToReturn;
-					}
-					
-					JSONObject jObj = manager.readInJsonFormat(hiddenFilePath);
-					JSONArray jArr = converter.retrieveJsonArrFromJsonObj(jObj);
-					
-					tasksToReturn = converter.jsonArrToTasks(jArr);
-					
-					return tasksToReturn;
-				} catch (IOException e){
-					report(ERROR_IO);
-					tasksToReturn.clear();
-					return tasksToReturn;
-				} catch (ParseException e) {
-					report(ERROR_PARSE);
-					tasksToReturn.clear();
-					return tasksToReturn;
-				}
+				return loadHiddenTasks(hiddenFilePath);
 			}
 		}
 		
 		return tasksToReturn;
 	}
-	
+ 	
 	/** ******************** **/
 	
 	@Override
@@ -306,12 +264,60 @@ public class FileStorage implements Storage {
 		} catch (IOException e) {
 			report(ERROR_IO);
 			list.clear();
+			
 			//check if folder and all files are found to be deleted accidentally
 			//all data written back as long as application does not quit abnormally
 			recreateFolderIfFolderNotFound();
 		}
 		
 		return list;
+	}
+	
+	/** ******************** **/
+	
+	private ArrayList<TaskData> loadHiddenTasks(String hiddenFilePath) {
+		ArrayList<TaskData> tasksToReturn = new ArrayList<TaskData>();
+		
+		try {
+			if (manager.isEmptyFile(hiddenFilePath)) {
+				
+				return tasksToReturn;
+			}
+			
+			JSONObject jObj = manager.readInJsonFormat(hiddenFilePath);
+			JSONArray jArr = converter.retrieveJsonArrFromJsonObj(jObj);
+			
+			tasksToReturn = converter.jsonArrToTasks(jArr);
+			
+			return tasksToReturn;
+		} catch (IOException e){
+			report(ERROR_IO);
+			tasksToReturn.clear();
+			return tasksToReturn;
+		} catch (ParseException e) {
+			report(ERROR_PARSE);
+			tasksToReturn.clear();
+			return tasksToReturn;
+		}
+	}
+	
+	/** ******************** **/
+	
+	private String getHiddenFilePath(String fileName) {
+		String hiddenFilePath = "";
+		
+		if (manager.isMac()) {
+			hiddenFilePath = manager.createFilePath(folderName, 
+					LINUX_HIDDEN_IND + FilenameUtils.getBaseName(fileName) + HIDDEN + 
+							FilenameUtils.getExtension(fileName));
+		}
+		else if (manager.isWindows()) {
+			hiddenFilePath = manager.createFilePath(folderName, 
+					FilenameUtils.getBaseName(fileName) + HIDDEN + 
+							FilenameUtils.getExtension(fileName));
+		}
+		
+		return hiddenFilePath;
 	}
 	
 	/** ******************** **/
