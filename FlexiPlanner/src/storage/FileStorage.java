@@ -10,10 +10,13 @@ import org.json.simple.parser.ParseException;
 
 import commons.TaskData;
 
+//@author A0117989H
+
 /**
  * This class implements functions of saving and loading
- * tasks from respective files.
- * The files must only contain task data in JSON format.
+ * data from respective files.
+ * 
+ * For saving and loading task files, they must only contain task data in JSON format.
  *
  */
 
@@ -29,7 +32,6 @@ public class FileStorage implements Storage {
 	private final String INFO_FILE_CREATED = "Database setup completed for : ";
 	
 	private final String BASE_FOLDER_NAME = "FlexiPlanner Database";
-	
 	private final String NEXT_LINE = "\n";
 	private final String SEPERATOR = "//";
 	
@@ -45,10 +47,12 @@ public class FileStorage implements Storage {
 	private static FileStorage fStorageInstance;
 	
 	/** Singleton Constructor Method **/
+	
 	public static synchronized FileStorage getInstance() {
 		if (fStorageInstance == null) {
 			fStorageInstance = new FileStorage();
 		}
+		
 		return fStorageInstance;
 	}
 	
@@ -58,7 +62,6 @@ public class FileStorage implements Storage {
 		manager = new FileManager();
 		converter = new JsonConverter();
 		path = new ArrayList<String>();
-		
 		createFolder();
 	}
 	
@@ -68,6 +71,7 @@ public class FileStorage implements Storage {
 		
 		if (manager.isValidFileName(fileName)) {
 			try {
+				//redirect file to be created into the folder
 				final String filePath = createFilePath(fileName);
 				
 				isSetup = manager.createFile(filePath);
@@ -82,6 +86,7 @@ public class FileStorage implements Storage {
 				}
 			} catch (IOException e) {
 				report(ERROR_IO);
+				
 				return false;
 			}
 		}
@@ -92,6 +97,8 @@ public class FileStorage implements Storage {
 		
 		return isSetup;
 	}
+	
+	/** ******************** **/
 
 	@Override
 	public boolean saveTasks(final String fileName, ArrayList<TaskData> taskList) {
@@ -101,11 +108,13 @@ public class FileStorage implements Storage {
 		
 		if (path.isEmpty() || !path.contains(filePath)) {
 			report(ERROR_NOT_SETUP_YET);
+			
 			return isSaveSuccess;
 		}
 		
 		if (taskList == null) {
 			report(ERROR_NULL_LIST);
+			
 			return isSaveSuccess;
 		}
 		
@@ -115,8 +124,11 @@ public class FileStorage implements Storage {
 			
 			jArr = converter.tasksToJsonArr(taskList);
 			jObjToSave = converter.encloseJsonArrInJsonObj(jArr);
+			
 			manager.writeInJsonFormat(filePath, jObjToSave, false);
+			
 			isSaveSuccess = true;	
+			
 		} catch (IOException e) {
 			report(ERROR_IO);
 			isSaveSuccess = false;
@@ -124,6 +136,8 @@ public class FileStorage implements Storage {
 		
 		return isSaveSuccess;
 	}
+	
+	/** ******************** **/
 
 	@Override
 	public ArrayList<TaskData> loadTasks(final String fileName) {
@@ -133,11 +147,13 @@ public class FileStorage implements Storage {
 		
 		if (path.isEmpty() || !path.contains(filePath)) {
 			report(ERROR_NOT_SETUP_YET);
+			
 			return tasksToReturn;
 		}
 		
 		try {
 			if (manager.isEmptyFile(filePath)) {
+				
 				return tasksToReturn;
 			}
 			
@@ -157,6 +173,8 @@ public class FileStorage implements Storage {
 		return tasksToReturn;
 	}
 	
+	/** ******************** **/
+	
 	@Override
 	public boolean saveFile(final String fileName, ArrayList<String> list) {
 		boolean isSaveSuccess = false;
@@ -169,11 +187,11 @@ public class FileStorage implements Storage {
 		}
 		
 		try {
-			manager.write(filePath, "", false);
+			manager.clearFile(filePath);
 			
-			for (String category : list) {
-				manager.write(filePath, category, true);
-				if (list.indexOf(category) != (list.size() - 1)) {
+			for (String s : list) {
+				manager.write(filePath, s, true);
+				if (list.indexOf(s) != (list.size() - 1)) {
 					manager.write(filePath, "\n", true);
 				}
 			}
@@ -186,6 +204,8 @@ public class FileStorage implements Storage {
 		
 		return isSaveSuccess;
 	}
+	
+	/** ******************** **/
 
 	@Override
 	public ArrayList<String> loadFile(final String fileName) {
@@ -212,19 +232,22 @@ public class FileStorage implements Storage {
 		return categories;
 	}
 	
+	/** ******************** **/
+	
 	private void createFolder() {
 		boolean isCreated = false;
+		
 		folderName = BASE_FOLDER_NAME;
 		
+		//check if BASE_FOLDER_NAME exists
 		if (manager.hasFolder(folderName)) {
 			return;
 		}
-		else {
-			for (int i = 1; i < MAX_ITERATION; i++) {
-				if (manager.hasFolder(folderName + i)) {
-					folderName = folderName + i;
-					return;
-				}
+		//check if the children derived from BASE_FOLDER exists
+		for (int i = 1; i < MAX_ITERATION; i++) {
+			if (manager.hasFolder(folderName + i)) {
+				folderName = folderName + i; //set folder if found
+				return;
 			}
 		}
 		
@@ -232,6 +255,7 @@ public class FileStorage implements Storage {
 			isCreated = manager.createFolder(folderName);
 			
 			if (!isCreated) {
+				//if creating fails, create using another names
 				for (int i = 1; i < MAX_ITERATION; i++) {
 					if (manager.createFolder(folderName + i)) {
 						folderName = folderName + i;
@@ -244,10 +268,13 @@ public class FileStorage implements Storage {
 		}
 	}
 	
+	/** ******************** **/
+	
 	private String createFilePath(final String fileName) {
 		return folderName + SEPERATOR + fileName;
 	}
 	
+	/** ******************** **/
 	
 	private void report(final String toReport) {
 		System.out.print(toReport);

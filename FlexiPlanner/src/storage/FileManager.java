@@ -29,9 +29,12 @@ import org.json.simple.parser.ParseException;
 
 public class FileManager {
 	
+	private final int ONE_KILO_BYTE = 1024;
+	
 	private final String FILE_NAME_PATTERN = "^[\\w,\\s-]+$";
 	private final String VALID_EXTENSION_TASKS_FILE = "json";
 	private final String VALID_EXTENSION_NORMAL_FILE = "txt";
+	private final String NOTHING = "";
 	
 	public boolean createFolder(String folderName) throws IOException {
 		boolean isCreated = false;
@@ -76,6 +79,8 @@ public class FileManager {
 		write(filePath, new JsonConverter().toPrettyFormat(jsonObj), isAppendable);
 	}
 	
+	/** ******************** **/
+	
 	public void write(String filePath, String content, boolean isAppendable) throws IOException, FileNotFoundException {
 		BufferedWriter bWriter = new BufferedWriter(new FileWriter(filePath, isAppendable));
 		bWriter.write(content);
@@ -83,19 +88,25 @@ public class FileManager {
 		bWriter.close();
 	}
 	
+	/** ******************** **/
+	
 	public JSONObject readInJsonFormat(String filePath) throws FileNotFoundException, IOException, ParseException{
 		if (isEmptyFile(filePath)) {
 			return new JSONObject();
 		}
+		
 		JSONParser parser = new JSONParser();
 		JSONObject jsonObj = (JSONObject) parser.parse(new BufferedReader(new FileReader(filePath)));
+		
 		return jsonObj;
 	}
 	
+	/** ******************** **/
+	
 	public ArrayList<String> read(String filePath) throws IOException {
 		ArrayList<String> listToReturn = new ArrayList<String>();
-		String line;
 		BufferedReader reader = new BufferedReader(new FileReader(filePath));
+		String line;
 		
 		while ((line = reader.readLine()) != null) {
 			listToReturn.add(line);
@@ -106,27 +117,31 @@ public class FileManager {
 		return listToReturn;
 	}
 	
-	public boolean isValidFileName(final String filePath) {
-		if (filePath == null) {
+	/** ******************** **/
+	
+	public boolean isValidFileName(final String fileName) {
+		if (fileName == null) {
 			return false;
 		}
 		
-		if (!FilenameUtils.getExtension(filePath).equalsIgnoreCase(VALID_EXTENSION_TASKS_FILE) &&
-			!FilenameUtils.getExtension(filePath).equalsIgnoreCase(VALID_EXTENSION_NORMAL_FILE)) {
+		if (!FilenameUtils.getExtension(fileName).equalsIgnoreCase(VALID_EXTENSION_TASKS_FILE) &&
+			!FilenameUtils.getExtension(fileName).equalsIgnoreCase(VALID_EXTENSION_NORMAL_FILE)) {
 			return false;
 		}
 		
 		Pattern pattern = Pattern.compile(FILE_NAME_PATTERN);
-		Matcher matcher = pattern.matcher(FilenameUtils.getBaseName(filePath));
+		Matcher matcher = pattern.matcher(FilenameUtils.getBaseName(fileName));
 		
 		return matcher.matches();
 	}
 	
-	public void copy(String from, String to) throws IOException, FileNotFoundException {
+	/** ******************** **/
+	
+	public void copyFile(String from, String to) throws IOException, FileNotFoundException {
 		InputStream is = new FileInputStream(new File(from));
 		OutputStream os = new FileOutputStream(new File(to));
 		
-		byte[] buffer = new byte[1024];
+		byte[] buffer = new byte[ONE_KILO_BYTE];
 		int length;
 		
 		while ((length = is.read(buffer)) > 0) {
@@ -137,25 +152,37 @@ public class FileManager {
 		os.close();
 	}
 	
-	public boolean delete(String filePath) throws FileNotFoundException {
+	/** ******************** **/
+	
+	public boolean deleteFile(String filePath) throws FileNotFoundException {
 		File fileToDelete = new File(filePath);
 		return fileToDelete.delete();
 	}
 	
-	public void clear(String filePath) throws FileNotFoundException, IOException {
-		write(filePath, "", false);
+	/** ******************** **/
+	
+	public void clearFile(String filePath) throws FileNotFoundException, IOException {
+		write(filePath, NOTHING, false);
 	}
+	
+	/** ******************** **/
 	
 	public boolean isEmptyFile(String filePath) throws IOException {
 		boolean isEmpty = true;
+		
 		BufferedReader reader = new BufferedReader(new FileReader(filePath));
 		isEmpty = reader.readLine() == null;
+		
 		reader.close();
+		
 		return isEmpty;
 	}
 	
+	/** ******************** **/
+	
 	public boolean hasFolder(String folderName) {
 		File folder = new File(folderName);
+		
 		return folder.exists() && !folder.isFile();
 	}
 }
