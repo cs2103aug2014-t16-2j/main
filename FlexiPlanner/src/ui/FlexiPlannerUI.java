@@ -45,14 +45,14 @@ import com.apple.eawt.Application;
 public class FlexiPlannerUI implements HotKeyListener {
 	private JLabel displayedMonth, displayedYear;
 	private JLabel showUserGuideLabel;
-	private JLabel displayLabel;
+	private JLabel displayTasksLabel;
 	private JLabel showBlockedLabel;
 	private JLabel showUserRecentAddedTaskLabel;
 	private JLabel showCategoryLabel;
 	private JPanel schedulerPanel;
 	private JButton prevMonth, nextMonth;
 	private JTable calendar;
-	private JTable displaytaskTable;
+	private JTable displayTaskTable;
 	private DefaultTableModel calendarDTM;
 	private DefaultTableModel displayTasksTableDTM;
 	private Border border;
@@ -148,25 +148,25 @@ public class FlexiPlannerUI implements HotKeyListener {
 			public boolean isCellEditable(int rowIndex, int mColIndex) {
 				return false;
 			}
-		};// get default table model for calendar
-		calendar = new JTable(calendarDTM);// create new table
+		};//set the calendar cells to disallow editting
+		calendar = new JTable(calendarDTM);
 		calendarScroll = new JScrollPane(calendar,
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		schedulerPanel = new JPanel(null);
 		schedulerFrame.getContentPane().add(schedulerPanel);// add panel to
 		// frame
-		displaytaskTable = new JTable(new DefaultTableModel(dummyData,
+		displayTaskTable = new JTable(new DefaultTableModel(dummyData,
 				columnNames) {
 			public boolean isCellEditable(int rowIndex, int mColIndex) {
 				return false;
 			}
-		});
-		displayTasksTableDTM = (DefaultTableModel) displaytaskTable.getModel();
+		});//set the displaytaskTable cells to disallow editting
+		displayTasksTableDTM = (DefaultTableModel) displayTaskTable.getModel();
 		displayTasksTableDTM.setRowCount(50);
-		setDisplayTaskTableProperties();// Set table restrictions
-		// get calendar format
-		GregorianCalendar cal = new GregorianCalendar();
+		setDisplayTaskTableProperties();// Set displayTaskTable restrictions
+		
+		GregorianCalendar cal = new GregorianCalendar();// get calendar format
 		actualDay = cal.get(GregorianCalendar.DAY_OF_MONTH);
 		actualMonth = cal.get(GregorianCalendar.MONTH);
 		actualYear = cal.get(GregorianCalendar.YEAR);
@@ -191,6 +191,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		nextMonth.setForeground(Color.BLUE);
 		calendarScroll.setBounds(10, 35, 300, 250);
 		border = BorderFactory.createLineBorder(Color.BLACK);
+		
 		showUserGuideLabel = new JLabel();
 		showUserGuideLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		showUserGuideLabel.setForeground(Color.BLUE);
@@ -215,22 +216,24 @@ public class FlexiPlannerUI implements HotKeyListener {
 		showUserGuideCollapsePane.setBounds(320, 4, 570, 0);
 		showUserGuideCollapsePane.setPreferredSize(new Dimension(570, 495));
 		showUserGuideCollapsePane.setCollapsed(false);
-		displayLabel = new JLabel();
-		displayLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
-		displayLabel.setForeground(Color.BLUE);
-		displayLabel.setBorder(BorderFactory.createCompoundBorder(border,
+		
+		displayTasksLabel = new JLabel();
+		displayTasksLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
+		displayTasksLabel.setForeground(Color.BLUE);
+		displayTasksLabel.setBorder(BorderFactory.createCompoundBorder(border,
 				BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-		displayLabel.setText("Tasks");
-		showTasksScroll = new JScrollPane(displaytaskTable,
+		displayTasksLabel.setText("Tasks");
+		showTasksScroll = new JScrollPane(displayTaskTable,
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		showTasksScroll.setPreferredSize(new Dimension(570, 460));
 		showTasksCollapsePane = new JXCollapsiblePane();
-		showTasksCollapsePane.add(displayLabel);
+		showTasksCollapsePane.add(displayTasksLabel);
 		showTasksCollapsePane.add(showTasksScroll);
 		showTasksCollapsePane.setCollapsed(true);
 		showTasksCollapsePane.setBounds(320, 4, 570, 0);
 		showTasksCollapsePane.setPreferredSize(new Dimension(570, 495));
+		
 		showUserRecentAddedTaskLabel = new JLabel();
 		showUserRecentAddedTaskLabel.setFont(new Font("Times New Roman",
 				Font.BOLD, 15));
@@ -262,6 +265,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		showUserRecentAddedTaskCollapsePane.setBounds(320, 4, 570, 0);
 		showUserRecentAddedTaskCollapsePane.setPreferredSize(new Dimension(570,
 				495));
+		
 		showCategoryLabel = new JLabel();
 		showCategoryLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		showCategoryLabel.setForeground(Color.BLUE);
@@ -286,6 +290,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		showCategoryCollapsePane.setPreferredSize(new Dimension(300, 175));
 		showCategoryCollapsePane.setCollapsed(true);
 		showCategoryCollapsePane.setCollapsed(false);
+		
 		showBlockedLabel = new JLabel();
 		showBlockedLabel.setFont(new Font("Times New Roman", Font.BOLD, 15));
 		showBlockedLabel.setForeground(Color.BLUE);
@@ -310,6 +315,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 		showBlockedCollapsePane.setCollapsed(true);
 		showBlockedCollapsePane.setBounds(10, 325, 300, 0);
 		showBlockedCollapsePane.setPreferredSize(new Dimension(300, 175));
+		
 		commandFeedback = new JTextArea("");
 		commandFeedback.setBackground(new Color(240, 240, 240));
 		commandFeedback.setForeground(Color.RED);
@@ -318,11 +324,13 @@ public class FlexiPlannerUI implements HotKeyListener {
 		commandFeedback.setLineWrap(true);
 		commandFeedback.setWrapStyleWord(true);
 		commandFeedback.setBounds(11, 500, 870, 40);
+		
 		inputCommand = new JTextField();
 		inputCommand.setForeground(Color.BLUE);
 		inputCommand.setBackground(Color.WHITE);
 		inputCommand.setFont(new Font("Times New Roman", Font.BOLD, 20));
 		inputCommand.setBounds(10, 540, 880, 46);
+		
 		// add components to panel
 		schedulerPanel.add(displayedMonth);
 		schedulerPanel.add(displayedYear);
@@ -337,17 +345,13 @@ public class FlexiPlannerUI implements HotKeyListener {
 		schedulerPanel.add(showCategoryCollapsePane);
 		schedulerPanel.add(commandFeedback);
 		schedulerPanel.add(inputCommand);
-		String[] headers = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" }; // All
-		// headers
+		String[] headers = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+		// headers for calendar
 		for (int i = 0; i < 7; i++) {
 			calendarDTM.addColumn(headers[i]);// add it on top column(left to
 			// right)
 		}
-		calendar.getTableHeader().setResizingAllowed(false);
-		calendar.getTableHeader().setReorderingAllowed(false);
-		calendar.setColumnSelectionAllowed(false);
-		calendar.setRowSelectionAllowed(false);
-		calendar.setRowHeight(40);
+		setCalendarTableProperties();//set restrictions for calendar
 		calendarDTM.setColumnCount(7);// set no of columns of calendar(inner)
 		calendarDTM.setRowCount(6);// set no of rows of calendar(inner)
 		setValuesCombox();// combo box for selectYear
@@ -355,7 +359,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 		prevMonth.addActionListener(new Prev_Year());
 		nextMonth.addActionListener(new Next_Year());
 		selectYear.addActionListener(new Years_Action());
-		inputCommand.requestFocusInWindow();
+		inputCommand.requestFocusInWindow();//will focus to inputCommand 
+											//Textfield when program starts
 		executeKeyAction(commandFeedback, showUserRecentAddedTaskCommand,
 				showCategory, showBlocked, showTasksScroll,
 				showUserRecentAddedTaskScroll, showCategoryScroll,
@@ -363,7 +368,6 @@ public class FlexiPlannerUI implements HotKeyListener {
 				showUserRecentAddedTaskCollapsePane, showBlockedCollapsePane,
 				showCategoryCollapsePane);
 	}
-
 	/**
 	*@author A0111770R
 	 * @param commandFeedback
@@ -378,6 +382,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	 * @param showUserRecentAddedTaskCollapsePane
 	 * @param showBlockedCollapsePane
 	 * @param showCategoryCollapsePane
+	 * check keys events
 	 */
 	private void executeKeyAction(final JTextArea commandFeedback,
 			final JTextArea showUserRecentAddedTaskCommand,
@@ -597,26 +602,35 @@ public class FlexiPlannerUI implements HotKeyListener {
 	*@author A0111770R
 	 */
 	private void setDisplayTaskTableProperties() {
-		displaytaskTable.setModel(displayTasksTableDTM);
-		displaytaskTable.setCellSelectionEnabled(false);
-		displaytaskTable.setRowHeight(60);
-		displaytaskTable.getColumnModel().getColumn(0)
+		displayTaskTable.setModel(displayTasksTableDTM);
+		displayTaskTable.setCellSelectionEnabled(false);
+		displayTaskTable.setRowHeight(60);
+		displayTaskTable.getColumnModel().getColumn(0)
 				.setCellRenderer(new TasksTableRenderer());
-		displaytaskTable.getColumnModel().getColumn(0).setPreferredWidth(30);
-		displaytaskTable.getColumnModel().getColumn(1).setPreferredWidth(55);
-		displaytaskTable.getColumnModel().getColumn(2).setPreferredWidth(65);
-		displaytaskTable.getColumnModel().getColumn(3).setPreferredWidth(220);
-		displaytaskTable.getColumnModel().getColumn(3).setMaxWidth(220);
-		displaytaskTable.getColumnModel().getColumn(4).setPreferredWidth(90);
-		displaytaskTable.getColumnModel().getColumn(5).setPreferredWidth(90);
-		displaytaskTable.getColumnModel().getColumn(5).setMaxWidth(110);
-		displaytaskTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-		displaytaskTable.getTableHeader().setResizingAllowed(false);
-		displaytaskTable.getTableHeader().setReorderingAllowed(false);
-		displaytaskTable.setColumnSelectionAllowed(false);
-		displaytaskTable.setRowSelectionAllowed(false);
+		displayTaskTable.getColumnModel().getColumn(0).setPreferredWidth(30);
+		displayTaskTable.getColumnModel().getColumn(1).setPreferredWidth(55);
+		displayTaskTable.getColumnModel().getColumn(2).setPreferredWidth(65);
+		displayTaskTable.getColumnModel().getColumn(3).setPreferredWidth(220);
+		displayTaskTable.getColumnModel().getColumn(3).setMaxWidth(220);
+		displayTaskTable.getColumnModel().getColumn(4).setPreferredWidth(90);
+		displayTaskTable.getColumnModel().getColumn(5).setPreferredWidth(90);
+		displayTaskTable.getColumnModel().getColumn(5).setMaxWidth(110);
+		displayTaskTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+		displayTaskTable.getTableHeader().setResizingAllowed(false);
+		displayTaskTable.getTableHeader().setReorderingAllowed(false);
+		displayTaskTable.setColumnSelectionAllowed(false);
+		displayTaskTable.setRowSelectionAllowed(false);
 	}
-
+	/**
+	*@author A0111770R
+	 */
+	private void setCalendarTableProperties() {
+		calendar.getTableHeader().setResizingAllowed(false);
+		calendar.getTableHeader().setReorderingAllowed(false);
+		calendar.setColumnSelectionAllowed(false);
+		calendar.setRowSelectionAllowed(false);
+		calendar.setRowHeight(40);
+	}
 	/**
 	*@author A0111770R
 	 * @param userCommand
@@ -668,13 +682,14 @@ public class FlexiPlannerUI implements HotKeyListener {
 				}
 			}
 		}
-		displaytaskTable.setDefaultRenderer(displaytaskTable.getColumnClass(0),
+		displayTaskTable.setDefaultRenderer(displayTaskTable.getColumnClass(0),
 				new TextWrapRenderer());
 	}
 
 	/**
 	 * @author A0111770R
 	 *
+	 *TasksTableRenderer is used for colouring the index column of displayTasksTable
 	 */
 	@SuppressWarnings("serial")
 	class TasksTableRenderer extends DefaultTableCellRenderer {
@@ -785,11 +800,12 @@ public class FlexiPlannerUI implements HotKeyListener {
 			setBorder(null);
 			return this;
 		}
-	}// end of class TasksTableRenderer
+	}
 
 	/**
 	 * @author A0111770R
 	 *
+	 *This class wraps the text in the cells and also in terms of word
 	 */
 	@SuppressWarnings("serial")
 	class TextWrapRenderer extends DefaultTableCellRenderer {
@@ -818,7 +834,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 			setBorder(null);
 			return area;
 		}
-	}// end of class CellRenderer
+	}
 
 	/**
 	*@author A0111770R
@@ -860,14 +876,13 @@ public class FlexiPlannerUI implements HotKeyListener {
 			calendarDTM.setValueAt(i, row, column);
 		}// set value for the days displayed
 		calendar.setDefaultRenderer(calendar.getColumnClass(0),
-				new CalendarRenderer());// using Calendar1Renderer class to set
-		// table display
-	}// end of refreshCalendar method
-		// class Calendar1Renderer used for editting how things are displayed
-
+				new CalendarRenderer());
+	}
+		
 	/**
 	 * @author A0111770R
 	 *
+	 *CalendarRenderer used for editting the colours in Calendar cells
 	 */
 	@SuppressWarnings("serial")
 	class CalendarRenderer extends DefaultTableCellRenderer {
@@ -927,9 +942,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 			setBorder(null);
 			return this;
 		}
-	}// end of class Calendar1Renderer
+	}
 
-	// Prev_Action points to the previous year
 	/**
 	 * @author A0111770R
 	 *
@@ -944,9 +958,8 @@ public class FlexiPlannerUI implements HotKeyListener {
 			}
 			refreshCalendar(currentDisplayedMonth, currentDisplayedYear);
 		}
-	}// end of class Prev_Action
+	}
 
-	// Next_Action points to the next year
 	/**
 	 * @author A0111770R
 	 *
@@ -961,8 +974,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 			}
 			refreshCalendar(currentDisplayedMonth, currentDisplayedYear);
 		}
-	}// end of class Next_Action
-
+	}
 	/**
 	 * @author A0111770R
 	 *
@@ -975,12 +987,12 @@ public class FlexiPlannerUI implements HotKeyListener {
 				refreshCalendar(currentDisplayedMonth, currentDisplayedYear);
 			}
 		}
-	}// end of class Years_Action
-
+	}
 	
 	/**
 	*@author A0111770R
 	 * @return
+	 * This method is created for unit testing
 	 */
 	public boolean getUserGuideCollapseOrNot() {
 		return showUserGuideCollapsePane.isCollapsed();
@@ -988,6 +1000,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	/**
 	*@author A0111770R
 	 * @return
+	 * This method is created for unit testing
 	 */
 	public boolean getBlockedCollapseOrNot() {
 		return showBlockedCollapsePane.isCollapsed();
@@ -995,6 +1008,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	/**
 	*@author A0111770R
 	 * @param text
+	 * This method is created for unit testing
 	 */
 	public void setTextField(String text) {
 		inputCommand.setText(text);
@@ -1002,6 +1016,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	/**
 	*@author A0111770R
 	 * @return
+	 * This method is created for unit testing
 	 */
 	public String getTextField() {
 		return inputCommand.getText();
@@ -1009,6 +1024,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	/**
 	*@author A0111770R
 	 * @return
+	 * This method is created for unit testing
 	 */
 	public String getCategoryLabel() {
 		return showCategoryLabel.getText();
@@ -1016,6 +1032,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	/**
 	*@author A0111770R
 	 * @return
+	 * This method is created for unit testing
 	 */
 	public String getCommandFeedback() {
 		return commandFeedback.getText();
@@ -1023,6 +1040,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 	/**
 	*@author A0111770R
 	 * @return
+	 * This method is created for unit testing
 	 */
 	public Object getSelectYear() {
 		return selectYear.getSelectedItem();
@@ -1070,4 +1088,4 @@ public class FlexiPlannerUI implements HotKeyListener {
 		}
 	}
 
-}// end of class FlexiPlannerUI
+}
