@@ -260,9 +260,7 @@ public class Parser {
 		for (int index = 0; index < wordList.size(); index++) {
 			String word = wordList.get(index).toLowerCase();
 			if (KEYWORDS_MARK.contains(word)) {
-				if (word.equals("undone") || word.equals("incomplete")) {
-					task.setDone(false);
-				} else {
+				if (word.equals("done") || word.equals("complete") ||word.equals("completed")) {
 					task.setDone(true);
 				}
 				wordList.remove(index);

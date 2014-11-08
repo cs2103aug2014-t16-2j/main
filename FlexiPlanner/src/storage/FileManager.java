@@ -3,14 +3,10 @@ package storage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,14 +25,13 @@ import org.json.simple.parser.ParseException;
 
 public class FileManager {
 	
-	private final int ONE_KILO_BYTE = 1024;
-	
 	private final String FILE_NAME_PATTERN = "^[\\w,\\s-]+$";
 	private final String VALID_EXTENSION_TASKS_FILE = "json";
 	private final String VALID_EXTENSION_NORMAL_FILE = "txt";
 	private final String NOTHING = "";
 	private final String SEPERATOR = "//";
-	private final String LINUX_HIDDEN_IND = ".";
+	private final String USER_HOME = "user.home";
+	private final String BACKUP = "-backup";
 	
 	public boolean createFolder(String folderName) throws IOException {
 		boolean isCreated = false;
@@ -75,38 +70,18 @@ public class FileManager {
 		return isCreated;
 	}
 	
-	public boolean createHiddenFile(String folderName, String fileName) throws IOException {
+	public boolean createBackupFile(String folderName, String fileName) throws IOException {
 		boolean isCreated = false;
 		
-		if (isWindows()) {
-			File hiddenFile = new File(folderName + SEPERATOR + fileName);
-			isCreated = createFile(hiddenFile.getPath());
-			hideFile(hiddenFile);
-			
-		}
-		else if (isMac()) {
-			isCreated = createFile(folderName + SEPERATOR + LINUX_HIDDEN_IND + fileName);
-		}
+		String backupFolderName = folderName + BACKUP;
+		
+		File backupDataDir = new File(System.getProperty(USER_HOME) + SEPERATOR + backupFolderName);
+		createFolder(backupDataDir.getPath());
+		
+		File backupDataFile = new File(System.getProperty(USER_HOME) + SEPERATOR + backupFolderName + SEPERATOR + fileName);
+		isCreated = createFile(backupDataFile.getPath());
 		
 		return isCreated;
-	}
-	
-	public void hideFile(File hiddenFile) throws IOException {
-		Process p = Runtime.getRuntime().exec("attrib +h \"" + hiddenFile.getAbsolutePath() + "\"");
-		try {
-			p.waitFor();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void revealFile(File hiddenFile) throws IOException {
-		Process p = Runtime.getRuntime().exec("attrib -h \"" + hiddenFile.getAbsolutePath() + "\"");
-		try {
-			p.waitFor();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	/** ******************** **/
@@ -173,23 +148,6 @@ public class FileManager {
 	
 	/** ******************** **/
 	
-	public void copyFile(String from, String to) throws IOException, FileNotFoundException {
-		InputStream is = new FileInputStream(new File(from));
-		OutputStream os = new FileOutputStream(new File(to));
-		
-		byte[] buffer = new byte[ONE_KILO_BYTE];
-		int length;
-		
-		while ((length = is.read(buffer)) > 0) {
-			os.write(buffer, 0, length);
-		}
-		
-		is.close();
-		os.close();
-	}
-	
-	/** ******************** **/
-	
 	public boolean deleteFile(String filePath) throws FileNotFoundException {
 		File fileToDelete = new File(filePath);
 		return fileToDelete.delete();
@@ -228,36 +186,14 @@ public class FileManager {
 		return folderName + SEPERATOR + fileName;
 	}
 	
+	public String createBackupFilePath(String folderName, final String fileName) {
+		return System.getProperty(USER_HOME) + SEPERATOR + folderName + BACKUP + SEPERATOR + fileName;
+	}
+	
 	/** ******************** **/
 	
 	public String extractFileName(String filePath) {
 		String[] s = filePath.split(SEPERATOR);
 		return s[s.length - 1];
-	}
-	
-	/** ******************** **/
-	
-	public int numOfFilesIn(String folderName) {
-		File folder = new File(folderName);
-		if (!folder.exists() || (folder.exists() && folder.isFile())) {
-			return -1;
-		}
-		else {
-			return folder.list().length;
-		}
-	}
-	
-	/** ******************** **/
-	
-	public boolean isWindows() {
-		String OS = System.getProperty("os.name").toLowerCase();
-		return OS.indexOf("win") >= 0;
-	}
-	
-	/** ******************** **/
-	
-	public boolean isMac() {
-		String OS = System.getProperty("os.name").toLowerCase();
-		return OS.indexOf("mac") >= 0;
 	}
 }

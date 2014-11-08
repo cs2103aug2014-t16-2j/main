@@ -1,6 +1,5 @@
 package storage;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,13 +35,11 @@ public class FileStorage implements Storage {
 	private final String BASE_FOLDER_NAME = "FlexiPlanner Database";
 	private final String NEXT_LINE = "\n";
 	private final String HIDDEN = "-backup.";
-	private final String LINUX_HIDDEN_IND = ".";
 	private final String NOTHING = "";
 	
 	private final int MAX_ITERATION = 10000;
 	
 	private String folderName;
-	
 	private List<String> path;
 	
 	private FileManager manager;
@@ -81,7 +78,7 @@ public class FileStorage implements Storage {
 				isSetup = manager.createFile(filePath);
 				
 				//data automatic backup
-				isSetup = manager.createHiddenFile(folderName, 
+				isSetup = manager.createBackupFile(folderName, 
 						FilenameUtils.getBaseName(fileName) + HIDDEN + 
 						FilenameUtils.getExtension(fileName));
 				
@@ -114,7 +111,7 @@ public class FileStorage implements Storage {
 		boolean isSaveSuccess = false;
 		
 		String filePath = manager.createFilePath(folderName, fileName);
-		String hiddenFilePath = getHiddenFilePath(fileName);
+		String backupFilePath = getHiddenFilePath(fileName);
 		
 		if (path.isEmpty() || !path.contains(filePath)) {
 			report(ERROR_NOT_SETUP_YET);
@@ -138,11 +135,8 @@ public class FileStorage implements Storage {
 			manager.writeInJsonFormat(filePath, jObjToSave, false);
 			
 			//data auto backup
-			if (!hiddenFilePath.equals(NOTHING)) {
-				File hiddenFile = new File(hiddenFilePath);
-				manager.revealFile(hiddenFile);
-				manager.writeInJsonFormat(hiddenFilePath, jObjToSave, false);
-				manager.hideFile(hiddenFile);
+			if (!backupFilePath.equals(NOTHING)) {
+				manager.writeInJsonFormat(backupFilePath, jObjToSave, false);
 			}
 			
 			isSaveSuccess = true;	
@@ -173,11 +167,11 @@ public class FileStorage implements Storage {
 		
 		try {
 			if (manager.isEmptyFile(filePath)) {
-				String hiddenFilePath = getHiddenFilePath(fileName);
+				String backupFilePath = getHiddenFilePath(fileName);
 				
 				//check back-up file to observe discrepancies to choose loading file path
-				if (!hiddenFilePath.equals(NOTHING) && !manager.isEmptyFile(hiddenFilePath)) {
-					filePath = hiddenFilePath;
+				if (!backupFilePath.equals(NOTHING) && !manager.isEmptyFile(backupFilePath)) {
+					filePath = backupFilePath;
 				}
 				else {
 					return tasksToReturn;
@@ -204,7 +198,7 @@ public class FileStorage implements Storage {
 			String hiddenFilePath = getHiddenFilePath(fileName);
 			
 			if (!hiddenFilePath.equals("")) {
-				return loadHiddenTasks(hiddenFilePath);
+				return loadBackupTasks(hiddenFilePath);
 			}
 		}
 		
@@ -212,7 +206,7 @@ public class FileStorage implements Storage {
 	}
  	
 	/** ******************** **/
-	
+	//@author A0117989H-unused
 	@Override
 	public boolean saveFile(final String fileName, ArrayList<String> list) {
 		boolean isSaveSuccess = false;
@@ -247,7 +241,7 @@ public class FileStorage implements Storage {
 	}
 	
 	/** ******************** **/
-
+	//@author A0117989H-unused
 	@Override
 	public ArrayList<String> loadFile(final String fileName) {
 		ArrayList<String> list = new ArrayList<String>();
@@ -278,17 +272,17 @@ public class FileStorage implements Storage {
 	}
 	
 	/** ******************** **/
-	
-	private ArrayList<TaskData> loadHiddenTasks(String hiddenFilePath) {
+	//@author A0117989H
+	private ArrayList<TaskData> loadBackupTasks(String backupFilePath) {
 		ArrayList<TaskData> tasksToReturn = new ArrayList<TaskData>();
 		
 		try {
-			if (manager.isEmptyFile(hiddenFilePath)) {
+			if (manager.isEmptyFile(backupFilePath)) {
 				
 				return tasksToReturn;
 			}
 			
-			JSONObject jObj = manager.readInJsonFormat(hiddenFilePath);
+			JSONObject jObj = manager.readInJsonFormat(backupFilePath);
 			JSONArray jArr = converter.retrieveJsonArrFromJsonObj(jObj);
 			
 			tasksToReturn = converter.jsonArrToTasks(jArr);
@@ -308,20 +302,12 @@ public class FileStorage implements Storage {
 	/** ******************** **/
 	
 	private String getHiddenFilePath(String fileName) {
-		String hiddenFilePath = "";
+		String backupFilePath = "";
+		backupFilePath = manager.createBackupFilePath(folderName, 
+				FilenameUtils.getBaseName(fileName) + HIDDEN + 
+						FilenameUtils.getExtension(fileName));
 		
-		if (manager.isMac()) {
-			hiddenFilePath = manager.createFilePath(folderName, 
-					LINUX_HIDDEN_IND + FilenameUtils.getBaseName(fileName) + HIDDEN + 
-							FilenameUtils.getExtension(fileName));
-		}
-		else if (manager.isWindows()) {
-			hiddenFilePath = manager.createFilePath(folderName, 
-					FilenameUtils.getBaseName(fileName) + HIDDEN + 
-							FilenameUtils.getExtension(fileName));
-		}
-		
-		return hiddenFilePath;
+		return backupFilePath;
 	}
 	
 	/** ******************** **/
