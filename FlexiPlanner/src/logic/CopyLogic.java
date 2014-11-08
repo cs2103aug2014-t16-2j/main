@@ -17,62 +17,62 @@ import parser.*;
 import reminder.ReminderPatternFinder;
 import storage.*;
 
-public class Logic {
-	private static final String MSG_NOT_ALLOWED_MARK = "You cannot mark a completed task as done";
-	private static final String MSG_NOT_ALLOWED_MODIFY = "You cannot modify a completed task";
-	private static final String MSG_ERROR = "Error. ";
-	private static final String MSG_ASK_FOR_TIME = "Please provide start and end time";
-	private static final String MSG_SUCCESSFUL = "Successful. ";
-	private static final String MSG_TIME_SPECIFIED = "You must specify start time and end time";
-	private static final String MSG_CANNOT_UNDO = "Cannot undo anymore";
-	private static final String MSG_CANNOT_REDO_ANYMORE = "Cannot redo anymore";
-	private static final String MSG_INDEX_OUT_OF_BOUND = "Index out of bound";
-	private static final String MSG_NO_TASK_FOUND = "No task found";
-	private static final String MSG_NO_TASK_SPCIFIED = "No task spcified";
-	private static final String MSG_ERROR_WHILE_SAVING_DATA = "Error while saving data";
-	private static final String MSG_EXISTING_TASK = "This task has been existing";
-	private static final String MSG_CLASHES = "This task clashes with a blocked slot";
-	private static final String MSG_EMPTY_INPUT = "Empty input";
-	private Command command;
-	private Task task;
-	private HashMap<String, HashMap<DateInfo, TaskData>> taskIdentifier;
-	private HashMap<String, TaskData> completedTaskIdentifier;
-	private Storage storer;
-	private Parser parser;
-	private Action action;
-	private ActionEntry entry;
-	private SearchTool searchTool;
-	private ArrayList<TaskData> F2DisplayedList; // list of tasks displayed when
+public class CopyLogic {
+	protected static final String MSG_NOT_ALLOWED_MARK = "You cannot mark a completed task as done";
+	protected static final String MSG_NOT_ALLOWED_MODIFY = "You cannot modify a completed task";
+	protected static final String MSG_ERROR = "Error. ";
+	protected static final String MSG_ASK_FOR_TIME = "Please provide start and end time";
+	protected static final String MSG_SUCCESSFUL = "Successful. ";
+	protected static final String MSG_TIME_SPECIFIED = "You must specify start time and end time";
+	protected static final String MSG_CANNOT_UNDO = "Cannot undo anymore";
+	protected static final String MSG_CANNOT_REDO_ANYMORE = "Cannot redo anymore";
+	protected static final String MSG_INDEX_OUT_OF_BOUND = "Index out of bound";
+	protected static final String MSG_NO_TASK_FOUND = "No task found";
+	protected static final String MSG_NO_TASK_SPCIFIED = "No task spcified";
+	protected static final String MSG_ERROR_WHILE_SAVING_DATA = "Error while saving data";
+	protected static final String MSG_EXISTING_TASK = "This task has been existing";
+	protected static final String MSG_CLASHES = "This task clashes with a blocked slot";
+	protected static final String MSG_EMPTY_INPUT = "Empty input";
+	protected Command command;
+	protected Task task;
+	protected HashMap<String, HashMap<DateInfo, TaskData>> taskIdentifier;
+	protected HashMap<String, TaskData> completedTaskIdentifier;
+	protected Storage storer;
+	protected Parser parser;
+	protected Action action;
+	protected ActionEntry entry;
+	protected SearchTool searchTool;
+	protected ArrayList<TaskData> F2DisplayedList; // list of tasks displayed when
 													// press F2
-	private ArrayList<TaskData> F3DisplayedList; // list of tasks displayed when
+	protected ArrayList<TaskData> F3DisplayedList; // list of tasks displayed when
 													// press F3
-	private ArrayList<TaskData> taskList;
-	private ArrayList<TaskData> completedTask;
-	private ArrayList<TaskData> blockedList;
-	private String blockedPath = "blocked.json";
-	private String taskFilePath = "text.json";
-	private String completedTaskFilePath = "completed.json";
-	private boolean isSuspendedAction = false;
-	private Action suspendingAction;
-	private ReminderPatternFinder reminderParser;
-	private LocalDateTime reminderDateTime;
-	private Integer reminderMinutes;
-	private int currentDisplayList;
+	protected ArrayList<TaskData> taskList;
+	protected ArrayList<TaskData> completedTask;
+	protected ArrayList<TaskData> blockedList;
+	protected String blockedPath = "unittests\\blocked.json";
+	protected String taskFilePath = "unittests\\text.json";
+	protected String completedTaskFilePath = "unittests\\completed.json";
+	protected boolean isSuspendedAction = false;
+	protected Action suspendingAction;
+	protected ReminderPatternFinder reminderParser;
+	protected LocalDateTime reminderDateTime;
+	protected Integer reminderMinutes;
+	protected int currentDisplayList;
 
-	private boolean done = false;
+	protected boolean done = false;
 
-	private Stack<ActionEntry> actionList; // for undo and redo
-	private Stack<ActionEntry> redoList;
-	private Stack<ArrayList<TaskData>> unblockSlot = new Stack<ArrayList<TaskData>>();
-	private Stack<ArrayList<TaskData>> blockSlot = new Stack<ArrayList<TaskData>>();
+	protected Stack<ActionEntry> actionList; // for undo and redo
+	protected Stack<ActionEntry> redoList;
+	protected Stack<ArrayList<TaskData>> unblockSlot = new Stack<ArrayList<TaskData>>();
+	protected Stack<ArrayList<TaskData>> blockSlot = new Stack<ArrayList<TaskData>>();
 
-	private ArrayList<TaskData> searchResult;
-	private int overdueRow = 0;
+	protected ArrayList<TaskData> searchResult;
+	protected int overdueRow = 0;
 
-	private String messageToUser;
+	protected String messageToUser;
 
 	// ------------------Constructor-------------------------//
-	public Logic() throws FileNotFoundException, IOException, ParseException {
+	public CopyLogic() throws FileNotFoundException, IOException, ParseException {
 		setupDatabase();
 		initialiseVariables();
 		loadData();
@@ -81,7 +81,7 @@ public class Logic {
 	// ---------------------------------Method-----------------------------//
 	/** This method sets up all file needed **/
 	//@author A0112066U
-	private void setupDatabase() {
+	protected void setupDatabase() {
 		storer = FileStorage.getInstance();
 		storer.setupDatabase(taskFilePath); // act upon changes made in storage
 		storer.setupDatabase(completedTaskFilePath); // act upon changes
@@ -90,7 +90,7 @@ public class Logic {
 
 	/** This methods is to initialise all variables **/
 	//@author A0112066U
-	private void initialiseVariables() {
+	protected void initialiseVariables() {
 		command = null;
 		task = null;
 		taskList = new ArrayList<TaskData>();
@@ -109,7 +109,7 @@ public class Logic {
 
 	/** This method is to load all data saved in the files **/
 	//@author A0112066U
-	private void loadData() throws IOException, ParseException {
+	protected void loadData() throws IOException, ParseException {
 		taskList = new ArrayList<TaskData>(storer.loadTasks(taskFilePath));
 		for (TaskData t : taskList) {
 			String content = t.getContent();
@@ -160,7 +160,7 @@ public class Logic {
 	 * parser
 	 */
 	//@author A0112066U
-	private void extractCommandandTask(String _command) {
+	protected void extractCommandandTask(String _command) {
 		action = parser.getAction(_command);
 		command = action.getCommand();
 		task = action.getTask();
@@ -174,7 +174,7 @@ public class Logic {
 	}
 
 	/** get reminder date and time from reminder parser **/
-	private void getReminderDateTime(String command, TaskData t) {
+	protected void getReminderDateTime(String command, TaskData t) {
 		Object obj = reminderParser.parse(command);
 		if (obj == null) {
 			reminderDateTime = null;
@@ -205,7 +205,7 @@ public class Logic {
 	 * executed, action is push to undo/redo stack
 	 **/
 	//@author A0112066U
-	private boolean executeCommand(Command command, Task task)
+	protected boolean executeCommand(Command command, Task task)
 			throws IOException, ParseException {
 		boolean isSuccessful;
 		switch (command) {
@@ -234,7 +234,7 @@ public class Logic {
 			isSuccessful = search(task);
 			return isSuccessful;
 		case MARK:
-			isSuccessful = mark(toTaskData(task), false);
+			isSuccessful = markAsDone(toTaskData(task), false);
 			if (isSuccessful)
 				actionList.push(new ActionEntry(action, null));
 			return isSuccessful;
@@ -261,7 +261,7 @@ public class Logic {
 
 	/** This method is for adding a task */
 	//@author A0112066U
-	private boolean addTask(TaskData task, boolean unredo) {
+	protected boolean addTask(TaskData task, boolean unredo) {
 		String content = task.getContent();
 		if (content == null || content.isEmpty()) {
 			messageToUser = MSG_EMPTY_INPUT;
@@ -328,7 +328,7 @@ public class Logic {
 	/** This method determines of a task clashes with a blocked time **/
 	//@author A0112066U
 
-	private boolean isClashingWithBlockedSlots(TaskData task) {
+	protected boolean isClashingWithBlockedSlots(TaskData task) {
 		LocalDateTime start = task.getStartDateTime();
 		LocalDateTime end = task.getEndDateTime();
 		for (TaskData _task : blockedList) {
@@ -342,7 +342,7 @@ public class Logic {
 
 	/** This method is to delete a task described by content **/
 	//@author A0112066U
-	private boolean deleteTask(TaskData task, boolean unredo) {
+	protected boolean deleteTask(TaskData task, boolean unredo) {
 		String content = task.getContent();
 		if (isInteger(content)) {
 			return deleteIndex(Integer.parseInt(content), unredo);
@@ -407,7 +407,7 @@ public class Logic {
 
 	/** This method determines the task to be deleted **/
 	//@author A0112066U
-	private TaskData getTaskToDelete(TaskData task, boolean unredo,
+	protected TaskData getTaskToDelete(TaskData task, boolean unredo,
 			HashMap<DateInfo, TaskData> toDeleteList, LocalDateTime st,
 			LocalDateTime et) {
 		TaskData toDelete;
@@ -420,7 +420,7 @@ public class Logic {
 	 * panel
 	 **/
 	//@author A0112066U
-	private boolean deleteIndex(int index, boolean unredo) {
+	protected boolean deleteIndex(int index, boolean unredo) {
 		ArrayList<TaskData> displayedList = getDisplayedList();
 		int size = displayedList.size();
 		if (index < 1 || index > size) {
@@ -434,7 +434,7 @@ public class Logic {
 
 	/** This method is to modify a task **/
 	//@author A0112066U
-	private boolean modifyTask(Task task, Task t, boolean unredo) {
+	protected boolean modifyTask(Task task, Task t, boolean unredo) {
 		String content;
 		if (t != null) {
 			content = t.getContent();
@@ -466,7 +466,7 @@ public class Logic {
 	 * tasks
 	 **/
 	//@author A0112066U
-	private boolean modifyTask(Task _task, Task t, String content,
+	protected boolean modifyTask(Task _task, Task t, String content,
 			boolean unredo) {
 		LocalDateTime newStartTime = _task.getStartDateTime();
 		LocalDateTime newEndTime = _task.getEndDateTime();
@@ -566,7 +566,7 @@ public class Logic {
 
 	/** This method does modifying the task with known information **/
 	//author A0112066U
-	private void doModify(Task _task, Task t, boolean unredo,
+	protected void doModify(Task _task, Task t, boolean unredo,
 			LocalDateTime newStartTime, LocalDateTime newEndTime,
 			String newCategory, String newPriority, TaskData taskToModify,
 			LocalDateTime oldStartTime, LocalDateTime oldEndTime,
@@ -607,7 +607,7 @@ public class Logic {
 
 	/** This method checks if the task after modifying exists **/
 	//@author A0112066U
-	private boolean checkExisting(LocalDateTime newStartTime,
+	protected boolean checkExisting(LocalDateTime newStartTime,
 			LocalDateTime newEndTime, String newCategory, String newPriority,
 			String newContent, HashMap<DateInfo, TaskData> _listTaskToEdit,
 			TaskData toFind, TaskData taskToModify, LocalDateTime oldEndTime,
@@ -639,7 +639,7 @@ public class Logic {
 	 * panel with new description
 	 **/
 	//@author A0112066U
-	private boolean modifyIndex(Task task, String content, boolean unredo) {
+	protected boolean modifyIndex(Task task, String content, boolean unredo) {
 		String[] a = content.trim().split(" ");
 		int index = Integer.parseInt(a[0]);
 		content = content.substring(a[0].length()).trim();
@@ -659,13 +659,13 @@ public class Logic {
 		}
 	}
 
-	/** This method is to mark a task as done or undone**/
+	/** This method is to mark a task as done **/
 	//@author A0112066U
-	private boolean mark(TaskData _task, boolean unredo) {
+	protected boolean markAsDone(TaskData _task, boolean unredo) {
 		boolean isSuccessful = false;
 		String content = _task.getContent();
 		if (isInteger(content)) {
-			return markByIndex(Integer.parseInt(content), unredo);
+			return markAsDoneByIndex(Integer.parseInt(content), unredo);
 		}
 		if (done) {
 			messageToUser = MSG_NOT_ALLOWED_MARK;
@@ -713,7 +713,7 @@ public class Logic {
 	/** This method is to find the task to modify **/
 	//@author A0112066U
 
-	private TaskData getTaskToMark(TaskData _task, boolean unredo,
+	protected TaskData getTaskToMark(TaskData _task, boolean unredo,
 			HashMap<DateInfo, TaskData> _taskToEdit, LocalDateTime st,
 			LocalDateTime et) {
 		TaskData task;
@@ -752,7 +752,7 @@ public class Logic {
 	 **/
 	//@author A0112066U
 
-	private boolean markByIndex(int index, boolean unredo) {
+	protected boolean markAsDoneByIndex(int index, boolean unredo) {
 		ArrayList<TaskData> displayedList = getDisplayedList();
 		int size = displayedList.size();
 		if (index < 1 || index > size) {
@@ -760,7 +760,7 @@ public class Logic {
 			return false;
 		} else {
 			TaskData task = displayedList.get(index - 1);
-			return mark(task, unredo);
+			return markAsDone(task, unredo);
 		}
 
 	}
@@ -768,7 +768,7 @@ public class Logic {
 	/** This method is to block a list of slots **/
 	//@author A0112066U
 
-	private boolean block(ArrayList<TaskData> blocks) {
+	protected boolean block(ArrayList<TaskData> blocks) {
 		ArrayList<TaskData> block = new ArrayList<TaskData>();
 		for (TaskData _task : blocks) {
 			LocalDateTime _start = _task.getStartDateTime();
@@ -786,7 +786,7 @@ public class Logic {
 
 	/** This method is to unblock a list of slots **/
 	//@author A0112066U
-	private boolean unblock(ArrayList<TaskData> blocks) {
+	protected boolean unblock(ArrayList<TaskData> blocks) {
 
 		ArrayList<TaskData> unblock = new ArrayList<TaskData>();
 		for (TaskData _task : blocks) {
@@ -805,7 +805,7 @@ public class Logic {
 
 	/** This method is to block a slot **/
 	//@author A0112066U
-	private ArrayList<TaskData> block(TaskData slot) {
+	protected ArrayList<TaskData> block(TaskData slot) {
 
 		LocalDateTime st = slot.getStartDateTime();
 		LocalDateTime et = slot.getEndDateTime();
@@ -837,7 +837,7 @@ public class Logic {
 
 	/** This method is to unblock a slot **/
 	//@author A0112066U
-	private ArrayList<TaskData> unblock(TaskData task) {
+	protected ArrayList<TaskData> unblock(TaskData task) {
 		LocalDateTime start = task.getStartDateTime();
 		LocalDateTime end = task.getEndDateTime();
 		ArrayList<TaskData> copy = new ArrayList<TaskData>(blockedList);
@@ -883,18 +883,18 @@ public class Logic {
 		return unblocked;
 	}
 
-	private LocalDateTime chooseStart(LocalDateTime start1, LocalDateTime start2) {
+	protected LocalDateTime chooseStart(LocalDateTime start1, LocalDateTime start2) {
 		return (start1.isBefore(start2)) ? start1 : start2;
 	}
 
-	private LocalDateTime chooseEnd(LocalDateTime end1, LocalDateTime end2) {
+	protected LocalDateTime chooseEnd(LocalDateTime end1, LocalDateTime end2) {
 		return (end1.isAfter(end2)) ? end1 : end2;
 	}
 
 	/** This method checks if two periods of time clash with each other **/
 	//@author A0112066U
 
-	private boolean isClash(LocalDateTime start1, LocalDateTime end1,
+	protected boolean isClash(LocalDateTime start1, LocalDateTime end1,
 			LocalDateTime start2, LocalDateTime end2) {
 		if (start1.isEqual(start2) || end1.isEqual(end2))
 			return true;
@@ -910,14 +910,14 @@ public class Logic {
 	/** This method checks if two periods of time are sequential **/
 	//@author A0112066U
 
-	private boolean isSequential(LocalDateTime start1, LocalDateTime end1,
+	protected boolean isSequential(LocalDateTime start1, LocalDateTime end1,
 			LocalDateTime start2, LocalDateTime end2) {
 		return start1.isEqual(end2) || start2.isEqual(end1);
 	}
 
 	/** This method is for redoing an action **/
 	//@author A0112066U
-	private boolean redo() throws IOException, ParseException {
+	protected boolean redo() throws IOException, ParseException {
 		if (redoList.isEmpty()) {
 			messageToUser = MSG_CANNOT_REDO_ANYMORE;
 			return false;
@@ -945,7 +945,7 @@ public class Logic {
 		case MODIFY:
 			return modifyTask(task, t, true);
 		case MARK:
-			return mark(_task, true);
+			return markAsDone(_task, true);
 		case BLOCK:
 			ArrayList<TaskData> blockList = unblockSlot.pop();
 			blockSlot.push(blockList);
@@ -961,7 +961,7 @@ public class Logic {
 
 	/** This method is for undoing an action **/
 	//@author A0112066U
-	private boolean undo() {
+	protected boolean undo() {
 		boolean isSuccessful = false;
 		if (actionList.isEmpty()) {
 			messageToUser = MSG_CANNOT_UNDO;
@@ -997,7 +997,7 @@ public class Logic {
 	}
 
 	//@author A0112066U
-	private boolean undoDelete(Action done) {
+	protected boolean undoDelete(Action done) {
 		if (done.getTask().isDone()) {
 			this.done = true;
 		}
@@ -1010,7 +1010,7 @@ public class Logic {
 	}
 
 	//@author A0112066U
-	private boolean undoAdd(Action done) {
+	protected boolean undoAdd(Action done) {
 		if (done.getTask().isDone()) {
 			this.done = true;
 		}
@@ -1023,7 +1023,7 @@ public class Logic {
 	}
 
 	//@author A0112066U
-	private boolean undoModify(Action done, Task t) {
+	protected boolean undoModify(Action done, Task t) {
 		boolean isSuccessful = modifyTask(done.getTask(), t, true);
 		if (isSuccessful)
 			redoList.push(entry);
@@ -1033,7 +1033,7 @@ public class Logic {
 	}
 
 	//@author A0112066U
-	private boolean undoMark(Action done) {
+	protected boolean undoMark(Action done) {
 		Task task = done.getTask();
 		boolean isSuccessful = false;
 		String s = task.getStartDateTime() + "" + task.getEndDateTime();
@@ -1053,7 +1053,7 @@ public class Logic {
 		return isSuccessful;
 	}
 
-	private boolean undoBlock(Action done) {
+	protected boolean undoBlock(Action done) {
 		boolean isSuccessful = false;
 		ArrayList<TaskData> blockList = blockSlot.pop();
 		isSuccessful = unblock(blockList);
@@ -1066,7 +1066,7 @@ public class Logic {
 		return isSuccessful;
 	}
 
-	private boolean undoUnblock(Action done) {
+	protected boolean undoUnblock(Action done) {
 		boolean isSuccessful = false;
 		ArrayList<TaskData> blockList = unblockSlot.pop();
 		isSuccessful = block(blockList);
@@ -1085,7 +1085,7 @@ public class Logic {
 	 **/
 	//@author A0112066U
 
-	private boolean search(Task task) throws IOException, ParseException {
+	protected boolean search(Task task) throws IOException, ParseException {
 		searchResult = new ArrayList<TaskData>();
 		String content = task.getContent();
 		if (content != null
@@ -1094,7 +1094,7 @@ public class Logic {
 						.startsWith("blocked"))) {
 			searchResult = blockedList;
 		} else {
-			if (task.isDone() == null || !task.isDone()) {
+			if (!task.isDone()) {
 				searchResult = searchTool.search(taskList, task);
 				done = false;
 			} else {
@@ -1112,7 +1112,7 @@ public class Logic {
 
 	/** This method is to exit, data is saved and jframe is minimised to tray **/
 	//@author A0112066U
-	private boolean exit() {
+	protected boolean exit() {
 		// store when exit
 		try {
 			saveData();
@@ -1130,7 +1130,7 @@ public class Logic {
 	}
 
 	//@author A0112066U
-	private void saveCompletedTask() throws IOException {
+	protected void saveCompletedTask() throws IOException {
 		storer.saveTasks(completedTaskFilePath, completedTask);
 	}
 
@@ -1229,12 +1229,12 @@ public class Logic {
 	}
 
 	//@author A0112066U
-	private String dataToShow() throws IOException, ParseException {
+	protected String dataToShow() throws IOException, ParseException {
 		return showToUser(F2DisplayedList);
 	}
 
 	//@author A0112066U
-	private String showToUser(ArrayList<TaskData> taskToShow) {
+	protected String showToUser(ArrayList<TaskData> taskToShow) {
 		String text = "";
 		SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
 		SimpleDateFormat f = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
@@ -1274,12 +1274,14 @@ public class Logic {
 	//author A0112066U
 	public void clear() throws IOException {
 		taskList.clear();
+		completedTask.clear();
 		saveData();
+		saveCompletedTask();
 	}
 
 	/** This method translates a Task to TaskData for storage **/
 	//@author A0112066U
-	private TaskData toTaskData(Task task) {
+	protected TaskData toTaskData(Task task) {
 		String content = task.getContent();
 		LocalDateTime startTime = task.getStartDateTime();
 		LocalDateTime endTime = task.getEndDateTime();
@@ -1290,7 +1292,7 @@ public class Logic {
 
 	/** This method translates a TaskData to Task **/
 	//@author A0112066U
-	private Task toTask(TaskData task, boolean done) {
+	protected Task toTask(TaskData task, boolean done) {
 		Task t = new Task();
 		t.setContent(task.getContent());
 		t.setCategory(task.getCategory());
@@ -1303,7 +1305,7 @@ public class Logic {
 
 	/** This method is to check whether a string provided is an integer **/
 	//@author A0112066U
-	private static boolean isInteger(String index) {
+	protected static boolean isInteger(String index) {
 		try {
 			Integer.parseInt(index);
 		} catch (NumberFormatException e) {
@@ -1357,7 +1359,7 @@ public class Logic {
 
 	/** This method is to determined what list of tasks is being displayed **/
 	//@author A0112066U
-	private ArrayList<TaskData> getDisplayedList() {
+	protected ArrayList<TaskData> getDisplayedList() {
 		if (currentDisplayList == 2) {
 			return F2DisplayedList;
 		} else if (currentDisplayList == 3) {
@@ -1371,7 +1373,7 @@ public class Logic {
 	 * UI
 	 **/
 	//@author A0112066U
-	private DisplayedEntry toDisplayedEntry(TaskData task) {
+	protected DisplayedEntry toDisplayedEntry(TaskData task) {
 		return new DisplayedEntry(task);
 	}
 }

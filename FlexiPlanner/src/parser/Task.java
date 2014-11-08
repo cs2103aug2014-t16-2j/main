@@ -141,7 +141,7 @@ public class Task{
 
 	//@author A0111887Y
 	
-	public boolean isDone() {
+	public Boolean isDone() {
 	
 		return isDone;
 	

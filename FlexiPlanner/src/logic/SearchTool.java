@@ -88,7 +88,7 @@ public class SearchTool {
 	public ArrayList<TaskData> search(ArrayList<TaskData> taskList, Task task)
 			throws IOException, ParseException {
 		if (taskList.isEmpty()) {
-			return null;
+			return new ArrayList<TaskData>();
 		}
 
 		String content = task.getContent();
