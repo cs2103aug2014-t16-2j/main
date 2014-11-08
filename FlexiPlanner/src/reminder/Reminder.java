@@ -11,12 +11,27 @@ import java.util.concurrent.TimeUnit;
 import commons.TaskData;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
+//@author A0117989H
+
+/**
+ * This class is to setup, start and stop the reminder.
+ *
+ */
+
 public class Reminder {
+	
 	private final String INFO_TIME_IS_OVER = "The schedule is over!\n";
 	
 	private final String WARNING_INTERRUPTED = "Thread is interrupted!\n";
 	
+	private final String NEXT_LINE = "\n";
+	private final String FROM = "From: ";
+	private final String TO   = "To  : ";
+	private final String ON = "On: ";
+	private final String BY = "By: ";
+	
 	private final int ZERO = 0;
+	private final int FIVE = 5;
 	
 	private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 	
@@ -34,36 +49,42 @@ public class Reminder {
 		sb.append(task.getContent());
 		
 		if (task.getStartDateTime() != null && task.getEndDateTime() != null) {
-			sb.append("\n");
-			sb.append("From: " + task.getStartDateTime().format(formatter));
-			sb.append("\n");
-			sb.append("To  : " + task.getEndDateTime().format(formatter));
+			sb.append(NEXT_LINE);
+			sb.append(FROM + task.getStartDateTime().format(formatter));
+			sb.append(NEXT_LINE);
+			sb.append(TO + task.getEndDateTime().format(formatter));
 		}
 		
 		else if (task.getStartDateTime() != null) {
-			sb.append("\n");
-			sb.append("On: " + task.getStartDateTime().format(formatter));
+			sb.append(NEXT_LINE);
+			sb.append(ON + task.getStartDateTime().format(formatter));
 		}
 		
 		else if (task.getEndDateTime() != null) {
-			sb.append("\n");
-			sb.append("By: " + task.getEndDateTime().format(formatter));
+			sb.append(NEXT_LINE);
+			sb.append(BY + task.getEndDateTime().format(formatter));
 		}
 		
 		this.reminderText = sb.toString();
 	}
-
+	
+	/**
+	 * start the reminder
+	 */
     public void start() {
     	long ms = getDifferenceInMilliseconds();
     	scheduleReminder(ms, reminderText);
     	
     	try {
-			TimeUnit.MILLISECONDS.sleep(5);
+			TimeUnit.MILLISECONDS.sleep(FIVE);
 		} catch (InterruptedException e) {
 			report(WARNING_INTERRUPTED);
 		}
     }
     
+    /**
+	 * stop the reminder
+	 */
     public void stop() {
     	scheduler.shutdownNow();
     }
@@ -85,14 +106,20 @@ public class Reminder {
 
         return then.getTimeInMillis()-now.getTimeInMillis();
     }
-
+    
+    /**
+     * schedule the reminder and execute below when time's up
+     * - remove reminder from task
+     * - display pop-up
+     * - stop the scheduler service
+     */
     private void scheduleReminder(long ms, String reminderText) {
         scheduler.schedule(new Runnable() {
             @Override
             public void run() {
             	task.clearReminder();
                 ReminderPopup popup = new ReminderPopup();
-                popup.reminderPopup(reminderText);
+                popup.displayPopupWSound(reminderText);
                 stop();
             }
         }, ms, MILLISECONDS);

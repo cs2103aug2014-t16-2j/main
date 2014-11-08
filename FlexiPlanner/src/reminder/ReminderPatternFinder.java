@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+//@author A0117989H
+
 /**
  * This class is to parse user's command to set reminder for the to-do tasks.
- * 
- * @author Moe Lwin Hein (A0117989)
  */
 
 /**
@@ -26,11 +26,14 @@ import java.util.regex.Pattern;
  *
  */
 
-public class ReminderPatternParser {
+public class ReminderPatternFinder {
 	
 	private final String INFO_NO_COMMAND_FOR_REMINDER = "Command to set reminder is not found!\n";
 	
 	private final String ERROR_INVALID_DATE_TIME = "Invalid date and time!\n";
+	
+	private final String AM = "am";
+	private final String PM = "pm";
 	
 	private final int CLR_PATTERN = -1;
 	private final int NO_PATTERN = 0;
@@ -38,6 +41,7 @@ public class ReminderPatternParser {
 	private final int R_PATTERN_2 = 2;
 	private final int R_PATTERN_3 = 3;
 	private final int YEAR_OF_TODAY = 2000;
+	private final int HOUR_TO_MIN_MULTIPLIER = 60;
 	
 	private final String PATTERN_1 = "(?i).*\\s*\\[{1}(\\s*\\w*\\s+)*(\\d{1,2})\\s*"
 			+ "(m|min|mins|minute|minutes|h|hr|hrs|hour|hours)(\\s+\\w*)*\\]{1}(\\s+.*)*";
@@ -73,7 +77,7 @@ public class ReminderPatternParser {
 	private LocalDateTime reminderDateTime;
 	private Integer reminderMinutes;
 	
-	public ReminderPatternParser() {
+	public ReminderPatternFinder() {
 		pattern1 = Pattern.compile(PATTERN_1);
 		pattern2 = Pattern.compile(PATTERN_2);
 		pattern3 = Pattern.compile(PATTERN_3);
@@ -123,12 +127,13 @@ public class ReminderPatternParser {
 			matcher = pattern1.matcher(commandStr);
 			matcher.find();
 			
+			//check minutes or hours
 			if (matcher.group(3).substring(0, 1).equals("m")) {
 				reminderMinutes = Integer.valueOf(matcher.group(2));
 				isValid = true;
 			}
 			else {
-				reminderMinutes = Integer.valueOf(matcher.group(2)) * 60;
+				reminderMinutes = Integer.valueOf(matcher.group(2)) * HOUR_TO_MIN_MULTIPLIER;
 				isValid = true;
 			}
 			
@@ -140,7 +145,7 @@ public class ReminderPatternParser {
 			
 			day = Integer.valueOf(matcher.group(2));
 			month = monthList.indexOf(matcher.group(3).substring(0, 3).toLowerCase()) + 1;
-			year = 2014;
+			year = LocalDateTime.now().getYear();
 			hour = Integer.valueOf(matcher.group(4));
 			
 			if (matcher.group(6) != null) {
@@ -155,6 +160,7 @@ public class ReminderPatternParser {
 				isValid = true;
 			} catch (DateTimeException e) {
 				isValid = false;
+				return isValid;
 			}
 			
 			if ((matcher.group(7) != null) && !(matcher.group(7).isEmpty())) {
@@ -202,17 +208,18 @@ public class ReminderPatternParser {
 				isValid = true;
 			} catch (DateTimeException e) {
 				isValid = false;
+				return isValid;
 			}
 			
 			if ((matcher.group(11) != null) && !(matcher.group(11).isEmpty())) {
 				isValid = hour <= 12;
-				if (matcher.group(11).equalsIgnoreCase("pm")) {
+				if (matcher.group(11).equalsIgnoreCase(PM)) {
 					hour += 12;
 					if (hour >= 24) {
 						hour = 0;
 					}
 				}
-				else if (matcher.group(11).equalsIgnoreCase("am")) {
+				else if (matcher.group(11).equalsIgnoreCase(AM)) {
 					if (hour == 12) {
 						hour = 0;
 					}

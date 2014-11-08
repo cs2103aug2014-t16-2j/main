@@ -14,7 +14,7 @@ import org.json.simple.parser.ParseException;
 
 import commons.TaskData;
 import parser.*;
-import reminder.ReminderPatternParser;
+import reminder.ReminderPatternFinder;
 import storage.*;
 
 public class Logic {
@@ -54,7 +54,7 @@ public class Logic {
 	private String completedTaskFilePath = "completed.json";
 	private boolean isSuspendedAction = false;
 	private Action suspendingAction;
-	private ReminderPatternParser reminderParser;
+	private ReminderPatternFinder reminderParser;
 	private LocalDateTime reminderDateTime;
 	private Integer reminderMinutes;
 	private int currentDisplayList;
@@ -103,7 +103,7 @@ public class Logic {
 		parser = new Parser();
 		searchTool = new SearchTool();
 		entry = new ActionEntry(action, null);
-		reminderParser = new ReminderPatternParser();
+		reminderParser = new ReminderPatternFinder();
 		messageToUser = "";
 	}
 
