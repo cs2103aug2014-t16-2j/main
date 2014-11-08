@@ -196,18 +196,4 @@ public class FileManager {
 		String[] s = filePath.split(SEPERATOR);
 		return s[s.length - 1];
 	}
-	
-	/** ******************** **/
-	
-	public boolean isWindows() {
-		String OS = System.getProperty("os.name").toLowerCase();
-		return OS.indexOf("win") >= 0;
-	}
-	
-	/** ******************** **/
-	
-	public boolean isMac() {
-		String OS = System.getProperty("os.name").toLowerCase();
-		return OS.indexOf("mac") >= 0;
-	}
 }

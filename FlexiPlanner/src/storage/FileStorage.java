@@ -40,7 +40,6 @@ public class FileStorage implements Storage {
 	private final int MAX_ITERATION = 10000;
 	
 	private String folderName;
-	
 	private List<String> path;
 	
 	private FileManager manager;
@@ -207,7 +206,7 @@ public class FileStorage implements Storage {
 	}
  	
 	/** ******************** **/
-	
+	//@author A0117989H-unused
 	@Override
 	public boolean saveFile(final String fileName, ArrayList<String> list) {
 		boolean isSaveSuccess = false;
@@ -242,7 +241,7 @@ public class FileStorage implements Storage {
 	}
 	
 	/** ******************** **/
-
+	//@author A0117989H-unused
 	@Override
 	public ArrayList<String> loadFile(final String fileName) {
 		ArrayList<String> list = new ArrayList<String>();
@@ -273,7 +272,7 @@ public class FileStorage implements Storage {
 	}
 	
 	/** ******************** **/
-	
+	//@author A0117989H
 	private ArrayList<TaskData> loadBackupTasks(String backupFilePath) {
 		ArrayList<TaskData> tasksToReturn = new ArrayList<TaskData>();
 		
