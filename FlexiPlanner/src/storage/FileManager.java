@@ -36,7 +36,8 @@ public class FileManager {
 	private final String VALID_EXTENSION_NORMAL_FILE = "txt";
 	private final String NOTHING = "";
 	private final String SEPERATOR = "//";
-	private final String LINUX_HIDDEN_IND = ".";
+	private final String USER_HOME = "user.home";
+	private final String BACKUP = "-backup";
 	
 	public boolean createFolder(String folderName) throws IOException {
 		boolean isCreated = false;
@@ -75,38 +76,18 @@ public class FileManager {
 		return isCreated;
 	}
 	
-	public boolean createHiddenFile(String folderName, String fileName) throws IOException {
+	public boolean createBackupFile(String folderName, String fileName) throws IOException {
 		boolean isCreated = false;
 		
-		if (isWindows()) {
-			File hiddenFile = new File(folderName + SEPERATOR + fileName);
-			isCreated = createFile(hiddenFile.getPath());
-			hideFile(hiddenFile);
-			
-		}
-		else if (isMac()) {
-			isCreated = createFile(folderName + SEPERATOR + LINUX_HIDDEN_IND + fileName);
-		}
+		String backupFolderName = folderName + BACKUP;
+		
+		File backupDataDir = new File(System.getProperty(USER_HOME) + SEPERATOR + backupFolderName);
+		createFolder(backupDataDir.getPath());
+		
+		File backupDataFile = new File(System.getProperty(USER_HOME) + SEPERATOR + backupFolderName + SEPERATOR + fileName);
+		isCreated = createFile(backupDataFile.getPath());
 		
 		return isCreated;
-	}
-	
-	public void hideFile(File hiddenFile) throws IOException {
-		Process p = Runtime.getRuntime().exec("attrib +h \"" + hiddenFile.getAbsolutePath() + "\"");
-		try {
-			p.waitFor();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void revealFile(File hiddenFile) throws IOException {
-		Process p = Runtime.getRuntime().exec("attrib -h \"" + hiddenFile.getAbsolutePath() + "\"");
-		try {
-			p.waitFor();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	/** ******************** **/
@@ -228,23 +209,15 @@ public class FileManager {
 		return folderName + SEPERATOR + fileName;
 	}
 	
+	public String createBackupFilePath(String folderName, final String fileName) {
+		return System.getProperty(USER_HOME) + SEPERATOR + folderName + BACKUP + SEPERATOR + fileName;
+	}
+	
 	/** ******************** **/
 	
 	public String extractFileName(String filePath) {
 		String[] s = filePath.split(SEPERATOR);
 		return s[s.length - 1];
-	}
-	
-	/** ******************** **/
-	
-	public int numOfFilesIn(String folderName) {
-		File folder = new File(folderName);
-		if (!folder.exists() || (folder.exists() && folder.isFile())) {
-			return -1;
-		}
-		else {
-			return folder.list().length;
-		}
 	}
 	
 	/** ******************** **/
