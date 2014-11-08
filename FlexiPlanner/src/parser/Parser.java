@@ -32,7 +32,7 @@ public class Parser {
 	private final List<String> KEYWORDS_MARK = Arrays.asList("complete", "completed", "incomplete", "done", "undone");
 	private final List<String> SECONDARY_KEYWORDS_DATE = Arrays.asList("this", "next", "last");
 	private final List<String> SECONDARY_KEYWORDS_DATE_TIME = Arrays.asList("after", "before", "by");
-	private final List<String> SECONDARY_KEYWORDS_MARK = Arrays.asList("not", "yet", "to", "be", "has", "been", "is");
+	private final List<String> SECONDARY_KEYWORDS_MARK = Arrays.asList("as", "not", "yet", "to", "be", "has", "been", "is");
 	private final List<String> USELESS_WORDS = Arrays.asList("on", "from", "to", "@", "at");
 	private final NumberFormat FORMATTER = NumberFormat.getIntegerInstance();
 	private final String SYMBOL_CATEGORY = "#";
@@ -49,7 +49,7 @@ public class Parser {
 		
 		MyStringList wordList = new MyStringList();
 		try {
-			wordList.addAll(Arrays.asList(input.split(" ")));
+			wordList.addAll(Arrays.asList(input.split("\\s+")));
 		} catch (NullPointerException e) {
 			System.err.println(ERROR_INPUT_NULL);
 			return null;
@@ -260,7 +260,9 @@ public class Parser {
 		for (int index = 0; index < wordList.size(); index++) {
 			String word = wordList.get(index).toLowerCase();
 			if (KEYWORDS_MARK.contains(word)) {
-				if (word.equals("done") || word.equals("complete") || word.equals("completed")) {
+				if (word.equals("undone") || word.equals("incomplete")) {
+					task.setDone(false);
+				} else {
 					task.setDone(true);
 				}
 				wordList.remove(index);
@@ -292,7 +294,7 @@ public class Parser {
 				case "to" :
 				case "be" :
 				case "not" :
-					task.setDone(isDone ^= true);
+					task.setDone(!isDone);
 				default :
 					wordList.remove(index);
 					index--;
@@ -526,7 +528,7 @@ public class Parser {
 				LocalDateTime endDateTime = task.getEndDateTime();
 				if (endDateTime == null) {
 					task.setEndDateTime(startDateTime);
-					task.setStartDateTime(LocalDateTime.of(LocalDate.now(), LocalTime.of(LocalTime.now().getHour(), LocalTime.now().getMinute())));
+					task.setStartDateTime(LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0)));
 				}
 		}
 		numOfWordsToRemove++;

@@ -13,7 +13,7 @@ public class Task{
 	private String category;
 	private String priority;
 	private int index;
-	private boolean isDone;
+	private Boolean isDone;
 
 	//@author A0111887Y
 	
@@ -25,7 +25,7 @@ public class Task{
 		category = null;
 		priority = null;
 		index = 0;
-		isDone = false;
+		isDone = null;
 	
 	}
 	

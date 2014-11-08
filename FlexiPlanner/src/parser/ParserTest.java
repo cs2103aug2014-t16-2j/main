@@ -216,19 +216,19 @@ public class ParserTest {
 	public void testStartEndDateTime() {
 		assertEquals(LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0)), parser.getAction("from today to tomorrow").getTask().getStartDateTime());
 		assertEquals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(23, 59)), parser.getAction("from today to tomorrow").getTask().getEndDateTime());
-		assertEquals(LocalDateTime.of(LocalDate.now(), LocalTime.of(LocalTime.now().getHour(), LocalTime.now().getMinute())), parser.getAction("by tomorrow").getTask().getStartDateTime());
+		assertEquals(LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0)), parser.getAction("by tomorrow").getTask().getStartDateTime());
 		assertEquals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(23, 59)), parser.getAction("by tomorrow").getTask().getEndDateTime());
 		assertEquals(LocalDateTime.of(LocalDate.now().plusDays(-1), LocalTime.of(0, 0)), parser.getAction("from yesterday to the day after tomorrow").getTask().getStartDateTime());
 		assertEquals(LocalDateTime.of(LocalDate.now().plusDays(2), LocalTime.of(23, 59)), parser.getAction("from yesterday to the day after tomorrow").getTask().getEndDateTime());
 		assertEquals(LocalDateTime.of(LocalDate.now().plusWeeks(-1), LocalTime.of(0, 0)), parser.getAction("from from last week to the day before yesterday").getTask().getStartDateTime());
 		assertEquals(LocalDateTime.of(LocalDate.now().plusDays(-2), LocalTime.of(23, 59)), parser.getAction("from last week to the day before yesterday").getTask().getEndDateTime());
-		assertEquals(LocalDateTime.of(LocalDate.now(), LocalTime.of(LocalTime.now().getHour(), LocalTime.now().getMinute())), parser.getAction("by next week").getTask().getStartDateTime());
+		assertEquals(LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0)), parser.getAction("by next week").getTask().getStartDateTime());
 		assertEquals(LocalDateTime.of(LocalDate.now().plusWeeks(1), LocalTime.of(23, 59)), parser.getAction("by next week").getTask().getEndDateTime());
 		assertEquals(LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0)), parser.getAction("from today to tomorrow 2pm").getTask().getStartDateTime());
 		assertEquals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(14, 0)), parser.getAction("from today to tomorrow 2pm").getTask().getEndDateTime());
 		assertEquals(LocalDateTime.of(LocalDate.now(), LocalTime.of(12, 0)), parser.getAction("from today to tomorrow 12pm to 2pm").getTask().getStartDateTime());
 		assertEquals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(14, 0)), parser.getAction("from today to tomorrow 12pm to 2pm").getTask().getEndDateTime());
-		assertEquals(LocalDateTime.of(LocalDate.now(), LocalTime.of(LocalTime.now().getHour(), LocalTime.now().getMinute())), parser.getAction("by 7pm").getTask().getStartDateTime());
+		assertEquals(LocalDateTime.of(LocalDate.now(), LocalTime.of(0,0)), parser.getAction("by 7pm").getTask().getStartDateTime());
 		assertEquals(LocalDateTime.of(LocalDate.now(), LocalTime.of(19, 0)), parser.getAction("by 7pm").getTask().getEndDateTime());
 	}
 
@@ -251,6 +251,7 @@ public class ParserTest {
 	@Test
 	public void testContent() {
 		assertEquals("have lunch", parser.getAction("have lunch at noon").getTask().getContent());
+		assertEquals("have lunch", parser.getAction("   add     have     lunch    at    noon     ").getTask().getContent());
 		assertEquals("study maths topic 5", parser.getAction("study at 2pm maths topic 5 to 6pm").getTask().getContent());
 	}
 
