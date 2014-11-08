@@ -3,14 +3,10 @@ package storage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,8 +24,6 @@ import org.json.simple.parser.ParseException;
  */
 
 public class FileManager {
-	
-	private final int ONE_KILO_BYTE = 1024;
 	
 	private final String FILE_NAME_PATTERN = "^[\\w,\\s-]+$";
 	private final String VALID_EXTENSION_TASKS_FILE = "json";
@@ -150,23 +144,6 @@ public class FileManager {
 		Matcher matcher = pattern.matcher(FilenameUtils.getBaseName(fileName));
 		
 		return matcher.matches();
-	}
-	
-	/** ******************** **/
-	
-	public void copyFile(String from, String to) throws IOException, FileNotFoundException {
-		InputStream is = new FileInputStream(new File(from));
-		OutputStream os = new FileOutputStream(new File(to));
-		
-		byte[] buffer = new byte[ONE_KILO_BYTE];
-		int length;
-		
-		while ((length = is.read(buffer)) > 0) {
-			os.write(buffer, 0, length);
-		}
-		
-		is.close();
-		os.close();
 	}
 	
 	/** ******************** **/
