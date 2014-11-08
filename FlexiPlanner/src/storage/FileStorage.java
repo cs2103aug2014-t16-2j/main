@@ -1,5 +1,6 @@
 package storage;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -138,7 +139,10 @@ public class FileStorage implements Storage {
 			
 			//data auto backup
 			if (!hiddenFilePath.equals(NOTHING)) {
+				File hiddenFile = new File(hiddenFilePath);
+				manager.revealFile(hiddenFile);
 				manager.writeInJsonFormat(hiddenFilePath, jObjToSave, false);
+				manager.hideFile(hiddenFile);
 			}
 			
 			isSaveSuccess = true;	

@@ -11,10 +11,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -83,18 +79,34 @@ public class FileManager {
 		boolean isCreated = false;
 		
 		if (isWindows()) {
-			isCreated = createFile(folderName + SEPERATOR + fileName);
-			Path path = FileSystems.getDefault().getPath(folderName, fileName);
-			Boolean hidden = (Boolean) Files.getAttribute(path, "dos:hidden", LinkOption.NOFOLLOW_LINKS);
-			if ((hidden != null) && !hidden) {
-				Files.setAttribute(path, "dos:hidden", true, LinkOption.NOFOLLOW_LINKS);
-			}
+			File hiddenFile = new File(folderName + SEPERATOR + fileName);
+			isCreated = createFile(hiddenFile.getPath());
+			hideFile(hiddenFile);
+			
 		}
 		else if (isMac()) {
 			isCreated = createFile(folderName + SEPERATOR + LINUX_HIDDEN_IND + fileName);
 		}
 		
 		return isCreated;
+	}
+	
+	public void hideFile(File hiddenFile) throws IOException {
+		Process p = Runtime.getRuntime().exec("attrib +h \"" + hiddenFile.getAbsolutePath() + "\"");
+		try {
+			p.waitFor();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void revealFile(File hiddenFile) throws IOException {
+		Process p = Runtime.getRuntime().exec("attrib -h \"" + hiddenFile.getAbsolutePath() + "\"");
+		try {
+			p.waitFor();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/** ******************** **/
