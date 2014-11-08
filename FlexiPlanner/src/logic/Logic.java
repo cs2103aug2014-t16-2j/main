@@ -859,6 +859,7 @@ public class Logic {
 					TaskData t = new TaskData();
 					t.setStartDateTime(end);
 					t.setEndDateTime(_end);
+					t.setContent("Blocked slot");
 					blockedList.add(0, t);
 					blockedList.add(0, _task);
 					unblocked.add(new TaskData(null, null, null, start, end));
