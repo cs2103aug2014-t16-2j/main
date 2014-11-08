@@ -860,19 +860,20 @@ public class Logic {
 					t.setStartDateTime(end);
 					t.setEndDateTime(_end);
 					t.setContent("Blocked slot");
+					_task.setContent("Blocked slot");
 					blockedList.add(0, t);
 					blockedList.add(0, _task);
 					unblocked.add(new TaskData(null, null, null, start, end));
 					continue;
 				}
-				if (start.isBefore(_start) && end.isBefore(_end)) {
+				if ((start.isBefore(_start) || start.equals(_start)) && end.isBefore(_end)) {
 					blockedList.remove(_task);
 					_task.setStartDateTime(end);
 					blockedList.add(_task);
 					unblocked.add(new TaskData(null, null, null, _start, end));
 					continue;
 				}
-				if (_start.isBefore(start) && _end.isBefore(end)) {
+				if (_start.isBefore(start) && (_end.isBefore(end) || end.equals(_end))) {
 					blockedList.remove(_task);
 					_task.setEndDateTime(start);
 					blockedList.add(_task);
