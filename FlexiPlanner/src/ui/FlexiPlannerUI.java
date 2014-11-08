@@ -491,6 +491,7 @@ public class FlexiPlannerUI implements HotKeyListener {
 					break;
 				case KeyEvent.VK_F4:
 					if (showBlockedCollapsePane.isCollapsed()) {
+						showBlocked.setText(logic.getBlock());
 						showBlockedCollapsePane.setCollapsed(false);
 						showCategoryCollapsePane.setCollapsed(true);
 					} else {
