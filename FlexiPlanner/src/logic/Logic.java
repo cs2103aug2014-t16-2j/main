@@ -1355,6 +1355,18 @@ public class Logic {
 		return overdueRow;
 	}
 
+	public String getBlock() {
+		String result = "";
+		for (TaskData block : blockedList) {
+			DisplayedEntry b = new DisplayedEntry(block);
+			try {
+				result += b.getStartDateTime() + " - " + b.getEndDateTime();
+				result += "\n";
+			} catch (java.text.ParseException e) {
+			}
+		}
+		return result;
+	}
 	/** This method is to determined what list of tasks is being displayed **/
 	//@author A0112066U
 	private ArrayList<TaskData> getDisplayedList() {
