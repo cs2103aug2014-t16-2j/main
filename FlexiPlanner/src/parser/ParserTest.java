@@ -230,6 +230,8 @@ public class ParserTest {
 		assertEquals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(14, 0)), parser.getAction("from today to tomorrow 12pm to 2pm").getTask().getEndDateTime());
 		assertEquals(LocalDateTime.of(LocalDate.now(), LocalTime.of(0,0)), parser.getAction("by 7pm").getTask().getStartDateTime());
 		assertEquals(LocalDateTime.of(LocalDate.now(), LocalTime.of(19, 0)), parser.getAction("by 7pm").getTask().getEndDateTime());
+		assertEquals(LocalDateTime.of(LocalDate.now(), LocalTime.of(2,0)), parser.getAction("add task 2am to 2pm tomorrow").getTask().getStartDateTime());
+		assertEquals(LocalDateTime.of(LocalDate.now().plusDays(1), LocalTime.of(14, 0)), parser.getAction("add task 2am to 2pm tomorrow").getTask().getEndDateTime());
 	}
 
 	//@author A0111887Y

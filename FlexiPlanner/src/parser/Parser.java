@@ -225,6 +225,67 @@ public class Parser {
 	}
 
 	//@author A0111887Y
+	//This methods helps find the Task priority by searching for specific keywords in input String.
+	private int getPriorityLevelWithWord(MyStringList wordList, int index) {
+		
+		assert wordList != null;
+		int priorityLevel = -1;
+		if (index >= 0 && index < wordList.size()) {
+			String word = wordList.get(index);
+			if (word.equalsIgnoreCase("priority") && index - 1 >= 0) {
+				word = wordList.get(index - 1);
+				switch (word) {
+					case "high" :
+						wordList.remove(index);
+						index--;
+						if (index - 1 < 0 || !wordList.get(index - 1).equalsIgnoreCase("very")) {
+							priorityLevel = 1;
+							break;
+						}
+					case "top" :
+						wordList.remove(index);
+						index--;
+						priorityLevel = 2;
+						break;
+					case "normal" :
+					case "low" :
+					case "lowest" :
+						wordList.remove(index);
+						index--;
+						priorityLevel = 0;
+				}
+				if (priorityLevel > -1) {
+					wordList.remove(index);
+				}
+			} else if (word.equalsIgnoreCase("important")) {
+				if (index - 1 >= 0) {
+					word = wordList.get(index - 1);
+				}
+				switch (word) {
+					case "very" :
+						wordList.remove(index);
+						index--;
+						priorityLevel = 2;
+						break;
+					case "not" :
+						wordList.remove(index);
+						index--;
+						priorityLevel = 0;
+						break;
+					default :
+						priorityLevel = 1;
+				}
+				wordList.remove(index);
+			} else if (word.equalsIgnoreCase("unimportant")) {
+				priorityLevel = 0;
+				wordList.remove(index);
+			}
+		}
+		return priorityLevel;
+		
+	}
+
+	//@author A0111887Y
 	//This method helps find the Task priority by searching for the number of "!" in the input String.
 	private int findPriorityLevelWithSymbol(MyStringList wordList, int priorityLevel) {
 		
@@ -253,6 +314,661 @@ public class Parser {
 	}
 
 	//@author A0111887Y
+	//This method finds the dates and times in the input String and sets them to Task object.
+	private void setDateTime(MyStringList wordList, Task task) {
+		
+		assert wordList != null && task != null;
+		for (int index = 0; index < wordList.size(); index++) {
+			index = findDateTime(wordList, index, task);
+		}
+		
+	}
+
+	//@author A0111887Y
+	//This method helps identify if a word is date or time.
+	private int findDateTime(MyStringList wordList, int index, Task task) {
+		
+		assert wordList != null && task != null;
+		if (index >= 0 && index < wordList.size()) {
+			LocalDate date = null;
+			LocalTime time = null;
+			if (wordList.get(index).isEmpty()) {
+				wordList.remove(index);
+				return index--;
+			}
+			if (wordList.get(index).length() <= 4) {
+				date = findDateWithDay(wordList, index);
+				if (date == null) {
+					date = findDateWithYear(wordList, index);
+				}
+			}
+			if (date == null) {
+				date = findDateWithMonth(wordList, index);
+			}
+			if (date == null) {
+				date = findDate(wordList, index);
+			}
+			if (date == null) {
+				date = findDateWithWord(wordList, index);
+			}
+			if (date == null) {
+				date = findDateWithKeyWord(wordList, index);
+			}
+			if (date == null) {
+				time = findTime(wordList, index);
+			}
+			if (date == null && time == null) {
+				time = findTimeWithWord(wordList, index);
+			}
+			if (date != null || time != null) {
+				setDateTimeToTask(task, date, time);
+				index -= adjustDateTimeOfTask(wordList, index - 1, task);
+				index -= 1 + removeUselessWord(wordList, index - 1);
+			}
+		}
+		return index;
+		
+	}
+
+	//@author A0111887Y
+	//This method helps identify a date in the format "DD-MM-YYYY", "YYYY\MM\DD", "MM/DD/YYYY", "DD-MM" etc..
+	private LocalDate findDate(MyStringList wordList, int index) {
+	
+		assert wordList != null && index >= 0 && index < wordList.size();
+		MyStringList stringList = new MyStringList();
+		LocalDate date = null;
+		if (wordList.get(index).contains("/")) {
+			stringList.addAll(Arrays.asList(wordList.get(index).split("/")));
+		} else if (wordList.get(index).contains("\\")) {
+			stringList.addAll(Arrays.asList(wordList.get(index).split("\\\\")));
+		} else if (wordList.get(index).contains("-")) {
+			stringList.addAll(Arrays.asList(wordList.get(index).split("-")));
+		}
+		date = findDateWithDay(stringList, 0);
+		if (date == null) {
+			date = findDateWithMonth(stringList, 0);
+		}
+		if (date == null) {
+			date = findDateWithYear(stringList, 0);
+		}
+		if (date != null) {
+			wordList.remove(index);
+		}
+		return date;
+		
+	}
+
+	//@author A0111887Y
+	//This method helps to identify a date by checking if the word is a numerical number and a valid day.
+	private LocalDate findDateWithDay(MyStringList wordList, int index){
+		
+		assert wordList != null && index >= 0;
+		if (index + 1 < wordList.size()) {
+			int day = getDay(wordList.get(index));
+			if (day > 0) {
+				int month = getMonth(wordList.get(index + 1));
+				if (month > 0) {
+					int year;
+					if (index + 2 < wordList.size()) {
+						year = getYear(wordList.get(index + 2));
+						if (year > 0) {
+							if (isValidDate(year, month, day)) {
+								wordList.remove(index + 2);
+								wordList.remove(index + 1);
+								wordList.remove(index);
+								return LocalDate.of(year, month, day);
+							}
+						}
+					}
+					year = LocalDate.now().getYear();
+					if (isValidDate(year, month, day)) {
+						wordList.remove(index + 1);
+						wordList.remove(index);
+						return LocalDate.now().withMonth(month).withDayOfMonth(day);
+					}
+				}
+			}
+		}
+		return null;
+		
+	}
+
+	//@author A0111887Y
+	//This method helps o identify a date by checking if the word is a numerical number and a valid year.
+	private LocalDate findDateWithYear(MyStringList wordList, int index){
+	
+		assert wordList != null && index >= 0;
+		if (index + 2 < wordList.size()) {
+			int year = getYear(wordList.get(index));
+			if (year > 0) {
+				int month = getMonth(wordList.get(index + 1));
+				if (month > 0) {
+					int day = getDay(wordList.get(index + 2));
+					if (day > 0) {
+						if (isValidDate(year, month, day)) {
+							wordList.remove(index + 2);
+							wordList.remove(index + 1);
+							wordList.remove(index);
+							return LocalDate.of(year, month, day);
+						}
+					}
+				} else {
+					int day = getDay(wordList.get(index + 1));
+					if (day > 0) {
+						month = getMonth(wordList.get(index + 2));
+						if (month > 0) {
+							if (isValidDate(year, month, day)) {
+								wordList.remove(index + 2);
+								wordList.remove(index + 1);
+								wordList.remove(index);
+								return LocalDate.of(year, month, day);
+							}
+						}
+					}
+				}
+			}
+		}
+		return null;
+		
+	}
+
+	//@author A0111887Y
+	//This method helps to identify a date by checking if the word is a numerical number and a valid month.
+	private LocalDate findDateWithMonth(MyStringList wordList, int index){
+	
+		assert wordList != null && index >= 0;
+		if (index + 1 < wordList.size()) {
+			int month = getMonth(wordList.get(index));
+			if (month > 0) {
+				int day = getDay(wordList.get(index + 1));
+				if (day > 0) {
+					int year;
+					if (index + 2 < wordList.size()) {
+						year = getYear(wordList.get(index + 2));
+						if (year > 0) {
+							if (isValidDate(year, month, day)) {
+								wordList.remove(index + 2);
+								wordList.remove(index + 1);
+								wordList.remove(index);
+								return LocalDate.of(year, month, day);
+							}
+						}
+					}
+					year = LocalDate.now().getYear();
+					if (isValidDate(year, month, day)) {
+						wordList.remove(index + 1);
+						wordList.remove(index);
+						return LocalDate.of(year, month, day);
+					}
+				}
+			}
+		}
+		return null;
+		
+	}
+
+	//@author A0111887Y
+	//This method returns the day number if the word is a valid numerical day, returns 0 if not.
+	private int getDay(String word) {
+		
+		assert word != null;
+		if (word.length() <= 4) {
+			if (isNumeric(word)) {
+				int num = Integer.parseInt(word);
+				if (num <= 31 && num > 0){
+					return num;
+				}
+			} else {
+				for (String ordNum : KEYWORDS_DATE_ORDINAL_NUMBER) {
+					if (word.endsWith(ordNum)) {
+						return getDay(word.substring(0, word.lastIndexOf(ordNum)));
+					}
+				}
+			}
+		}
+		return 0;
+		
+	}
+
+	//@author A0111887Y
+	//This method returns the month number if the word is a valid numerical month, returns 0 if not.
+	private int getMonth(String word) {
+	
+		assert word != null;
+		if (isNumeric(word)) {
+			int num = Integer.parseInt(word);
+			if (num <= 12 && num > 0){
+				return num;
+			}
+		} else {
+			for (String month : KEYWORDS_DATE_MONTH) {
+				if (word.equalsIgnoreCase(month)) {
+					return getNumeric(month);
+				}
+			}
+		}
+		return 0;
+		
+	}
+
+	//@author A0111887Y
+	//This method returns the year number if the word is a valid numerical year, returns 0 if not.
+	private int getYear(String word) {
+	
+		assert word != null;
+		if (isNumeric(word)) {
+			int num = Integer.parseInt(word);
+			if (num < 10000 && num > 999){
+				return num;
+			}
+		}
+		return 0;
+		
+	}
+
+	//@author A0111887Y
+	//This method helps identify a date by checking for words such as "today", "monday" etc..
+	private LocalDate findDateWithWord(MyStringList wordList, int index) {
+		
+		assert wordList != null && index >= 0 && index < wordList.size();
+		String word = wordList.get(index).toLowerCase();
+		if (KEYWORDS_DATE_DAY.contains(word)) {
+			return getDateWithDayWord(wordList, index);
+		} else if (KEYWORDS_DATE_DAY_OF_WEEK.contains(word)){
+			return getDateWithDayOfWeekWord(wordList, index);
+		}
+		return null;
+		
+	}
+
+	//@author A0111887Y
+	//This method helps to identify a date by checking for specific keywords.
+	private LocalDate findDateWithKeyWord(MyStringList wordList, int index) {
+		
+		assert wordList != null && index >= 0;
+		LocalDate date = null;
+		if (SECONDARY_KEYWORDS_DATE.contains(wordList.get(index).toLowerCase())) {
+			date = getDateWithDayOfWeekWord(wordList, index + 1);
+			switch (wordList.get(index)) {
+				case "this" :
+					if (date == null) {
+						date = getDateWithPeriodWord(wordList, index + 1, 0);
+					}
+					break;
+				case "next" :
+					if (date != null) {
+						date = date.plusWeeks(1);
+					} else {
+						date = getDateWithPeriodWord(wordList, index + 1, 1);
+					}
+					break;
+				case "last" :
+					if (date != null) {
+						date = date.plusWeeks(-1);
+					} else {
+						date = getDateWithPeriodWord(wordList, index + 1, -1);
+					}
+				default :
+			}
+			if (date != null) {
+				wordList.remove(index);
+			}
+		}
+		return date;
+		
+	}
+
+	//@author A0111887Y
+	//This method returns a date depending on the keywords in the input String.
+	private LocalDate getDateWithDayWord(MyStringList wordList, int index) {
+		
+		assert wordList != null;
+		if (index >= 0 && index < wordList.size()) {
+			String word = wordList.get(index);
+			wordList.remove(index);
+			switch (word) {
+				case "tonight" :
+					wordList.add(index, "night");
+				case "today" :
+					return LocalDate.now();
+				case "tomorrow" :
+					return LocalDate.now().plusDays(1);
+				case "yesterday" :
+					return LocalDate.now().plusDays(-1);
+				default :
+			}
+		}
+		return null;
+		
+	}
+
+	//@author A0111887Y
+	//This method returns a date depending on the words in the input String.
+	private LocalDate getDateWithDayOfWeekWord(MyStringList wordList, int index) {
+		
+		assert wordList != null;
+		if (index >= 0 && index < wordList.size() && KEYWORDS_DATE_DAY_OF_WEEK.contains(wordList.get(index).toLowerCase())) {
+			int day = getNumeric(wordList.get(index).toLowerCase());
+			int daysToAdd = day - LocalDate.now().getDayOfWeek().getValue();
+			if (daysToAdd < 0) {
+				daysToAdd += 7;
+			}
+			wordList.remove(index);
+			return LocalDate.now().plusDays(daysToAdd);
+		}
+		return null;
+		
+	}
+
+	//@author A0111887Y
+	//This method returns a date depending on the words in the input String.
+	private LocalDate getDateWithPeriodWord(MyStringList wordList, int index, int multiplier) {
+		
+		assert wordList != null && (multiplier == 0 || multiplier == 1 || multiplier == -1);
+		if (index >= 0 && index < wordList.size() && KEYWORDS_DATE_PERIOD.contains(wordList.get(index).toLowerCase())) {
+			String word = wordList.get(index).toLowerCase();
+			wordList.remove(index);
+			switch (word) {
+				case "day" :
+					return LocalDate.now().plusDays(multiplier);
+				case "week" :
+					return LocalDate.now().plusWeeks(multiplier);
+				case "month" :
+					return LocalDate.now().plusMonths(multiplier);
+				case "year" :
+					return LocalDate.now().plusYears(multiplier);
+				default :
+			}
+		}
+		return null;
+		
+	}
+
+	//@author A0111887Y
+	//This method helps to identify a time by checking for formats "HHam", "HHpm", "HH.MM", "HH:MM:SS", "HH:MM am" etc..
+	private LocalTime findTime(MyStringList wordList, int index) {
+		
+		assert wordList != null && index >= 0 && index < wordList.size();
+		String timeWord = wordList.get(index);
+		MyStringList s = new MyStringList();
+		LocalTime time = null;
+		boolean isAM = false;
+		boolean isPM = false;
+		boolean mayBeTime = false;
+		boolean removeNextWord = false;
+		for (String tw : KEYWORDS_TIME) {
+			if (timeWord.toLowerCase().endsWith(tw)) {
+				mayBeTime = true;
+				if (tw.equals("am")) {
+					isAM = true;
+				} else {
+					isPM = true;
+				}
+				timeWord = timeWord.substring(0, timeWord.toLowerCase().lastIndexOf(tw));
+				break;
+			}
+		}
+		if (!isAM && !isPM && index + 1 < wordList.size()) {
+			for (String tw : KEYWORDS_TIME) {
+				if (wordList.get(index + 1).equalsIgnoreCase(tw)) {
+					mayBeTime = true;
+					if (tw.equals("am")) {
+						isAM = true;
+					} else {
+						isPM = true;
+					}
+					removeNextWord = true;
+					break;
+				}
+			}
+		}
+		if (timeWord.contains(":")) {
+			s.addAll(Arrays.asList(timeWord.split(":")));
+			mayBeTime = true;
+		} else if (timeWord.contains(".")) {
+			s.addAll(Arrays.asList(timeWord.split("\\.")));
+			mayBeTime = true;
+		} else if (mayBeTime) {
+			s.add(timeWord);
+		}
+		if (mayBeTime) {
+			time = getTime(s, isAM, isPM);
+			if (time != null) {
+				if (removeNextWord) {
+					wordList.remove(index + 1);
+				}
+				wordList.remove(index);
+			}
+		}
+		return time;
+		
+	}
+
+	//@author A0111887Y
+	//This method helps identify time by checking for words such as "morning", "midnight" etc..
+	private LocalTime findTimeWithWord(MyStringList wordList, int index) {
+		
+		assert wordList != null && index >= 0 && index < wordList.size();
+		String word = wordList.get(index).toLowerCase();
+		if (KEYWORDS_TIME_OF_DAY.contains(word)) {
+			wordList.remove(index);
+			return getTimeWithTimeOfDayWord(word);
+		}
+		return null;
+		
+	}
+
+	//@author A0111887Y
+	//This method returns a time if the lists of words represents a valid time.
+	private LocalTime getTime(MyStringList stringList, boolean isAM, boolean isPM) {
+		
+		assert stringList != null;
+		if (!stringList.isEmpty()) {
+			for (int index = 0; index < stringList.size(); index++) {
+				if (!isNumeric(stringList.get(index))) {
+					return null;
+				}
+			}
+			int hour = 0;
+			int minute = 0;
+			switch (stringList.size()) {
+				case 3 :
+				case 2 :
+					minute = Integer.parseInt(stringList.get(1));
+				case 1 :
+					hour = Integer.parseInt(stringList.get(0));
+			}
+			if (hour == 12 && isAM) {
+				hour = 0;
+			} else if (hour < 12 && isPM) {
+				hour += 12;
+			}
+			if (isValidTime(hour, minute)) {
+				return LocalTime.of(hour, minute);
+			}
+		}
+		return null;
+		
+	}
+
+	//@author A0111887Y
+	//This method returns a time depending on the words in the input String.
+	private LocalTime getTimeWithTimeOfDayWord(String word) {
+		
+		switch (word) {
+			case "morning" :
+				return LocalTime.of(5, 0);
+			case "noon" :
+				return LocalTime.of(12, 0);
+			case "afternoon" :
+				return LocalTime.of(13, 0);
+			case "evening" :
+				return LocalTime.of(17, 0);
+			case "night" :
+				return LocalTime.of(19, 0);
+			case "midnight" :
+				return LocalTime.of(23, 59);
+			default :
+				return null;
+		}
+		
+	}
+
+	//@author A0111887Y
+	//This method sets date and time to startDateTime and endDateTime in Task.
+	private void setDateTimeToTask(Task task, LocalDate date, LocalTime time) {
+		
+		assert task != null && (date != null || time != null);
+		LocalDateTime startDateTime = task.getStartDateTime();
+		LocalDateTime endDateTime = task.getEndDateTime();
+		if (date != null) {
+			if (startDateTime == null && endDateTime == null) {
+				task.setStartDateTime(LocalDateTime.of(date, LocalTime.of(0, 0, 1)));
+			} else if (endDateTime == null) {
+				if (startDateTime.getYear() == 0) {
+					task.setStartDateTime(LocalDateTime.of(date, LocalTime.of(startDateTime.getHour(), startDateTime.getMinute())));
+				} else {
+					task.setEndDateTime(LocalDateTime.of(date, LocalTime.of(0, 0, 1)));
+				}
+			} else {
+				task.setEndDateTime(LocalDateTime.of(date, LocalTime.of(endDateTime.getHour(), endDateTime.getMinute())));
+			}
+		} else {
+			if (startDateTime == null && endDateTime == null) {
+				task.setStartDateTime(LocalDateTime.of(LocalDate.of(0, 1, 1), time));
+			} else if (endDateTime == null) {
+				if (startDateTime.getSecond() == 1) {
+					task.setStartDateTime(LocalDateTime.of(LocalDate.of(startDateTime.getYear(), startDateTime.getMonthValue(), startDateTime.getDayOfMonth()), time));
+				} else {
+					task.setEndDateTime(LocalDateTime.of(LocalDate.of(0, 1, 1), time));
+				}
+			} else if (endDateTime.getSecond() == 1) {
+				task.setEndDateTime(LocalDateTime.of(LocalDate.of(endDateTime.getYear(), endDateTime.getMonthValue(), endDateTime.getDayOfMonth()), time));
+			} else if (startDateTime.getSecond() == 1) {
+				task.setStartDateTime(LocalDateTime.of(startDateTime.getYear(), startDateTime.getMonthValue(), startDateTime.getDayOfMonth(), endDateTime.getHour(), endDateTime.getMinute()));
+				task.setEndDateTime(LocalDateTime.of(LocalDate.of(endDateTime.getYear(), endDateTime.getMonthValue(), endDateTime.getDayOfMonth()), time));
+			} else {
+				task.setEndDateTime(LocalDateTime.of(LocalDate.of(endDateTime.getYear(), endDateTime.getMonthValue(), endDateTime.getDayOfMonth()), time));
+			}
+		}
+		
+	}
+
+	//@author A0111887Y
+	//This method changes the startDateTime and endDateTime in Task object depending on the specific keywords in input String.
+	private int adjustDateTimeOfTask(MyStringList wordList, int index, Task task) {
+	
+		assert wordList != null && task != null;
+		if (index >= 0) {
+			String word = wordList.get(index).toLowerCase();
+			if (SECONDARY_KEYWORDS_DATE_TIME.contains(word)) {
+				return changeDateTimeOfTask(wordList, index, task);
+			}
+		}
+		return 0;
+		
+	}
+
+	//@author A0111887Y
+	//This method helps to change the startDateTime and endDateTime in Task object by identifying the keywords.
+	private int changeDateTimeOfTask(MyStringList wordList, int index, Task task) {
+		
+		assert wordList != null && task != null && index >= 0;
+		String word = wordList.get(index).toLowerCase();
+		int numOfWordsToRemove = 0;
+		switch (word) {
+			case "after" :
+				numOfWordsToRemove = changeDateTimeWithPeriodWord(wordList, index - 1, task, 1);
+				break;
+			case "before" :
+				numOfWordsToRemove = changeDateTimeWithPeriodWord(wordList, index - 1, task, -1);
+				if (numOfWordsToRemove != 0) {
+					break;
+				}
+			case "by" :
+				LocalDateTime startDateTime = task.getStartDateTime();
+				LocalDateTime endDateTime = task.getEndDateTime();
+				if (endDateTime == null) {
+					task.setEndDateTime(startDateTime);
+					task.setStartDateTime(LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0)));
+				}
+		}
+		numOfWordsToRemove++;
+		for (int i = numOfWordsToRemove; i > 0; i--) {
+			wordList.remove(index);
+			index--;
+		}
+		if (index >= 0 && wordList.get(index).toLowerCase().equals("the")) {
+			numOfWordsToRemove++;
+			wordList.remove(index);
+		}
+		return numOfWordsToRemove;
+		
+	}
+
+	//@author A0111887Y
+	//This method helps change startDateTime and endDateTime in Task object by looking for more keywords.
+	private int changeDateTimeWithPeriodWord(MyStringList wordList, int index, Task task, int multiplier) {
+		
+		assert wordList != null && task != null && (multiplier == 1 || multiplier == -1);
+		if (index >= 0 && KEYWORDS_DATE_PERIOD.contains(wordList.get(index))) {
+			String word = wordList.get(index).toLowerCase();
+			LocalDateTime startDateTime = task.getStartDateTime();
+			LocalDateTime endDateTime = task.getEndDateTime();
+			switch (word) {
+				case "day" :
+					if (endDateTime != null) {
+						task.setEndDateTime(endDateTime.plusDays(multiplier));
+					} else {
+						task.setStartDateTime(startDateTime.plusDays(multiplier));
+					}
+					return 1;
+				case "week" :
+					if (endDateTime != null) {
+						task.setEndDateTime(endDateTime.plusWeeks(multiplier));
+					} else {
+						task.setStartDateTime(startDateTime.plusWeeks(multiplier));
+					}
+					return 1;
+				case "month" :
+					if (endDateTime != null) {
+						task.setEndDateTime(endDateTime.plusMonths(multiplier));
+					} else {
+						task.setStartDateTime(startDateTime.plusMonths(multiplier));
+					}
+					return 1;
+				case "year" :
+					if (endDateTime != null) {
+						task.setEndDateTime(endDateTime.plusYears(multiplier));
+					} else {
+						task.setStartDateTime(startDateTime.plusYears(multiplier));
+					}
+					return 1;
+				default :
+			}
+		}
+		return 0;
+		
+	}
+
+	//@author A0111887Y
+	//This method removes words that are not part of the content and not used to identify any Task data.
+	private int removeUselessWord(MyStringList wordList, int index) {
+	
+		assert wordList != null;
+		if (index >= 0 && index < wordList.size()) {
+			for (String uw : USELESS_WORDS) {
+				if(wordList.get(index).equalsIgnoreCase(uw)) {
+					wordList.remove(index);
+					return 1;
+				}
+			}
+		}
+		return 0;
+		
+	}
+
+	//@author A0111887Y
 	//This method sets the isDone boolean in Task to true if a Task is marked done in the input String.
 	private void setDone(MyStringList wordList, Task task) {
 
@@ -269,6 +985,21 @@ public class Parser {
 				}
 				break;
 			}
+		}
+		
+	}
+
+	//@author A0111887Y
+	//This method set the remaining words as the Task content.
+	private void setContent(MyStringList wordList, Task task) {
+		
+		assert wordList != null && task != null;
+		if (wordList.size() != 0) {
+			StringBuilder sb = new StringBuilder(wordList.get(0));
+			for (int index = 1; index < wordList.size(); index++) {
+				sb.append(" " + wordList.get(index));
+			}
+			task.setContent(sb.toString());
 		}
 		
 	}
@@ -357,705 +1088,6 @@ public class Parser {
 	}
 
 	//@author A0111887Y
-	//This method finds the dates and times in the input String and sets them to Task object.
-	private void setDateTime(MyStringList wordList, Task task) {
-		
-		assert wordList != null && task != null;
-		for (int index = 0; index < wordList.size(); index++) {
-			index = findDateTime(wordList, index, task);
-		}
-		
-	}
-
-	//@author A0111887Y
-	//This method helps identify if a word is date or time.
-	private int findDateTime(MyStringList wordList, int index, Task task) {
-		
-		assert wordList != null && task != null;
-		if (index >= 0 && index < wordList.size()) {
-			LocalDate date = null;
-			LocalTime time = null;
-			if (wordList.get(index).isEmpty()) {
-				wordList.remove(index);
-				return index--;
-			}
-			if (wordList.get(index).length() <= 4) {
-				date = findDateWithDay(wordList, index);
-				if (date == null) {
-					date = findDateWithYear(wordList, index);
-				}
-			}
-			if (date == null) {
-				date = findDateWithMonth(wordList, index);
-			}
-			if (date == null) {
-				date = findDate(wordList, index);
-			}
-			if (date == null) {
-				date = findDateWithWord(wordList, index);
-			}
-			if (date == null) {
-				date = findDateWithKeyWord(wordList, index);
-			}
-			if (date == null) {
-				time = findTime(wordList, index);
-			}
-			if (date == null && time == null) {
-				time = findTimeWithWord(wordList, index);
-			}
-			if (date != null || time != null) {
-				setDateTimeToTask(task, date, time);
-				index -= adjustDateTimeOfTask(wordList, index - 1, task);
-				index -= 1 + removeUselessWord(wordList, index - 1);
-			}
-		}
-		return index;
-		
-	}
-
-	//@author A0111887Y
-	//This method sets date and time to startDateTime and endDateTime in Task.
-	private void setDateTimeToTask(Task task, LocalDate date, LocalTime time) {
-		
-		assert task != null && (date != null || time != null);
-		LocalDateTime startDateTime = task.getStartDateTime();
-		LocalDateTime endDateTime = task.getEndDateTime();
-		if (date != null) {
-			if (startDateTime == null && endDateTime == null) {
-				task.setStartDateTime(LocalDateTime.of(date, LocalTime.of(0, 0, 1)));
-			} else if (endDateTime == null) {
-				if (startDateTime.getYear() == 0) {
-					task.setStartDateTime(LocalDateTime.of(date, LocalTime.of(startDateTime.getHour(), startDateTime.getMinute())));
-				} else {
-					task.setEndDateTime(LocalDateTime.of(date, LocalTime.of(0, 0, 1)));
-				}
-			} else {
-				task.setEndDateTime(LocalDateTime.of(date, LocalTime.of(endDateTime.getHour(), endDateTime.getMinute())));
-			}
-		} else {
-			if (startDateTime == null && endDateTime == null) {
-				task.setStartDateTime(LocalDateTime.of(LocalDate.of(0, 1, 1), time));
-			} else if (endDateTime == null) {
-				if (startDateTime.getSecond() == 1) {
-					task.setStartDateTime(LocalDateTime.of(LocalDate.of(startDateTime.getYear(), startDateTime.getMonthValue(), startDateTime.getDayOfMonth()), time));
-				} else {
-					task.setEndDateTime(LocalDateTime.of(LocalDate.of(0, 1, 1), time));
-				}
-			} else if (endDateTime.getSecond() == 1) {
-				task.setEndDateTime(LocalDateTime.of(LocalDate.of(endDateTime.getYear(), endDateTime.getMonthValue(), endDateTime.getDayOfMonth()), time));
-			} else if (startDateTime.getSecond() == 1) {
-				task.setStartDateTime(LocalDateTime.of(startDateTime.getYear(), startDateTime.getMonthValue(), startDateTime.getDayOfMonth(), endDateTime.getHour(), endDateTime.getMinute()));
-				task.setEndDateTime(LocalDateTime.of(LocalDate.of(endDateTime.getYear(), endDateTime.getMonthValue(), endDateTime.getDayOfMonth()), time));
-			} else {
-				task.setEndDateTime(LocalDateTime.of(LocalDate.of(endDateTime.getYear(), endDateTime.getMonthValue(), endDateTime.getDayOfMonth()), time));
-			}
-		}
-		
-	}
-
-	//@author A0111887Y
-	//This method changes the startDateTime and endDateTime in Task object depending on the specific keywords in input String.
-	private int adjustDateTimeOfTask(MyStringList wordList, int index, Task task) {
-
-		assert wordList != null && task != null;
-		if (index >= 0) {
-			String word = wordList.get(index).toLowerCase();
-			if (SECONDARY_KEYWORDS_DATE_TIME.contains(word)) {
-				return changeDateTimeOfTask(wordList, index, task);
-			}
-		}
-		return 0;
-		
-	}
-
-	//@author A0111887Y
-	//This method helps to identify a date by checking for specific keywords.
-	private LocalDate findDateWithKeyWord(MyStringList wordList, int index) {
-		
-		assert wordList != null && index >= 0;
-		LocalDate date = null;
-		if (SECONDARY_KEYWORDS_DATE.contains(wordList.get(index).toLowerCase())) {
-			date = getDateWithDayOfWeekWord(wordList, index + 1);
-			switch (wordList.get(index)) {
-				case "this" :
-					if (date == null) {
-						date = getDateWithPeriodWord(wordList, index + 1, 0);
-					}
-					break;
-				case "next" :
-					if (date != null) {
-						date = date.plusWeeks(1);
-					} else {
-						date = getDateWithPeriodWord(wordList, index + 1, 1);
-					}
-					break;
-				case "last" :
-					if (date != null) {
-						date = date.plusWeeks(-1);
-					} else {
-						date = getDateWithPeriodWord(wordList, index + 1, -1);
-					}
-				default :
-			}
-			if (date != null) {
-				wordList.remove(index);
-			}
-		}
-		return date;
-		
-	}
-
-	//@author A0111887Y
-	//This method helps to change the startDateTime and endDateTime in Task object by identifying the keywords.
-	private int changeDateTimeOfTask(MyStringList wordList, int index, Task task) {
-		
-		assert wordList != null && task != null && index >= 0;
-		String word = wordList.get(index).toLowerCase();
-		int numOfWordsToRemove = 0;
-		switch (word) {
-			case "after" :
-				numOfWordsToRemove = changeDateTimeWithPeriodWord(wordList, index - 1, task, 1);
-				break;
-			case "before" :
-				numOfWordsToRemove = changeDateTimeWithPeriodWord(wordList, index - 1, task, -1);
-				if (numOfWordsToRemove != 0) {
-					break;
-				}
-			case "by" :
-				LocalDateTime startDateTime = task.getStartDateTime();
-				LocalDateTime endDateTime = task.getEndDateTime();
-				if (endDateTime == null) {
-					task.setEndDateTime(startDateTime);
-					task.setStartDateTime(LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0)));
-				}
-		}
-		numOfWordsToRemove++;
-		for (int i = numOfWordsToRemove; i > 0; i--) {
-			wordList.remove(index);
-			index--;
-		}
-		if (index >= 0 && wordList.get(index).toLowerCase().equals("the")) {
-			numOfWordsToRemove++;
-			wordList.remove(index);
-		}
-		return numOfWordsToRemove;
-		
-	}
-
-	//@author A0111887Y
-	//This method helps change startDateTime and endDateTime in Task object by looking for more keywords.
-	private int changeDateTimeWithPeriodWord(MyStringList wordList, int index, Task task, int multiplier) {
-		
-		assert wordList != null && task != null && (multiplier == 1 || multiplier == -1);
-		if (index >= 0 && KEYWORDS_DATE_PERIOD.contains(wordList.get(index))) {
-			String word = wordList.get(index).toLowerCase();
-			LocalDateTime startDateTime = task.getStartDateTime();
-			LocalDateTime endDateTime = task.getEndDateTime();
-			switch (word) {
-				case "day" :
-					if (endDateTime != null) {
-						task.setEndDateTime(endDateTime.plusDays(multiplier));
-					} else {
-						task.setStartDateTime(startDateTime.plusDays(multiplier));
-					}
-					return 1;
-				case "week" :
-					if (endDateTime != null) {
-						task.setEndDateTime(endDateTime.plusWeeks(multiplier));
-					} else {
-						task.setStartDateTime(startDateTime.plusWeeks(multiplier));
-					}
-					return 1;
-				case "month" :
-					if (endDateTime != null) {
-						task.setEndDateTime(endDateTime.plusMonths(multiplier));
-					} else {
-						task.setStartDateTime(startDateTime.plusMonths(multiplier));
-					}
-					return 1;
-				case "year" :
-					if (endDateTime != null) {
-						task.setEndDateTime(endDateTime.plusYears(multiplier));
-					} else {
-						task.setStartDateTime(startDateTime.plusYears(multiplier));
-					}
-					return 1;
-				default :
-			}
-		}
-		return 0;
-		
-	}
-
-	//@author A0111887Y
-	//This method helps to identify a date by checking if the word is a numerical number and a valid day.
-	private LocalDate findDateWithDay(MyStringList wordList, int index){
-		
-		assert wordList != null && index >= 0;
-		if (index + 1 < wordList.size()) {
-			int day = getDay(wordList.get(index));
-			if (day > 0) {
-				int month = getMonth(wordList.get(index + 1));
-				if (month > 0) {
-					int year;
-					if (index + 2 < wordList.size()) {
-						year = getYear(wordList.get(index + 2));
-						if (year > 0) {
-							if (isValidDate(year, month, day)) {
-								wordList.remove(index + 2);
-								wordList.remove(index + 1);
-								wordList.remove(index);
-								return LocalDate.of(year, month, day);
-							}
-						}
-					}
-					year = LocalDate.now().getYear();
-					if (isValidDate(year, month, day)) {
-						wordList.remove(index + 1);
-						wordList.remove(index);
-						return LocalDate.now().withMonth(month).withDayOfMonth(day);
-					}
-				}
-			}
-		}
-		return null;
-		
-	}
-
-	//@author A0111887Y
-	//This method helps to identify a date by checking if the word is a numerical number and a valid month.
-	private LocalDate findDateWithMonth(MyStringList wordList, int index){
-
-		assert wordList != null && index >= 0;
-		if (index + 1 < wordList.size()) {
-			int month = getMonth(wordList.get(index));
-			if (month > 0) {
-				int day = getDay(wordList.get(index + 1));
-				if (day > 0) {
-					int year;
-					if (index + 2 < wordList.size()) {
-						year = getYear(wordList.get(index + 2));
-						if (year > 0) {
-							if (isValidDate(year, month, day)) {
-								wordList.remove(index + 2);
-								wordList.remove(index + 1);
-								wordList.remove(index);
-								return LocalDate.of(year, month, day);
-							}
-						}
-					}
-					year = LocalDate.now().getYear();
-					if (isValidDate(year, month, day)) {
-						wordList.remove(index + 1);
-						wordList.remove(index);
-						return LocalDate.of(year, month, day);
-					}
-				}
-			}
-		}
-		return null;
-		
-	}
-
-	//@author A0111887Y
-	//This method helps o identify a date by checking if the word is a numerical number and a valid year.
-	private LocalDate findDateWithYear(MyStringList wordList, int index){
-
-		assert wordList != null && index >= 0;
-		if (index + 2 < wordList.size()) {
-			int year = getYear(wordList.get(index));
-			if (year > 0) {
-				int month = getMonth(wordList.get(index + 1));
-				if (month > 0) {
-					int day = getDay(wordList.get(index + 2));
-					if (day > 0) {
-						if (isValidDate(year, month, day)) {
-							wordList.remove(index + 2);
-							wordList.remove(index + 1);
-							wordList.remove(index);
-							return LocalDate.of(year, month, day);
-						}
-					}
-				} else {
-					int day = getDay(wordList.get(index + 1));
-					if (day > 0) {
-						month = getMonth(wordList.get(index + 2));
-						if (month > 0) {
-							if (isValidDate(year, month, day)) {
-								wordList.remove(index + 2);
-								wordList.remove(index + 1);
-								wordList.remove(index);
-								return LocalDate.of(year, month, day);
-							}
-						}
-					}
-				}
-			}
-		}
-		return null;
-		
-	}
-
-	//@author A0111887Y
-	//This method helps identify a date in the format "DD-MM-YYYY", "YYYY\MM\DD", "MM/DD/YYYY", "DD-MM" etc..
-	private LocalDate findDate(MyStringList wordList, int index) {
-
-		assert wordList != null && index >= 0 && index < wordList.size();
-		MyStringList stringList = new MyStringList();
-		LocalDate date = null;
-		if (wordList.get(index).contains("/")) {
-			stringList.addAll(Arrays.asList(wordList.get(index).split("/")));
-		} else if (wordList.get(index).contains("\\")) {
-			stringList.addAll(Arrays.asList(wordList.get(index).split("\\\\")));
-		} else if (wordList.get(index).contains("-")) {
-			stringList.addAll(Arrays.asList(wordList.get(index).split("-")));
-		}
-		date = findDateWithDay(stringList, 0);
-		if (date == null) {
-			date = findDateWithMonth(stringList, 0);
-		}
-		if (date == null) {
-			date = findDateWithYear(stringList, 0);
-		}
-		if (date != null) {
-			wordList.remove(index);
-		}
-		return date;
-		
-	}
-
-	//@author A0111887Y
-	//This method helps to identify a time by checking for formats "HHam", "HHpm", "HH.MM", "HH:MM:SS", "HH:MM am" etc..
-	private LocalTime findTime(MyStringList wordList, int index) {
-		
-		assert wordList != null && index >= 0 && index < wordList.size();
-		String timeWord = wordList.get(index);
-		MyStringList s = new MyStringList();
-		LocalTime time = null;
-		boolean isAM = false;
-		boolean isPM = false;
-		boolean mayBeTime = false;
-		boolean removeNextWord = false;
-		for (String tw : KEYWORDS_TIME) {
-			if (timeWord.toLowerCase().endsWith(tw)) {
-				mayBeTime = true;
-				if (tw.equals("am")) {
-					isAM = true;
-				} else {
-					isPM = true;
-				}
-				timeWord = timeWord.substring(0, timeWord.toLowerCase().lastIndexOf(tw));
-				break;
-			}
-		}
-		if (!isAM && !isPM && index + 1 < wordList.size()) {
-			for (String tw : KEYWORDS_TIME) {
-				if (wordList.get(index + 1).equalsIgnoreCase(tw)) {
-					mayBeTime = true;
-					if (tw.equals("am")) {
-						isAM = true;
-					} else {
-						isPM = true;
-					}
-					removeNextWord = true;
-					break;
-				}
-			}
-		}
-		if (timeWord.contains(":")) {
-			s.addAll(Arrays.asList(timeWord.split(":")));
-			mayBeTime = true;
-		} else if (timeWord.contains(".")) {
-			s.addAll(Arrays.asList(timeWord.split("\\.")));
-			mayBeTime = true;
-		} else if (mayBeTime) {
-			s.add(timeWord);
-		}
-		if (mayBeTime) {
-			time = getTime(s, isAM, isPM);
-			if (time != null) {
-				if (removeNextWord) {
-					wordList.remove(index + 1);
-				}
-				wordList.remove(index);
-			}
-		}
-		return time;
-		
-	}
-
-	//@author A0111887Y
-	//This method helps identify a date by checking for words such as "today", "monday" etc..
-	private LocalDate findDateWithWord(MyStringList wordList, int index) {
-		
-		assert wordList != null && index >= 0 && index < wordList.size();
-		String word = wordList.get(index).toLowerCase();
-		if (KEYWORDS_DATE_DAY.contains(word)) {
-			return getDateWithDayWord(wordList, index);
-		} else if (KEYWORDS_DATE_DAY_OF_WEEK.contains(word)){
-			return getDateWithDayOfWeekWord(wordList, index);
-		}
-		return null;
-		
-	}
-
-	//@author A0111887Y
-	//This method helps identify time by checking for words such as "morning", "midnight" etc..
-	private LocalTime findTimeWithWord(MyStringList wordList, int index) {
-		
-		assert wordList != null && index >= 0 && index < wordList.size();
-		String word = wordList.get(index).toLowerCase();
-		if (KEYWORDS_TIME_OF_DAY.contains(word)) {
-			wordList.remove(index);
-			return getTimeWithTimeOfDayWord(word);
-		}
-		return null;
-		
-	}
-
-	//@author A0111887Y
-	//This methods helps find the Task priority by searching for specific keywords in input String.
-	private int getPriorityLevelWithWord(MyStringList wordList, int index) {
-		
-		assert wordList != null;
-		int priorityLevel = -1;
-		if (index >= 0 && index < wordList.size()) {
-			String word = wordList.get(index);
-			if (word.equalsIgnoreCase("priority") && index - 1 >= 0) {
-				word = wordList.get(index - 1);
-				switch (word) {
-					case "high" :
-						wordList.remove(index);
-						index--;
-						if (index - 1 < 0 || !wordList.get(index - 1).equalsIgnoreCase("very")) {
-							priorityLevel = 1;
-							break;
-						}
-					case "top" :
-						wordList.remove(index);
-						index--;
-						priorityLevel = 2;
-						break;
-					case "normal" :
-					case "low" :
-					case "lowest" :
-						wordList.remove(index);
-						index--;
-						priorityLevel = 0;
-				}
-				if (priorityLevel > -1) {
-					wordList.remove(index);
-				}
-			} else if (word.equalsIgnoreCase("important")) {
-				if (index - 1 >= 0) {
-					word = wordList.get(index - 1);
-				}
-				switch (word) {
-					case "very" :
-						wordList.remove(index);
-						index--;
-						priorityLevel = 2;
-						break;
-					case "not" :
-						wordList.remove(index);
-						index--;
-						priorityLevel = 0;
-						break;
-					default :
-						priorityLevel = 1;
-				}
-				wordList.remove(index);
-			} else if (word.equalsIgnoreCase("unimportant")) {
-				priorityLevel = 0;
-				wordList.remove(index);
-			}
-		}
-		return priorityLevel;
-		
-	}
-
-	//@author A0111887Y
-	//This method returns a date depending on the keywords in the input String.
-	private LocalDate getDateWithDayWord(MyStringList wordList, int index) {
-		
-		assert wordList != null;
-		if (index >= 0 && index < wordList.size()) {
-			String word = wordList.get(index);
-			wordList.remove(index);
-			switch (word) {
-				case "tonight" :
-					wordList.add(index, "night");
-				case "today" :
-					return LocalDate.now();
-				case "tomorrow" :
-					return LocalDate.now().plusDays(1);
-				case "yesterday" :
-					return LocalDate.now().plusDays(-1);
-				default :
-			}
-		}
-		return null;
-		
-	}
-
-	//@author A0111887Y
-	//This method returns a date depending on the words in the input String.
-	private LocalDate getDateWithDayOfWeekWord(MyStringList wordList, int index) {
-		
-		assert wordList != null;
-		if (index >= 0 && index < wordList.size() && KEYWORDS_DATE_DAY_OF_WEEK.contains(wordList.get(index).toLowerCase())) {
-			int day = getNumeric(wordList.get(index).toLowerCase());
-			int daysToAdd = day - LocalDate.now().getDayOfWeek().getValue();
-			if (daysToAdd < 0) {
-				daysToAdd += 7;
-			}
-			wordList.remove(index);
-			return LocalDate.now().plusDays(daysToAdd);
-		}
-		return null;
-		
-	}
-
-	//@author A0111887Y
-	//This method returns a time depending on the words in the input String.
-	private LocalTime getTimeWithTimeOfDayWord(String word) {
-		
-		switch (word) {
-			case "morning" :
-				return LocalTime.of(5, 0);
-			case "noon" :
-				return LocalTime.of(12, 0);
-			case "afternoon" :
-				return LocalTime.of(13, 0);
-			case "evening" :
-				return LocalTime.of(17, 0);
-			case "night" :
-				return LocalTime.of(19, 0);
-			case "midnight" :
-				return LocalTime.of(23, 59);
-			default :
-				return null;
-		}
-		
-	}
-
-	//@author A0111887Y
-	//This method returns a date depending on the words in the input String.
-	private LocalDate getDateWithPeriodWord(MyStringList wordList, int index, int multiplier) {
-		
-		assert wordList != null && (multiplier == 0 || multiplier == 1 || multiplier == -1);
-		if (index >= 0 && index < wordList.size() && KEYWORDS_DATE_PERIOD.contains(wordList.get(index).toLowerCase())) {
-			String word = wordList.get(index).toLowerCase();
-			wordList.remove(index);
-			switch (word) {
-				case "day" :
-					return LocalDate.now().plusDays(multiplier);
-				case "week" :
-					return LocalDate.now().plusWeeks(multiplier);
-				case "month" :
-					return LocalDate.now().plusMonths(multiplier);
-				case "year" :
-					return LocalDate.now().plusYears(multiplier);
-				default :
-			}
-		}
-		return null;
-		
-	}
-
-	//@author A0111887Y
-	//This method returns the day number if the word is a valid numerical day, returns 0 if not.
-	private int getDay(String word) {
-		
-		assert word != null;
-		if (word.length() <= 4) {
-			if (isNumeric(word)) {
-				int num = Integer.parseInt(word);
-				if (num <= 31 && num > 0){
-					return num;
-				}
-			} else {
-				for (String ordNum : KEYWORDS_DATE_ORDINAL_NUMBER) {
-					if (word.endsWith(ordNum)) {
-						return getDay(word.substring(0, word.lastIndexOf(ordNum)));
-					}
-				}
-			}
-		}
-		return 0;
-		
-	}
-
-	//@author A0111887Y
-	//This method returns the month number if the word is a valid numerical month, returns 0 if not.
-	private int getMonth(String word) {
-
-		assert word != null;
-		if (isNumeric(word)) {
-			int num = Integer.parseInt(word);
-			if (num <= 12 && num > 0){
-				return num;
-			}
-		} else {
-			for (String month : KEYWORDS_DATE_MONTH) {
-				if (word.equalsIgnoreCase(month)) {
-					return getNumeric(month);
-				}
-			}
-		}
-		return 0;
-		
-	}
-
-	//@author A0111887Y
-	//This method returns the year number if the word is a valid numerical year, returns 0 if not.
-	private int getYear(String word) {
-
-		assert word != null;
-		if (isNumeric(word)) {
-			int num = Integer.parseInt(word);
-			if (num < 10000 && num > 999){
-				return num;
-			}
-		}
-		return 0;
-		
-	}
-
-	//@author A0111887Y
-	//This method returns a time if the lists of words represents a valid time.
-	private LocalTime getTime(MyStringList stringList, boolean isAM, boolean isPM) {
-		
-		assert stringList != null;
-		if (!stringList.isEmpty()) {
-			for (int index = 0; index < stringList.size(); index++) {
-				if (!isNumeric(stringList.get(index))) {
-					return null;
-				}
-			}
-			int hour = 0;
-			int minute = 0;
-			switch (stringList.size()) {
-				case 3 :
-				case 2 :
-					minute = Integer.parseInt(stringList.get(1));
-				case 1 :
-					hour = Integer.parseInt(stringList.get(0));
-			}
-			if (hour == 12 && isAM) {
-				hour = 0;
-			} else if (hour < 12 && isPM) {
-				hour += 12;
-			}
-			if (isValidTime(hour, minute)) {
-				return LocalTime.of(hour, minute);
-			}
-		}
-		return null;
-		
-	}
-
-	//@author A0111887Y
 	//This method helps to check if the combination of year, month and day gives a valid date.
 	private boolean isValidDate(int year, int month, int day) {
 		
@@ -1081,34 +1113,18 @@ public class Parser {
 	}
 
 	//@author A0111887Y
-	//This method removes words that are not part of the content and not used to identify any Task data.
-	private int removeUselessWord(MyStringList wordList, int index) {
-
-		assert wordList != null;
-		if (index >= 0 && index < wordList.size()) {
-			for (String uw : USELESS_WORDS) {
-				if(wordList.get(index).equalsIgnoreCase(uw)) {
-					wordList.remove(index);
-					return 1;
-				}
+	//This method helps to check if a word is numeric
+	private boolean isNumeric(String word) {
+		
+		assert word != null;
+		if (word.length() != 0) {
+			ParsePosition pos = new ParsePosition(0);
+			FORMATTER.parse(word, pos);
+			if (word.length() == pos.getIndex()) {
+				return true;
 			}
 		}
-		return 0;
-		
-	}
-
-	//@author A0111887Y
-	//This method set the remaining words as the Task content.
-	private void setContent(MyStringList wordList, Task task) {
-		
-		assert wordList != null && task != null;
-		if (wordList.size() != 0) {
-			StringBuilder sb = new StringBuilder(wordList.get(0));
-			for (int index = 1; index < wordList.size(); index++) {
-				sb.append(" " + wordList.get(index));
-			}
-			task.setContent(sb.toString());
-		}
+		return false;
 		
 	}
 
@@ -1169,22 +1185,6 @@ public class Parser {
 			default :
 				return 0;
 		}
-		
-	}
-
-	//@author A0111887Y
-	//This method helps to check if a word is numeric
-	private boolean isNumeric(String word) {
-		
-		assert word != null;
-		if (word.length() != 0) {
-			ParsePosition pos = new ParsePosition(0);
-			FORMATTER.parse(word, pos);
-			if (word.length() == pos.getIndex()) {
-				return true;
-			}
-		}
-		return false;
 		
 	}
 	
