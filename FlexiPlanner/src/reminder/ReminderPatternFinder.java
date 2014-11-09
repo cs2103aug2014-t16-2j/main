@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  * This class is to find reminder command in user's command to set reminder for the to-do tasks.
  */
 
-/**
+/*
  * Users are able to enter commands to set reminder as below:
  * 
  * Sample commands:
@@ -89,6 +89,12 @@ public class ReminderPatternFinder {
 		return findReminderPattern(commandStr) != NO_PATTERN;
 	}
 	
+	/**
+	 * This method finds the reminder command pattern from command line.
+	 * 
+	 * @param command - String
+	 * @return Integer or LocalDateTime
+	 */
 	public Object parse(final String commandStr) {
 		int reminderPattern = findReminderPattern(commandStr);
 		
@@ -119,6 +125,7 @@ public class ReminderPatternFinder {
 		}
 	}
 	
+	//This method checks if the date and time in the pattern is valid or not.
 	private boolean isValidDateTime(int reminderPattern, final String commandStr) {
 		boolean isValid = false;
 		
@@ -235,6 +242,7 @@ public class ReminderPatternFinder {
 		return isValid;
 	}
 	
+	//This method finds the actual reminder patterns in the command.
 	private int findReminderPattern(final String commandStr) {
 		if (commandStr.matches(PATTERN_1)) {
 			

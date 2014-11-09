@@ -24,6 +24,7 @@ public interface Storage {
 	
 	/**
 	 * This method saves a list of tasks in a specified file.
+	 * 
 	 * @param fileName : name of the file to save into
 	 * @param taskList : ArrayList<TaskData>
 	 * 
@@ -33,6 +34,7 @@ public interface Storage {
 	
 	/**
 	 * This method loads task data from a specified file.
+	 * 
 	 * @param fileName : name of the file to load from
 	 * 
 	 * @return taskList : ArrayList<TaskData> 
@@ -41,6 +43,7 @@ public interface Storage {
 	
 	/**
 	 * This method saves a list of text data in a specified file.
+	 * 
 	 * @param fileName : name of the text file to save into
 	 * @param list : ArrayList<String>
 	 * 
@@ -51,6 +54,7 @@ public interface Storage {
 	
 	/**
 	 * This method loads data from a specified file.
+	 * 
 	 * @param fileName : name of the file to load from
 	 * 
 	 * @return list : ArrayList<String> 

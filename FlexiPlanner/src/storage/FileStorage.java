@@ -82,7 +82,7 @@ public class FileStorage implements Storage {
 		return isSetup;
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 
 	@Override
 	public boolean saveTasks(final String fileName, ArrayList<TaskData> taskList) {
@@ -108,7 +108,7 @@ public class FileStorage implements Storage {
 		return isSaveSuccess;
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 
 	@Override
 	public ArrayList<TaskData> loadTasks(final String fileName) {
@@ -128,9 +128,10 @@ public class FileStorage implements Storage {
 		return tasksToReturn;
 	}
  	
-	/** ******************** **/
+	//** ******************** **/
 	
 	//@author A0117989H-unused
+	//storage is used to save only tasks
 	@Override
 	public boolean saveFile(final String fileName, ArrayList<String> list) {
 		boolean isSaveSuccess = false;
@@ -148,9 +149,10 @@ public class FileStorage implements Storage {
 		return isSaveSuccess;
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	//@author A0117989H-unused
+	//storage is used to load tasks only
 	@Override
 	public ArrayList<String> loadFile(final String fileName) {
 		ArrayList<String> list = new ArrayList<String>();
@@ -167,9 +169,16 @@ public class FileStorage implements Storage {
 		return list;
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	//@author A0117989H
+	
+	/**
+	 * This method setup files and backup files
+	 * 
+	 * @param fileName
+	 * @return successful or not
+	 */
 	private boolean implementingSetupAndBackup(String fileName) {
 		boolean isSetup = false;
 		
@@ -201,7 +210,7 @@ public class FileStorage implements Storage {
 		return isSetup;
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	private boolean convertTasksToJsonObjAndSave(String filePath, String backupFilePath,
 			ArrayList<TaskData> taskList) {
@@ -226,19 +235,19 @@ public class FileStorage implements Storage {
 		}
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 
 	private boolean isDataBaseNotReadyFor(String filePath) {
 		return path.isEmpty() || !path.contains(filePath);
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	private boolean isNullList(ArrayList<TaskData> taskList) {
 		return taskList == null;
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	private ArrayList<TaskData> loadingFrom(String filePath, String backupFilePath) {
 		ArrayList<TaskData> tasksToReturn = new ArrayList<TaskData>();
@@ -279,19 +288,19 @@ public class FileStorage implements Storage {
 		return tasksToReturn;
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	private boolean isBackupFileAlsoEmpty(String backupFilePath) throws IOException {
 		return backupFilePath.equals(NOTHING) || manager.isEmptyFile(backupFilePath);
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	private boolean isValidBackupPath(String backupFilePath) {
 		return !backupFilePath.equals(NOTHING);
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	private boolean savingTo(String filePath, ArrayList<String> list) {
 		boolean isSaveSuccess = false;
@@ -317,7 +326,7 @@ public class FileStorage implements Storage {
 		return isSaveSuccess;
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	private ArrayList<String> loadingFrom(String filePath) {
 		ArrayList<String> list = new ArrayList<String>();
@@ -338,7 +347,7 @@ public class FileStorage implements Storage {
 		return list;
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	private ArrayList<TaskData> loadBackupTasks(String backupFilePath) {
 		ArrayList<TaskData> tasksToReturn = new ArrayList<TaskData>();
@@ -368,7 +377,14 @@ public class FileStorage implements Storage {
 		}
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
+	
+	/**
+	 * This method returns the path to the backup file.
+	 * 
+	 * @param fileName
+	 * @return backup file path
+	 */
 	
 	private String getBackupFilePath(String fileName) {
 		String backupFilePath = "";
@@ -379,7 +395,7 @@ public class FileStorage implements Storage {
 		return backupFilePath;
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	private void createFolder() {
 		boolean isCreated = false;
@@ -415,7 +431,7 @@ public class FileStorage implements Storage {
 		}
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	private boolean recreateFolderIfFolderNotFound() {
 		boolean isCreated = false;
@@ -433,7 +449,7 @@ public class FileStorage implements Storage {
 		return isCreated;
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	private void report(final String toReport) {
 		System.out.print(toReport);

@@ -36,7 +36,7 @@ public class TaskData implements Comparable<TaskData> {
 	private Reminder reminder;
 	private LocalDateTime remindDateTime;
 
-	/** Constructor Method **/
+	//** Constructor Method **/
 
 	public TaskData() {
 		this(null, null, null, null, null);
@@ -64,7 +64,7 @@ public class TaskData implements Comparable<TaskData> {
 		}
 	}
 
-	/** Accessor Methods **/
+	//** Accessor Methods **/
 
 	public String getContent() {
 		return content;
@@ -98,7 +98,7 @@ public class TaskData implements Comparable<TaskData> {
 		return reminder;
 	}
 
-	/** Mutator Methods **/
+	//** Mutator Methods **/
 
 	public void setContent(String content) {
 		this.content = content;
@@ -153,12 +153,8 @@ public class TaskData implements Comparable<TaskData> {
 			reminder = null;
 		}
 	}
-	
-	public boolean hasReminder() {
-		return getReminder() != null;
-	}
 
-	/** Other Methods **/
+	//** Other Methods **/
 
 	public void generateTaskId() {
 		//to make sure each ID is unique
@@ -177,6 +173,10 @@ public class TaskData implements Comparable<TaskData> {
 		obj = converter.taskToJsonObj(this);
 
 		return obj;
+	}
+	
+	public boolean hasReminder() {
+		return getReminder() != null;
 	}
 
 	@Override

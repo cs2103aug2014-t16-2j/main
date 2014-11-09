@@ -59,7 +59,12 @@ public class ReminderPopup {
 	public ReminderPopup() {
 		allocatePopupLocation();
 	}
-
+	
+	/**
+	 * This method calls the JFrame to pop up with alarm sound.
+	 * 
+	 * @param content - String
+	 */
 	public void displayPopupWSound(String content) {
 		displayPopup(content);
 		playReminderSound();
@@ -139,6 +144,7 @@ public class ReminderPopup {
 		}
 	}
 	
+	//to pop-up from upper right corner of the screen until the lower right corner in order systematically
 	private void allocatePopupLocation() {
 		for (int i = 0; i < 6; i++) {
 			if (identity[i] != 0) {

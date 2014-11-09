@@ -50,7 +50,7 @@ public class FileManager {
 		return isCreated;
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	public boolean createFile(String filePath) throws IOException {
 		boolean isCreated = false;
@@ -68,6 +68,8 @@ public class FileManager {
 		return isCreated;
 	}
 	
+	//** ******************** **/
+	
 	public boolean createBackupFile(String folderName, String fileName) throws IOException {
 		boolean isCreated = false;
 		
@@ -82,13 +84,13 @@ public class FileManager {
 		return isCreated;
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	public void writeInJsonFormat(String filePath, JSONObject jsonObj, boolean isAppendable) throws IOException, FileNotFoundException {
 		write(filePath, new JsonConverter().toPrettyFormat(jsonObj), isAppendable);
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	public void write(String filePath, String content, boolean isAppendable) throws IOException, FileNotFoundException {
 		BufferedWriter bWriter = new BufferedWriter(new FileWriter(filePath, isAppendable));
@@ -97,7 +99,7 @@ public class FileManager {
 		bWriter.close();
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	public JSONObject readInJsonFormat(String filePath) throws FileNotFoundException, IOException, ParseException{
 		if (isEmptyFile(filePath)) {
@@ -107,7 +109,7 @@ public class FileManager {
 		return new JsonConverter().getJsonObjFromFile(new BufferedReader(new FileReader(filePath)));
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	public ArrayList<String> read(String filePath) throws IOException {
 		ArrayList<String> listToReturn = new ArrayList<String>();
@@ -123,7 +125,7 @@ public class FileManager {
 		return listToReturn;
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	public boolean isValidFileName(final String fileName) {
 		if (fileName == null) {
@@ -139,20 +141,20 @@ public class FileManager {
 		return matcher.matches();
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	public boolean deleteFile(String filePath) throws FileNotFoundException {
 		File fileToDelete = new File(filePath);
 		return fileToDelete.delete();
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	public void clearFile(String filePath) throws FileNotFoundException, IOException {
 		write(filePath, NOTHING, false);
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	public boolean isEmptyFile(String filePath) throws IOException {
 		boolean isEmpty = true;
@@ -165,7 +167,7 @@ public class FileManager {
 		return isEmpty;
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	public boolean hasFolder(String folderName) {
 		File folder = new File(folderName);
@@ -173,17 +175,19 @@ public class FileManager {
 		return folder.exists() && !folder.isFile();
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	public String createFilePath(String folderName, final String fileName) {
 		return folderName + SEPERATOR + fileName;
 	}
 	
+	//** ******************** **/
+	
 	public String createBackupFilePath(String folderName, final String fileName) {
 		return System.getProperty(USER_HOME) + SEPERATOR + folderName + BACKUP + SEPERATOR + fileName;
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	public String extractFileName(String filePath) {
 		String[] s = filePath.split(SEPERATOR);

@@ -62,7 +62,7 @@ public class JsonConverter {
 		return null;
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 
 	public JSONArray tasksToJsonArr(ArrayList<TaskData> tasks) {
 		JSONArray jsonArrToReturn = new JSONArray();
@@ -74,7 +74,7 @@ public class JsonConverter {
 		return jsonArrToReturn;
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	public TaskData jsonObjToTask(JSONObject obj) {
 		TaskData taskToReturn = new TaskData();
@@ -98,7 +98,7 @@ public class JsonConverter {
 		return null;
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	public ArrayList<TaskData> jsonArrToTasks(JSONArray jsonArr) {
 		ArrayList<TaskData> taskListToReturn = new ArrayList<TaskData> ();
@@ -110,7 +110,7 @@ public class JsonConverter {
 		return taskListToReturn;
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 
 	public JSONObject encloseJsonArrInJsonObj(JSONArray jarr) {
 		JSONObject jo = new JSONObject();
@@ -119,7 +119,7 @@ public class JsonConverter {
 		return jo;
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	public JSONArray retrieveJsonArrFromJsonObj(JSONObject jsonObj) {
 		JSONArray jsonArrToReturn = (JSONArray) jsonObj.get(TITLE_JSONARRAY);
@@ -132,7 +132,7 @@ public class JsonConverter {
 		return jsonArrToReturn;
 	}
 	
-	/** ******************** **/
+	//** ******************** **/
 	
 	public JSONObject getJsonObjFromFile(BufferedReader br) throws IOException, ParseException {
 		JSONParser parser = new JSONParser();
@@ -145,7 +145,7 @@ public class JsonConverter {
 	 * This method transforms JSONObject display
 	 * into a more readable string format.
 	 * 
-	 * @param JSONObject : JSONObject
+	 * @param Object : JSONObject or JSONArray
 	 * @return formatted string : String
 	 */
 	public String toPrettyFormat(Object obj) {
