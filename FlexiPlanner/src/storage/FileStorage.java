@@ -34,7 +34,7 @@ public class FileStorage implements Storage {
 	
 	private final String BASE_FOLDER_NAME = "FlexiPlanner Database";
 	private final String NEXT_LINE = "\n";
-	private final String HIDDEN = "-backup.";
+	private final String BACKUP = "-backup.";
 	private final String NOTHING = "";
 	
 	private final int MAX_ITERATION = 10000;
@@ -78,8 +78,8 @@ public class FileStorage implements Storage {
 				isSetup = manager.createFile(filePath);
 				
 				//data automatic backup
-				isSetup = manager.createBackupFile(folderName, 
-						FilenameUtils.getBaseName(fileName) + HIDDEN + 
+				 manager.createBackupFile(folderName, 
+						FilenameUtils.getBaseName(fileName) + BACKUP + 
 						FilenameUtils.getExtension(fileName));
 				
 				if (isSetup) {
@@ -111,7 +111,7 @@ public class FileStorage implements Storage {
 		boolean isSaveSuccess = false;
 		
 		String filePath = manager.createFilePath(folderName, fileName);
-		String backupFilePath = getHiddenFilePath(fileName);
+		String backupFilePath = getBackupFilePath(fileName);
 		
 		if (path.isEmpty() || !path.contains(filePath)) {
 			report(ERROR_NOT_SETUP_YET);
@@ -167,7 +167,7 @@ public class FileStorage implements Storage {
 		
 		try {
 			if (manager.isEmptyFile(filePath)) {
-				String backupFilePath = getHiddenFilePath(fileName);
+				String backupFilePath = getBackupFilePath(fileName);
 				
 				//check back-up file to observe discrepancies to choose loading file path
 				if (!backupFilePath.equals(NOTHING) && !manager.isEmptyFile(backupFilePath)) {
@@ -195,10 +195,10 @@ public class FileStorage implements Storage {
 			report(ERROR_PARSE);
 			tasksToReturn.clear();
 			//get tasks from backup file
-			String hiddenFilePath = getHiddenFilePath(fileName);
+			String backupFilePath = getBackupFilePath(fileName);
 			
-			if (!hiddenFilePath.equals("")) {
-				return loadBackupTasks(hiddenFilePath);
+			if (!backupFilePath.equals("")) {
+				return loadBackupTasks(backupFilePath);
 			}
 		}
 		
@@ -291,20 +291,22 @@ public class FileStorage implements Storage {
 		} catch (IOException e){
 			report(ERROR_IO);
 			tasksToReturn.clear();
+			
 			return tasksToReturn;
 		} catch (ParseException e) {
 			report(ERROR_PARSE);
 			tasksToReturn.clear();
+			
 			return tasksToReturn;
 		}
 	}
 	
 	/** ******************** **/
 	
-	private String getHiddenFilePath(String fileName) {
+	private String getBackupFilePath(String fileName) {
 		String backupFilePath = "";
 		backupFilePath = manager.createBackupFilePath(folderName, 
-				FilenameUtils.getBaseName(fileName) + HIDDEN + 
+				FilenameUtils.getBaseName(fileName) + BACKUP + 
 						FilenameUtils.getExtension(fileName));
 		
 		return backupFilePath;

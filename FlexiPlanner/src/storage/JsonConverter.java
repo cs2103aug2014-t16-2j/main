@@ -1,11 +1,12 @@
 package storage;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
@@ -110,14 +111,6 @@ public class JsonConverter {
 	}
 	
 	/** ******************** **/
-	
-	public TaskData jsonStrToTask(String str) throws ParseException {
-		JSONObject object = (JSONObject) JSONValue.parseWithException(str);
-		
-		return jsonObjToTask(object);
-	}
-	
-	/** ******************** **/
 
 	public JSONObject encloseJsonArrInJsonObj(JSONArray jarr) {
 		JSONObject jo = new JSONObject();
@@ -128,19 +121,24 @@ public class JsonConverter {
 	
 	/** ******************** **/
 	
-	public JSONArray retrieveJsonArrFromJsonStr(String strContainingObj) throws ParseException {
-		JSONParser parser = new JSONParser();
-		JSONObject objContainingArr = (JSONObject) parser.parse(strContainingObj);
+	public JSONArray retrieveJsonArrFromJsonObj(JSONObject jsonObj) {
+		JSONArray jsonArrToReturn = (JSONArray) jsonObj.get(TITLE_JSONARRAY);
 		
-		return retrieveJsonArrFromJsonObj(objContainingArr);
+		if (jsonArrToReturn == null) {
+			
+			return new JSONArray();
+		}
+		
+		return jsonArrToReturn;
 	}
 	
 	/** ******************** **/
 	
-	public JSONArray retrieveJsonArrFromJsonObj(JSONObject jsonObj) {
-		JSONArray jsonArrToReturn = (JSONArray) jsonObj.get(TITLE_JSONARRAY);
+	public JSONObject getJsonObjFromFile(BufferedReader br) throws IOException, ParseException {
+		JSONParser parser = new JSONParser();
+		JSONObject jsonObj = (JSONObject) parser.parse(br);
 		
-		return jsonArrToReturn == null ? new JSONArray() : jsonArrToReturn;
+		return jsonObj;
 	}
 	
 	/**
@@ -153,9 +151,6 @@ public class JsonConverter {
 	public String toPrettyFormat(Object obj) {
 		if (obj instanceof JSONObject) {
 			obj = (JSONObject) obj;
-		}
-		else if (obj instanceof JSONArray) {
-			obj = (JSONArray) obj;
 		}
 		
 		Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();

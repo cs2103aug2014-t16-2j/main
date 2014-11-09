@@ -12,6 +12,14 @@ import commons.TaskData;
  */
 
 public interface Storage {
+	
+	/**
+	 * This method create folders and files necessary
+	 * for storing data.
+	 * 
+	 * @param filePath - the path to the file to set up
+	 * @return setup successful or not : boolean
+	 */
 	public boolean setupDatabase(final String filePath);
 	
 	/**
@@ -24,7 +32,7 @@ public interface Storage {
 	public boolean saveTasks(final String fileName, ArrayList<TaskData> taskList);
 	
 	/**
-	 * This method loads data from a specified file.
+	 * This method loads task data from a specified file.
 	 * @param fileName : name of the file to load from
 	 * 
 	 * @return taskList : ArrayList<TaskData> 
