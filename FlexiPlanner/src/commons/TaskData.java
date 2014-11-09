@@ -242,8 +242,7 @@ public class TaskData implements Comparable<TaskData> {
 		return sb.toString();
 	}
 
-	 //@author A0112066U
-	
+	//@author A0112066U
 	@Override
 	public int compareTo(TaskData task) {
 		String prior = task.getPriority();

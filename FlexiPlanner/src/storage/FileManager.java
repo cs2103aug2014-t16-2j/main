@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FilenameUtils;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 //@author A0117989H
@@ -25,13 +24,12 @@ import org.json.simple.parser.ParseException;
 
 public class FileManager {
 	
-	private final String FILE_NAME_PATTERN = "^[\\w,\\s-]+$";
-	private final String VALID_EXTENSION_TASKS_FILE = "json";
-	private final String VALID_EXTENSION_NORMAL_FILE = "txt";
+	private final String FILE_NAME_PATTERN = "^[\\w,\\s-]+.(?i)(txt|json)$";
 	private final String NOTHING = "";
 	private final String SEPERATOR = "//";
 	private final String USER_HOME = "user.home";
 	private final String BACKUP = "-backup";
+	private final String DOT = ".";
 	
 	public boolean createFolder(String folderName) throws IOException {
 		boolean isCreated = false;
@@ -106,10 +104,7 @@ public class FileManager {
 			return new JSONObject();
 		}
 		
-		JSONParser parser = new JSONParser();
-		JSONObject jsonObj = (JSONObject) parser.parse(new BufferedReader(new FileReader(filePath)));
-		
-		return jsonObj;
+		return new JsonConverter().getJsonObjFromFile(new BufferedReader(new FileReader(filePath)));
 	}
 	
 	/** ******************** **/
@@ -135,13 +130,11 @@ public class FileManager {
 			return false;
 		}
 		
-		if (!FilenameUtils.getExtension(fileName).equalsIgnoreCase(VALID_EXTENSION_TASKS_FILE) &&
-			!FilenameUtils.getExtension(fileName).equalsIgnoreCase(VALID_EXTENSION_NORMAL_FILE)) {
-			return false;
-		}
+		String actualFileName = FilenameUtils.getBaseName(fileName) + DOT +
+					  FilenameUtils.getExtension(fileName);
 		
 		Pattern pattern = Pattern.compile(FILE_NAME_PATTERN);
-		Matcher matcher = pattern.matcher(FilenameUtils.getBaseName(fileName));
+		Matcher matcher = pattern.matcher(actualFileName);
 		
 		return matcher.matches();
 	}

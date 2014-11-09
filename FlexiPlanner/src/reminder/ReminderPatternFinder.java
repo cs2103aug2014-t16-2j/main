@@ -10,19 +10,20 @@ import java.util.regex.Pattern;
 //@author A0117989H
 
 /**
- * This class is to parse user's command to set reminder for the to-do tasks.
+ * This class is to find reminder command in user's command to set reminder for the to-do tasks.
  */
 
 /**
  * Users are able to enter commands to set reminder as below:
  * 
  * Sample commands:
- * command 1 : collect movie ticket from box office tomorrow "remind me 3hours before"
- * command 2 : tutorial paper submission tomorrow "set reminder 1h before"
- * command 3 : production meeting on 10 November "9 nov 8am"
- * command 4 : shop groceries for kitchen "remind me 10-11-14 0700" (dd-mm-yy) or (dd-mm-yyyy)
- * command 5 : attend customer meeting next week "reminder me 10/11/14 0830am"
- * command 6 : submit report "reminder me on 10/11/14 8:30am"
+ * command 1 : collect movie ticket from box office tomorrow [remind me 3hours before]
+ * command 2 : tutorial paper submission tomorrow [set reminder 1h before]
+ * command 3 : production meeting on 10 November [9 nov 8am]
+ * command 4 : shop groceries for kitchen [remind me 10-11-14 0700] (dd-mm-yy) or (dd-mm-yyyy)
+ * command 5 : attend customer meeting next week [remind me 10/11/14 1230am]
+ * command 6 : submit report [remind me on 10/11/14 8:30am]
+ * command 7 : edit 1 [clear reminder]
  *
  */
 
