@@ -30,7 +30,7 @@ import ui.FlexiPlannerUI;
 public class ReminderPopup {
 	
 	private final String REMINDER_ICON_PATH = "/resources/reminder-icon.png";
-	private final String SOUND_FILE_PATH = "/resources/reminder2.wav";
+	private final String SOUND_FILE_PATH = "/resources/reminder.wav";
 	private final String NOTHING = "";
 	private final String HTML_ST = "<html>";
 	private final String HTML_EN = "</html>";
