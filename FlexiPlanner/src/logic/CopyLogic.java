@@ -49,9 +49,9 @@ public class CopyLogic {
 	protected ArrayList<TaskData> taskList;
 	protected ArrayList<TaskData> completedTask;
 	protected ArrayList<TaskData> blockedList;
-	protected String blockedPath = "unittests\\blocked.json";
-	protected String taskFilePath = "unittests\\text.json";
-	protected String completedTaskFilePath = "unittests\\completed.json";
+	protected String blockedPath = "blocked.json";
+	protected String taskFilePath = "text.json";
+	protected String completedTaskFilePath = "completed.json";
 	protected boolean isSuspendedAction = false;
 	protected Action suspendingAction;
 	protected ReminderPatternFinder reminderParser;
@@ -72,7 +72,7 @@ public class CopyLogic {
 	protected String messageToUser;
 
 	// ------------------Constructor-------------------------//
-	public CopyLogic() throws FileNotFoundException, IOException, ParseException {
+	protected CopyLogic() throws FileNotFoundException, IOException, ParseException {
 		setupDatabase();
 		initialiseVariables();
 		loadData();
@@ -135,7 +135,7 @@ public class CopyLogic {
 	 * @return message to user
 	 */
 	//@author A0112066U
-	public String executeInputCommand(String _command) throws IOException,
+	protected String executeInputCommand(String _command) throws IOException,
 			ParseException {
 		if (_command == null || _command.isEmpty()) {
 			_command = " ";
@@ -234,7 +234,7 @@ public class CopyLogic {
 			isSuccessful = search(task);
 			return isSuccessful;
 		case MARK:
-			isSuccessful = markAsDone(toTaskData(task), false);
+			isSuccessful = mark(toTaskData(task), false);
 			if (isSuccessful)
 				actionList.push(new ActionEntry(action, null));
 			return isSuccessful;
@@ -659,13 +659,13 @@ public class CopyLogic {
 		}
 	}
 
-	/** This method is to mark a task as done **/
+	/** This method is to mark a task as done or undone**/
 	//@author A0112066U
-	protected boolean markAsDone(TaskData _task, boolean unredo) {
+	protected boolean mark(TaskData _task, boolean unredo) {
 		boolean isSuccessful = false;
 		String content = _task.getContent();
 		if (isInteger(content)) {
-			return markAsDoneByIndex(Integer.parseInt(content), unredo);
+			return markByIndex(Integer.parseInt(content), unredo);
 		}
 		if (done) {
 			messageToUser = MSG_NOT_ALLOWED_MARK;
@@ -752,7 +752,7 @@ public class CopyLogic {
 	 **/
 	//@author A0112066U
 
-	protected boolean markAsDoneByIndex(int index, boolean unredo) {
+	protected boolean markByIndex(int index, boolean unredo) {
 		ArrayList<TaskData> displayedList = getDisplayedList();
 		int size = displayedList.size();
 		if (index < 1 || index > size) {
@@ -760,7 +760,7 @@ public class CopyLogic {
 			return false;
 		} else {
 			TaskData task = displayedList.get(index - 1);
-			return markAsDone(task, unredo);
+			return mark(task, unredo);
 		}
 
 	}
@@ -859,19 +859,21 @@ public class CopyLogic {
 					TaskData t = new TaskData();
 					t.setStartDateTime(end);
 					t.setEndDateTime(_end);
+					t.setContent("Blocked slot");
+					_task.setContent("Blocked slot");
 					blockedList.add(0, t);
 					blockedList.add(0, _task);
 					unblocked.add(new TaskData(null, null, null, start, end));
 					continue;
 				}
-				if (start.isBefore(_start) && end.isBefore(_end)) {
+				if ((start.isBefore(_start) || start.equals(_start)) && end.isBefore(_end)) {
 					blockedList.remove(_task);
 					_task.setStartDateTime(end);
 					blockedList.add(_task);
 					unblocked.add(new TaskData(null, null, null, _start, end));
 					continue;
 				}
-				if (_start.isBefore(start) && _end.isBefore(end)) {
+				if (_start.isBefore(start) && (_end.isBefore(end) || end.equals(_end))) {
 					blockedList.remove(_task);
 					_task.setEndDateTime(start);
 					blockedList.add(_task);
@@ -945,7 +947,7 @@ public class CopyLogic {
 		case MODIFY:
 			return modifyTask(task, t, true);
 		case MARK:
-			return markAsDone(_task, true);
+			return mark(_task, true);
 		case BLOCK:
 			ArrayList<TaskData> blockList = unblockSlot.pop();
 			blockSlot.push(blockList);
@@ -1094,7 +1096,7 @@ public class CopyLogic {
 						.startsWith("blocked"))) {
 			searchResult = blockedList;
 		} else {
-			if (!task.isDone()) {
+			if (task.isDone() == null || !task.isDone()) {
 				searchResult = searchTool.search(taskList, task);
 				done = false;
 			} else {
@@ -1125,7 +1127,7 @@ public class CopyLogic {
 	}
 
 	//@author A0112066U
-	public void saveData() throws IOException {
+	protected void saveData() throws IOException {
 		storer.saveTasks(taskFilePath, taskList);
 	}
 
@@ -1136,7 +1138,7 @@ public class CopyLogic {
 
 	/** This method returns tasks to come **/
 	//@author A0112066U
-	public ArrayList<TaskData> getTaskToCome() {
+	protected ArrayList<TaskData> getTaskToCome() {
 		LocalDateTime now = LocalDateTime.now();
 		int dateToday = now.getDayOfMonth();
 		int monthToday = now.getMonthValue();
@@ -1163,7 +1165,7 @@ public class CopyLogic {
 
 	/** This methods answers UI, checks if a date has task **/
 	//@author A0112066U
-	public boolean hasTask(String date) throws IOException, ParseException {
+	protected boolean hasTask(String date) throws IOException, ParseException {
 		Task testTask = parser.getAction(date).getTask();
 		LocalDateTime time = testTask.getStartDateTime();
 		int dayOfMonth = time.getDayOfMonth();
@@ -1192,7 +1194,7 @@ public class CopyLogic {
 
 	/** This method returns overdue task to UI **/
 	//@author A0112066U
-	public ArrayList<TaskData> getOverdue() {
+	protected ArrayList<TaskData> getOverdue() {
 		ArrayList<TaskData> overdue = new ArrayList<TaskData>();
 		LocalDateTime now = LocalDateTime.now();
 		Collections.sort(taskList);
@@ -1207,7 +1209,7 @@ public class CopyLogic {
 
 	/** This methods return all categories to UI **/
 	//@author A0112066U
-	public String getCategory() {
+	protected String getCategory() {
 		ArrayList<String> category = new ArrayList<String>();
 		for (TaskData _task : taskList) {
 			String cat = _task.getCategory();
@@ -1223,7 +1225,7 @@ public class CopyLogic {
 
 	/** This methods return data of recently added tasks to UI **/
 	//@author A0112066U
-	public String getData(String s) throws IOException, ParseException {
+	protected String getData(String s) throws IOException, ParseException {
 		currentDisplayList = 2;
 		return dataToShow();
 	}
@@ -1272,11 +1274,13 @@ public class CopyLogic {
 
 	/* clear all data */
 	//author A0112066U
-	public void clear() throws IOException {
+	protected void clear() throws IOException {
 		taskList.clear();
 		completedTask.clear();
+		blockedList.clear();
 		saveData();
 		saveCompletedTask();
+		storer.saveTasks(blockedPath, blockedList);
 	}
 
 	/** This method translates a Task to TaskData for storage **/
@@ -1317,7 +1321,7 @@ public class CopyLogic {
 	/** This method returns to UI the list of tasks it requires **/
 	//@author A0112066U
 
-	public ArrayList<DisplayedEntry> getRequiredTask(String userCommand) {
+	protected ArrayList<DisplayedEntry> getRequiredTask(String userCommand) {
 		Command cmd = null;
 		if (userCommand != null && !userCommand.isEmpty()) {
 			cmd = parser.getAction(userCommand).getCommand();
@@ -1353,10 +1357,22 @@ public class CopyLogic {
 		return tobeShown;
 	}
 
-	public int getOverdueRow() {
+	protected int getOverdueRow() {
 		return overdueRow;
 	}
 
+	protected String getBlock() {
+		String result = "";
+		for (TaskData block : blockedList) {
+			DisplayedEntry b = new DisplayedEntry(block);
+			try {
+				result += b.getStartDateTime() + " - " + b.getEndDateTime();
+				result += "\n";
+			} catch (java.text.ParseException e) {
+			}
+		}
+		return result;
+	}
 	/** This method is to determined what list of tasks is being displayed **/
 	//@author A0112066U
 	protected ArrayList<TaskData> getDisplayedList() {
