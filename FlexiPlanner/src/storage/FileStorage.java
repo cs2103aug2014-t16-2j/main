@@ -69,37 +69,15 @@ public class FileStorage implements Storage {
 	@Override
 	public boolean setupDatabase(final String fileName) {
 		boolean isSetup = false;
+		boolean isValid = manager.isValidFileName(fileName);
 		
-		if (manager.isValidFileName(fileName)) {
-			try {
-				//redirect file to be created into the folder
-				final String filePath = manager.createFilePath(folderName, fileName);
-				
-				isSetup = manager.createFile(filePath);
-				
-				//data automatic backup
-				 manager.createBackupFile(folderName, 
-						FilenameUtils.getBaseName(fileName) + BACKUP + 
-						FilenameUtils.getExtension(fileName));
-				
-				if (isSetup) {
-					path.add(filePath);
-					report(INFO_FILE_CREATED + filePath + NEXT_LINE);
-				}
-				else {
-					report(INFO_FILE_ALD_EXISTS);
-					path.add(filePath);
-				}
-			} catch (IOException e) {
-				report(ERROR_IO);
-				
-				return false;
-			}
-		}
-		else {
-			isSetup = false;
+		if (!isValid) {
 			report(ERROR_INVALID_FILE_NAME);
+			
+			return isSetup;
 		}
+		
+		isSetup = implementingSetupAndBackup(fileName);
 		
 		return isSetup;
 	}
@@ -113,40 +91,19 @@ public class FileStorage implements Storage {
 		String filePath = manager.createFilePath(folderName, fileName);
 		String backupFilePath = getBackupFilePath(fileName);
 		
-		if (path.isEmpty() || !path.contains(filePath)) {
+		if (isDataBaseNotReadyFor(filePath)) {
 			report(ERROR_NOT_SETUP_YET);
 			
 			return isSaveSuccess;
 		}
 		
-		if (taskList == null) {
+		if (isNullList(taskList)) {
 			report(ERROR_NULL_LIST);
 			
 			return isSaveSuccess;
 		}
 		
-		try {
-			JSONObject jObjToSave;
-			JSONArray jArr;
-			
-			jArr = converter.tasksToJsonArr(taskList);
-			jObjToSave = converter.encloseJsonArrInJsonObj(jArr);
-			
-			manager.writeInJsonFormat(filePath, jObjToSave, false);
-			
-			//data auto backup
-			if (!backupFilePath.equals(NOTHING)) {
-				manager.writeInJsonFormat(backupFilePath, jObjToSave, false);
-			}
-			
-			isSaveSuccess = true;	
-			
-		} catch (IOException e) {
-			report(ERROR_IO);
-			//check if folder and all files are found to be deleted accidentally
-			//all data written back as long as application does not quit abnormally
-			isSaveSuccess = recreateFolderIfFolderNotFound();
-		}
+		isSaveSuccess = convertTasksToJsonObjAndSave(filePath, backupFilePath, taskList);
 		
 		return isSaveSuccess;
 	}
@@ -158,23 +115,144 @@ public class FileStorage implements Storage {
 		ArrayList<TaskData> tasksToReturn = new ArrayList<TaskData>();
 		
 		String filePath = manager.createFilePath(folderName, fileName);
+		String backupFilePath = getBackupFilePath(fileName);
 		
-		if (path.isEmpty() || !path.contains(filePath)) {
+		if (isDataBaseNotReadyFor(filePath)) {
 			report(ERROR_NOT_SETUP_YET);
 			
 			return tasksToReturn;
 		}
 		
+		tasksToReturn = loadingFrom(filePath, backupFilePath);
+		
+		return tasksToReturn;
+	}
+ 	
+	/** ******************** **/
+	
+	//@author A0117989H-unused
+	@Override
+	public boolean saveFile(final String fileName, ArrayList<String> list) {
+		boolean isSaveSuccess = false;
+		
+		String filePath = manager.createFilePath(folderName, fileName);
+		
+		if (isDataBaseNotReadyFor(filePath)) {
+			report(ERROR_NOT_SETUP_YET);
+			
+			return isSaveSuccess;
+		}
+		
+		isSaveSuccess = savingTo(filePath, list);
+		
+		return isSaveSuccess;
+	}
+	
+	/** ******************** **/
+	
+	//@author A0117989H-unused
+	@Override
+	public ArrayList<String> loadFile(final String fileName) {
+		ArrayList<String> list = new ArrayList<String>();
+		
+		String filePath = manager.createFilePath(folderName, fileName);
+		
+		if (isDataBaseNotReadyFor(filePath)) {
+			report(ERROR_NOT_SETUP_YET);
+			return list;
+		}
+		
+		list = loadingFrom(filePath);
+		
+		return list;
+	}
+	
+	/** ******************** **/
+	
+	//@author A0117989H
+	private boolean implementingSetupAndBackup(String fileName) {
+		boolean isSetup = false;
+		
+		try {
+			//redirect file into the base folder
+			String filePath = manager.createFilePath(folderName, fileName);
+			String backupFileName = FilenameUtils.getBaseName(fileName) + BACKUP + 
+									FilenameUtils.getExtension(fileName);
+
+			isSetup = manager.createFile(filePath);
+
+			//data automatic backup
+			manager.createBackupFile(folderName, backupFileName);
+
+			if (isSetup) {
+				path.add(filePath);
+				report(INFO_FILE_CREATED + filePath + NEXT_LINE);
+			}
+			else {
+				path.add(filePath);
+				report(INFO_FILE_ALD_EXISTS);
+				isSetup = true;
+			}
+		} catch (IOException e) {
+			report(ERROR_IO);
+			isSetup = false;
+		}
+		
+		return isSetup;
+	}
+	
+	/** ******************** **/
+	
+	private boolean convertTasksToJsonObjAndSave(String filePath, String backupFilePath,
+			ArrayList<TaskData> taskList) {
+
+		try {
+			JSONArray jArr = converter.tasksToJsonArr(taskList);
+			JSONObject jObjToSave = converter.encloseJsonArrInJsonObj(jArr);
+
+			manager.writeInJsonFormat(filePath, jObjToSave, false);
+
+			//data auto backup
+			if (!backupFilePath.equals(NOTHING)) {
+				manager.writeInJsonFormat(backupFilePath, jObjToSave, false);
+			}
+
+			return true;	
+
+		} catch (IOException e) {
+			report(ERROR_IO);
+			
+			return recreateFolderIfFolderNotFound();
+		}
+	}
+	
+	/** ******************** **/
+
+	private boolean isDataBaseNotReadyFor(String filePath) {
+		return path.isEmpty() || !path.contains(filePath);
+	}
+	
+	/** ******************** **/
+	
+	private boolean isNullList(ArrayList<TaskData> taskList) {
+		return taskList == null;
+	}
+	
+	/** ******************** **/
+	
+	private ArrayList<TaskData> loadingFrom(String filePath, String backupFilePath) {
+		ArrayList<TaskData> tasksToReturn = new ArrayList<TaskData>();
+		
 		try {
 			if (manager.isEmptyFile(filePath)) {
-				String backupFilePath = getBackupFilePath(fileName);
 				
-				//check back-up file to observe discrepancies to choose loading file path
-				if (!backupFilePath.equals(NOTHING) && !manager.isEmptyFile(backupFilePath)) {
-					filePath = backupFilePath;
+				//check backup file
+				if (isBackupFileAlsoEmpty(backupFilePath)) {
+					
+					return tasksToReturn;
 				}
 				else {
-					return tasksToReturn;
+					filePath = backupFilePath;
 				}
 			}
 			
@@ -186,54 +264,53 @@ public class FileStorage implements Storage {
 		} catch (IOException e) {
 			report(ERROR_IO);
 			tasksToReturn.clear();
-			
-			//check if folder and all files are found to be deleted accidentally
-			//all data written back as long as application does not quit abnormally
 			recreateFolderIfFolderNotFound();
 			
 		} catch (ParseException pe) {
 			report(ERROR_PARSE);
 			tasksToReturn.clear();
 			//get tasks from backup file
-			String backupFilePath = getBackupFilePath(fileName);
-			
-			if (!backupFilePath.equals("")) {
+			if (isValidBackupPath(backupFilePath)) {
+				
 				return loadBackupTasks(backupFilePath);
 			}
 		}
 		
 		return tasksToReturn;
 	}
- 	
+	
 	/** ******************** **/
-	//@author A0117989H-unused
-	@Override
-	public boolean saveFile(final String fileName, ArrayList<String> list) {
+	
+	private boolean isBackupFileAlsoEmpty(String backupFilePath) throws IOException {
+		return backupFilePath.equals(NOTHING) || manager.isEmptyFile(backupFilePath);
+	}
+	
+	/** ******************** **/
+	
+	private boolean isValidBackupPath(String backupFilePath) {
+		return !backupFilePath.equals(NOTHING);
+	}
+	
+	/** ******************** **/
+	
+	private boolean savingTo(String filePath, ArrayList<String> list) {
 		boolean isSaveSuccess = false;
-		
-		String filePath = manager.createFilePath(folderName, fileName);
-		
-		if (path.isEmpty() || !path.contains(filePath)) {
-			report(ERROR_NOT_SETUP_YET);
-			
-			return isSaveSuccess;
-		}
 		
 		try {
 			manager.clearFile(filePath);
 			
 			for (String s : list) {
 				manager.write(filePath, s, true);
+				
 				if (list.indexOf(s) != (list.size() - 1)) {
 					manager.write(filePath, "\n", true);
 				}
 			}
 			
 			isSaveSuccess = true;
+			
 		} catch (IOException e) {
 			report(ERROR_IO);
-			//check if folder and all files are found to be deleted accidentally
-			//all data written back as long as application does not quit abnormally
 			isSaveSuccess = recreateFolderIfFolderNotFound();
 		}
 		
@@ -241,17 +318,9 @@ public class FileStorage implements Storage {
 	}
 	
 	/** ******************** **/
-	//@author A0117989H-unused
-	@Override
-	public ArrayList<String> loadFile(final String fileName) {
+	
+	private ArrayList<String> loadingFrom(String filePath) {
 		ArrayList<String> list = new ArrayList<String>();
-		
-		String filePath = manager.createFilePath(folderName, fileName);
-		
-		if (path.isEmpty() || !path.contains(filePath)) {
-			report(ERROR_NOT_SETUP_YET);
-			return list;
-		}
 		
 		try {
 			if (manager.isEmptyFile(filePath)) {
@@ -259,12 +328,10 @@ public class FileStorage implements Storage {
 			}
 			
 			list = manager.read(filePath);
+			
 		} catch (IOException e) {
 			report(ERROR_IO);
 			list.clear();
-			
-			//check if folder and all files are found to be deleted accidentally
-			//all data written back as long as application does not quit abnormally
 			recreateFolderIfFolderNotFound();
 		}
 		
@@ -272,7 +339,7 @@ public class FileStorage implements Storage {
 	}
 	
 	/** ******************** **/
-	//@author A0117989H
+	
 	private ArrayList<TaskData> loadBackupTasks(String backupFilePath) {
 		ArrayList<TaskData> tasksToReturn = new ArrayList<TaskData>();
 		
