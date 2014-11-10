@@ -20,12 +20,12 @@ import commons.TaskData;
 
 public class LogicTest {
 
-	CopyLogic logic;
+	Logic logic;
 
 	@Before
 	public void initialise() {
 		try {
-			logic = new CopyLogic();
+			logic = new Logic();
 			logic.clear();
 		} catch (FileNotFoundException e) {
 		} catch (IOException e) {
@@ -39,7 +39,7 @@ public class LogicTest {
 		try {
 			String command = "add meet Jim from 11/11 2pm 4pm #funny";
 			String s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_SUCCESSFUL, s);
+			assertEquals("fail",  Logic.MSG_SUCCESSFUL, s);
 
 			TaskData task = new TaskData();
 			task.setContent("meet Jim");
@@ -51,12 +51,12 @@ public class LogicTest {
 
 			command = "undo";
 			s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_SUCCESSFUL, s);
+			assertEquals("fail",  Logic.MSG_SUCCESSFUL, s);
 			assertTrue(!logic.taskList.contains(task));
 
 			command = "redo";
 			s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_SUCCESSFUL, s);
+			assertEquals("fail",  Logic.MSG_SUCCESSFUL, s);
 			assertTrue(logic.taskList.contains(task));
 
 		} catch (IOException | ParseException e) {
@@ -68,7 +68,7 @@ public class LogicTest {
 		try {
 			String command = "meet Jim";
 			String s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_SUCCESSFUL, s);
+			assertEquals("fail",  Logic.MSG_SUCCESSFUL, s);
 			TaskData task = new TaskData();
 			task.setContent("meet Jim");
 			task.setCategory("none");
@@ -85,13 +85,13 @@ public class LogicTest {
 		try {
 			String command = "";
 			String s = logic.executeInputCommand(command);
-			assertEquals("fail", s, CopyLogic.MSG_ERROR
-					+ CopyLogic.MSG_EMPTY_INPUT);
+			assertEquals("fail", s,  Logic.MSG_ERROR
+					+  Logic.MSG_EMPTY_INPUT);
 
 			command = "undo";
 			s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_ERROR
-					+ CopyLogic.MSG_CANNOT_UNDO, s);
+			assertEquals("fail",  Logic.MSG_ERROR
+					+  Logic.MSG_CANNOT_UNDO, s);
 
 		} catch (IOException | ParseException e) {
 		}
@@ -106,8 +106,8 @@ public class LogicTest {
 			command = "meet Jim from 11/11 2pm 4pm";
 			logic.executeInputCommand(command);
 			String s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_ERROR
-					+ CopyLogic.MSG_EXISTING_TASK, s);
+			assertEquals("fail",  Logic.MSG_ERROR
+					+  Logic.MSG_EXISTING_TASK, s);
 
 		} catch (IOException | ParseException e) {
 		}
@@ -121,7 +121,7 @@ public class LogicTest {
 			logic.executeInputCommand(command);
 			command = "modify meet Jim from 11/11 3pm 4pm #project important";
 			String s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_SUCCESSFUL, s);
+			assertEquals("fail",  Logic.MSG_SUCCESSFUL, s);
 			TaskData task = new TaskData();
 			task.setContent("meet Jim");
 			task.setCategory("project");
@@ -132,7 +132,7 @@ public class LogicTest {
 
 			command = "undo";
 			s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_SUCCESSFUL, s);
+			assertEquals("fail",  Logic.MSG_SUCCESSFUL, s);
 			task.setCategory("funny");
 			task.setPriority("normal");
 			task.setStartDateTime(LocalDateTime.of(2014, 11, 11, 14, 00));
@@ -141,7 +141,7 @@ public class LogicTest {
 
 			command = "redo";
 			s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_SUCCESSFUL, s);
+			assertEquals("fail",  Logic.MSG_SUCCESSFUL, s);
 			task.setCategory("project");
 			task.setPriority("high");
 			task.setStartDateTime(LocalDateTime.of(2014, 11, 11, 15, 00));
@@ -161,10 +161,10 @@ public class LogicTest {
 			logic.executeInputCommand(command);
 			command = "modify meet Jim from 13/11 3pm 4pm #project important";
 			String s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_ASK_FOR_TIME, s);
+			assertEquals("fail",  Logic.MSG_ASK_FOR_TIME, s);
 			command = "11/11 2pm 4pm";
 			s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_SUCCESSFUL, s);
+			assertEquals("fail",  Logic.MSG_SUCCESSFUL, s);
 			TaskData task = new TaskData();
 			task.setContent("meet Jim");
 			task.setCategory("project");
@@ -175,7 +175,7 @@ public class LogicTest {
 
 			command = "undo";
 			s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_SUCCESSFUL, s);
+			assertEquals("fail",  Logic.MSG_SUCCESSFUL, s);
 			task.setCategory("funny");
 			task.setPriority("normal");
 			task.setStartDateTime(LocalDateTime.of(2014, 11, 11, 14, 00));
@@ -184,7 +184,7 @@ public class LogicTest {
 
 			command = "redo";
 			s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_SUCCESSFUL, s);
+			assertEquals("fail",  Logic.MSG_SUCCESSFUL, s);
 			task.setCategory("project");
 			task.setPriority("high");
 			task.setStartDateTime(LocalDateTime.of(2014, 11, 13, 15, 00));
@@ -202,8 +202,8 @@ public class LogicTest {
 			logic.executeInputCommand(command);
 			command = "modify meet Anna from 11/11 3pm 4pm #project important";
 			String s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_ERROR
-					+ CopyLogic.MSG_NO_TASK_FOUND, s);
+			assertEquals("fail",  Logic.MSG_ERROR
+					+  Logic.MSG_NO_TASK_FOUND, s);
 		} catch (IOException | ParseException e) {
 		}
 	}
@@ -216,7 +216,7 @@ public class LogicTest {
 			logic.executeInputCommand(command);
 			command = "delete meet Jim";
 			String s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_SUCCESSFUL, s);
+			assertEquals("fail",  Logic.MSG_SUCCESSFUL, s);
 			assertTrue(logic.taskList.isEmpty());
 
 			TaskData task = new TaskData();
@@ -228,12 +228,12 @@ public class LogicTest {
 
 			command = "undo";
 			s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_SUCCESSFUL, s);
+			assertEquals("fail",  Logic.MSG_SUCCESSFUL, s);
 			assertTrue(logic.taskList.contains(task));
 
 			command = "redo";
 			s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_SUCCESSFUL, s);
+			assertEquals("fail",  Logic.MSG_SUCCESSFUL, s);
 			assertTrue(!logic.taskList.contains(task));
 		} catch (IOException | ParseException e) {
 		}
@@ -247,8 +247,8 @@ public class LogicTest {
 			logic.executeInputCommand(command);
 			command = "delete Jim";
 			String s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_ERROR
-					+ CopyLogic.MSG_NO_TASK_FOUND, s);
+			assertEquals("fail",  Logic.MSG_ERROR
+					+  Logic.MSG_NO_TASK_FOUND, s);
 		} catch (IOException | ParseException e) {
 		}
 	}
@@ -263,10 +263,10 @@ public class LogicTest {
 			logic.executeInputCommand(command);
 			command = "delete meet Jim";
 			String s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_ASK_FOR_TIME, s);
+			assertEquals("fail",  Logic.MSG_ASK_FOR_TIME, s);
 			command = "12/11 3pm 4pm";
 			s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_SUCCESSFUL, s);
+			assertEquals("fail",  Logic.MSG_SUCCESSFUL, s);
 
 			TaskData task = new TaskData();
 			task.setContent("meet Jim");
@@ -279,12 +279,12 @@ public class LogicTest {
 
 			command = "undo";
 			s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_SUCCESSFUL, s);
+			assertEquals("fail",  Logic.MSG_SUCCESSFUL, s);
 			assertTrue(logic.taskList.contains(task));
 
 			command = "redo";
 			s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_SUCCESSFUL, s);
+			assertEquals("fail",  Logic.MSG_SUCCESSFUL, s);
 			assertTrue(!logic.taskList.contains(task));
 		} catch (IOException | ParseException e) {
 		}
@@ -298,7 +298,7 @@ public class LogicTest {
 			logic.executeInputCommand(command);
 			command = "mark meet Jim";
 			String s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_SUCCESSFUL, s);
+			assertEquals("fail",  Logic.MSG_SUCCESSFUL, s);
 
 			TaskData task = new TaskData();
 			task.setContent("meet Jim");
@@ -311,13 +311,13 @@ public class LogicTest {
 
 			command = "undo";
 			s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_SUCCESSFUL, s);
+			assertEquals("fail",  Logic.MSG_SUCCESSFUL, s);
 			assertTrue(logic.taskList.contains(task));
 			assertTrue(!logic.completedTask.contains(task));
 
 			command = "redo";
 			s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_SUCCESSFUL, s);
+			assertEquals("fail",  Logic.MSG_SUCCESSFUL, s);
 			assertTrue(!logic.taskList.contains(task));
 			assertTrue(logic.completedTask.contains(task));
 		} catch (IOException | ParseException e) {
@@ -334,10 +334,10 @@ public class LogicTest {
 			logic.executeInputCommand(command);
 			command = "mark meet Jim";
 			String s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_ASK_FOR_TIME, s);
+			assertEquals("fail",  Logic.MSG_ASK_FOR_TIME, s);
 			command = "12/11 3pm 4pm";
 			s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_SUCCESSFUL, s);
+			assertEquals("fail",  Logic.MSG_SUCCESSFUL, s);
 
 			TaskData task = new TaskData();
 			task.setContent("meet Jim");
@@ -350,13 +350,13 @@ public class LogicTest {
 
 			command = "undo";
 			s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_SUCCESSFUL, s);
+			assertEquals("fail",  Logic.MSG_SUCCESSFUL, s);
 			assertTrue(logic.taskList.contains(task));
 			assertTrue(!logic.completedTask.contains(task));
 
 			command = "redo";
 			s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_SUCCESSFUL, s);
+			assertEquals("fail",  Logic.MSG_SUCCESSFUL, s);
 			assertTrue(!logic.taskList.contains(task));
 			assertTrue(logic.completedTask.contains(task));
 		} catch (IOException | ParseException e) {
@@ -370,7 +370,7 @@ public class LogicTest {
 			logic.executeInputCommand(command);
 			command = "add meet Jim from 11/11 3pm 4pm #funny";
 			String s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_ERROR + CopyLogic.MSG_CLASHES, s);
+			assertEquals("fail",  Logic.MSG_ERROR +  Logic.MSG_CLASHES, s);
 		} catch (IOException | ParseException e) {
 		}
 	}
@@ -381,7 +381,7 @@ public class LogicTest {
 			logic.executeInputCommand(command);
 			command = "unblock 11/11 2pm 3pm";
 			String s = logic.executeInputCommand(command);
-			assertEquals("fail", CopyLogic.MSG_SUCCESSFUL, s);
+			assertEquals("fail",  Logic.MSG_SUCCESSFUL, s);
 			
 			TaskData block = new TaskData();
 			block.setContent("Blocked slot");

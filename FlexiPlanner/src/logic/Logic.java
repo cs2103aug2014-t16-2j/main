@@ -18,21 +18,21 @@ import reminder.ReminderPatternFinder;
 import storage.*;
 
 public class Logic {
-	private static final String MSG_NOT_ALLOWED_MARK = "You cannot mark a completed task as done";
-	private static final String MSG_NOT_ALLOWED_MODIFY = "You cannot modify a completed task";
-	private static final String MSG_ERROR = "Error. ";
-	private static final String MSG_ASK_FOR_TIME = "Please provide start and end time";
-	private static final String MSG_SUCCESSFUL = "Successful. ";
-	private static final String MSG_TIME_SPECIFIED = "You must specify start time and end time";
-	private static final String MSG_CANNOT_UNDO = "Cannot undo anymore";
-	private static final String MSG_CANNOT_REDO_ANYMORE = "Cannot redo anymore";
-	private static final String MSG_INDEX_OUT_OF_BOUND = "Index out of bound";
-	private static final String MSG_NO_TASK_FOUND = "No task found";
-	private static final String MSG_NO_TASK_SPCIFIED = "No task spcified";
-	private static final String MSG_ERROR_WHILE_SAVING_DATA = "Error while saving data";
-	private static final String MSG_EXISTING_TASK = "This task has been existing";
-	private static final String MSG_CLASHES = "This task clashes with a blocked slot";
-	private static final String MSG_EMPTY_INPUT = "Empty input";
+	protected static final String MSG_NOT_ALLOWED_MARK = "You cannot mark a completed task as done";
+	protected static final String MSG_NOT_ALLOWED_MODIFY = "You cannot modify a completed task";
+	protected static final String MSG_ERROR = "Error. ";
+	protected static final String MSG_ASK_FOR_TIME = "Please provide start and end time";
+	protected static final String MSG_SUCCESSFUL = "Successful. ";
+	protected static final String MSG_TIME_SPECIFIED = "You must specify start time and end time";
+	protected static final String MSG_CANNOT_UNDO = "Cannot undo anymore";
+	protected static final String MSG_CANNOT_REDO_ANYMORE = "Cannot redo anymore";
+	protected static final String MSG_INDEX_OUT_OF_BOUND = "Index out of bound";
+	protected static final String MSG_NO_TASK_FOUND = "No task found";
+	protected static final String MSG_NO_TASK_SPCIFIED = "No task spcified";
+	protected static final String MSG_ERROR_WHILE_SAVING_DATA = "Error while saving data";
+	protected static final String MSG_EXISTING_TASK = "This task has been existing";
+	protected static final String MSG_CLASHES = "This task clashes with a blocked slot";
+	protected static final String MSG_EMPTY_INPUT = "Empty input";
 	private Command command;
 	private Task task;
 	private HashMap<String, HashMap<DateInfo, TaskData>> taskIdentifier;
@@ -46,9 +46,9 @@ public class Logic {
 													// press F2
 	private ArrayList<TaskData> F3DisplayedList; // list of tasks displayed when
 													// press F3
-	private ArrayList<TaskData> taskList;
-	private ArrayList<TaskData> completedTask;
-	private ArrayList<TaskData> blockedList;
+	protected ArrayList<TaskData> taskList;
+	protected ArrayList<TaskData> completedTask;
+	protected ArrayList<TaskData> blockedList;
 	private String blockedPath = "blocked.json";
 	private String taskFilePath = "text.json";
 	private String completedTaskFilePath = "completed.json";
@@ -66,7 +66,7 @@ public class Logic {
 	private Stack<ArrayList<TaskData>> unblockSlot = new Stack<ArrayList<TaskData>>();
 	private Stack<ArrayList<TaskData>> blockSlot = new Stack<ArrayList<TaskData>>();
 
-	private ArrayList<TaskData> searchResult;
+	protected ArrayList<TaskData> searchResult;
 	private int overdueRow = 0;
 
 	private String messageToUser;
@@ -1276,7 +1276,11 @@ public class Logic {
 	//author A0112066U
 	public void clear() throws IOException {
 		taskList.clear();
+		completedTask.clear();
+		blockedList.clear();
 		saveData();
+		saveCompletedTask();
+		storer.saveTasks(blockedPath, blockedList);
 	}
 
 	/** This method translates a Task to TaskData for storage **/
