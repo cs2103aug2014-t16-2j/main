@@ -1927,6 +1927,120 @@ public class Tray {
 
 
 	/**
+	 * origin: C:\Users\Kamui\git\main\FlexiPlanner\unit-tests\commons\TaskDataTest.java
+	 */
+
+
+/**
+ * This unit test class is to test the important functions
+ * of the TaskData class and its methods.
+ *
+ */
+
+public class TaskDataTest {
+	
+	/** test the null constructor **/
+	@Test
+	public void tc1() {
+		TaskData task = new TaskData();
+		
+		assertNull(task.getContent());
+		assertNull(task.getCategory());
+		assertNull(task.getPriority());
+		assertNull(task.getStartDateTime());
+		assertNull(task.getEndDateTime());
+	}
+	
+	/** test equal method **/
+	@Test
+	public void tc2() {
+		TaskData t1 = new TaskData();
+		t1.setContent("holiday");
+		t1.setCategory("perosnal");
+		t1.setPriority("high");
+		t1.setStartDateTime(LocalDateTime.now());
+		t1.setEndDateTime(LocalDateTime.now().plusDays(30));
+		TaskData t2 = new TaskData(t1);
+		assertTrue(t1.equals(t2));
+		
+		assertFalse(t1.equals(new TaskData()));
+		
+		t1 = new TaskData("December holiday");
+		t2 = new TaskData("December holiday");
+		assertTrue(t1.equals(t2));
+	}
+	
+	/** test equal method w all properties null **/
+	@Test
+	public void tc3() {
+		TaskData t1 = new TaskData();
+		TaskData t2 = new TaskData();
+		assertTrue(t1.equals(t2));
+	}
+	
+	/** test reminder auto set upon remind date time is not null **/
+	@Test
+	public void tc4() {
+		TaskData t1 = new TaskData("reminder");
+		t1.setRemindDateTime(LocalDateTime.now().plusYears(1));
+		assertTrue(t1.hasReminder());
+		t1.clearReminder();
+		assertFalse(t1.hasReminder());
+	}
+	
+	/** test clear reminder when remind date time is LDT.MIN (clear command) **/
+	@Test
+	public void tc5() {
+		TaskData t1 = new TaskData("reminder");
+		t1.setRemindDateTime(LocalDateTime.MIN);
+		assertNull(t1.getRemindDateTime());
+		assertFalse(t1.hasReminder());
+	}
+	
+	/** test convert to JSON object **/
+	@Test 
+	public void tc6() {
+		TaskData t1 = new TaskData("json object test");
+		Object obj = t1.convertToJsonObject();
+		assertTrue(obj instanceof JSONObject);
+	}
+	
+	/** test toString method **/
+	@Test
+	public void tc7() {
+		TaskData t1 = new TaskData("to String");
+		TaskData t2 = new TaskData(t1);
+		assertTrue(t1.toString().equals(t2.toString()));
+	}
+	
+	/** test compare chronologically and w priority **/
+	@Test
+	public void tc8() {
+		TaskData t1 = new TaskData();
+		TaskData t2 = new TaskData();
+		t1.setStartDateTime(LocalDateTime.now().plusDays(1));
+		t1.setPriority("normal");
+		t2.setStartDateTime(LocalDateTime.now().plusDays(2));
+		t1.setPriority("normal");
+		//t1 is before t2
+		assertEquals(t1.compareTo(t2), -1);
+		//t2 is after t1
+		assertEquals(t2.compareTo(t1), 1);
+		
+		TaskData t3 = new TaskData(t1);
+		//t1 = t3
+		assertEquals(t1.compareTo(t3), 0);
+	}
+
+}
+
+	// End of segment: C:\Users\Kamui\git\main\FlexiPlanner\unit-tests\commons\TaskDataTest.java
+
+
+
+
+
+	/**
 	 * origin: C:\Users\Kamui\git\main\FlexiPlanner\unit-tests\reminder\ReminderPatternFinderTest.java
 	 */
 
@@ -2178,7 +2292,6 @@ public class FileStorageTest {
 	final String SIMULATE_PE = "test-resources//simulatepe.json";
 	
 	final String ERROR_NO_RECORD = "File record not found! Setup database first!\n";
-	final String ERROR_PARSE_ERROR = "Parse Error!\nParse Error!\n";
 	final String ERROR_NULL_LIST = "List cannot be null!\n";
 	
 	final String PERSONAL = "#personal";
@@ -2259,14 +2372,6 @@ public class FileStorageTest {
 		assertEquals(ERROR_NO_RECORD, out.toString());
 	}
 	
-	/** test output when the task file is not in JSON format **/
-	@Test
-	public void testLoadFileNotInJSONFormat() {
-		System.setOut(new PrintStream(out));
-		database.loadTasks(NOT_IN_JSON_FORMAT);
-		assertEquals(ERROR_PARSE_ERROR, out.toString());
-	}
-	
 	/** test boundary case of loading from an empty task file **/
 	@Test 
 	public void testLoadEmptyFile() {
@@ -2295,6 +2400,13 @@ public class FileStorageTest {
 	}
 	
 	/** test loading back up data retrieval when task file is accidentally cleared **/
+	/** 
+	 * This test case is to be run with backup files setup in the FlexiPlanner Database-backup
+	 * folder in the system user.home directory.
+	 * Setup before run - files from FlexiPlanner Database//test-resources are copied to the backup folder 
+	 * as mentioned as above. Rename all copied files as fileName-backup.extension(same as original extension).
+	 */
+	@Ignore
 	@Test
 	public void testRetrieveBackupClearedFile() throws FileNotFoundException, IOException {
 		ArrayList<TaskData> tasks = new ArrayList<TaskData>();
@@ -2308,6 +2420,8 @@ public class FileStorageTest {
 	}
 	
 	/** test loading back up data retrieval when parse exception occurs in parsing JSON format **/
+	/** the same condition applied to this test case to run as the above test case **/
+	@Ignore
 	@Test
 	public void testRetrieveBackupWhenParseExOccurs() throws FileNotFoundException, IOException {
 		ArrayList<TaskData> tasks = new ArrayList<TaskData>();
