@@ -1,0 +1,63 @@
+//@author: a0117989h-unused
+
+
+
+	/**
+	 * origin: C:\Users\Kamui\git\main\FlexiPlanner\src\storage\FileStorage.java
+	 */
+
+	//storage is used to save only tasks
+	@Override
+	public boolean saveFile(final String fileName, ArrayList<String> list) {
+		boolean isSaveSuccess = false;
+		
+		String filePath = manager.createFilePath(folderName, fileName);
+		
+		if (isDataBaseNotReadyFor(filePath)) {
+			report(ERROR_NOT_SETUP_YET);
+			
+			return isSaveSuccess;
+		}
+		
+		isSaveSuccess = savingTo(filePath, list);
+		
+		return isSaveSuccess;
+	}
+	
+	//** ******************** **/
+	
+	// End of segment: C:\Users\Kamui\git\main\FlexiPlanner\src\storage\FileStorage.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Kamui\git\main\FlexiPlanner\src\storage\FileStorage.java
+	 */
+
+	//storage is used to load tasks only
+	@Override
+	public ArrayList<String> loadFile(final String fileName) {
+		ArrayList<String> list = new ArrayList<String>();
+		
+		String filePath = manager.createFilePath(folderName, fileName);
+		
+		if (isDataBaseNotReadyFor(filePath)) {
+			report(ERROR_NOT_SETUP_YET);
+			return list;
+		}
+		
+		list = loadingFrom(filePath);
+		
+		return list;
+	}
+	
+	//** ******************** **/
+	
+	// End of segment: C:\Users\Kamui\git\main\FlexiPlanner\src\storage\FileStorage.java
+
+
+
+
+

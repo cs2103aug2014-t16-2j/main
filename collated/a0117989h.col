@@ -1,0 +1,2404 @@
+//@author: a0117989h
+
+
+
+	/**
+	 * origin: C:\Users\Kamui\git\main\FlexiPlanner\src\commons\TaskData.java
+	 */
+
+
+/**
+ * This class creates a task object representing an actual task.
+ */
+
+public class TaskData implements Comparable<TaskData> {
+	
+	private static final int MIN_ID = 10;
+	private static final int MAX_ID = 100;
+	
+	//to extract numbers only from LocalDateTime string
+	private final String REGEX_LDT = "[-:.T]";
+	
+	//priorities
+	private final String HIGH_PRI = "high";
+	private final String VERY_HIGH_PRI = "very high";
+
+	private String content;
+	private String category;
+	private String priority;
+	private LocalDateTime startDateTime;
+	private LocalDateTime endDateTime;
+	private String taskId;
+	private static int id = MIN_ID;
+
+	private Reminder reminder;
+	private LocalDateTime remindDateTime;
+
+	//** Constructor Method **/
+
+	public TaskData() {
+		this(null, null, null, null, null);
+	}
+
+	public TaskData(String content) {
+		this(content, null, null, null, null);
+	}
+
+	public TaskData(TaskData t) {
+		this(t.getContent(), t.getCategory(), t.getPriority(), t
+				.getStartDateTime(), t.getEndDateTime());
+		setTaskId(t.getTaskId());
+	}
+
+	public TaskData(String content, String category, String priority,
+			LocalDateTime startDateTime, LocalDateTime endDateTime) {
+		this.setContent(content);
+		this.setCategory(category);
+		this.setPriority(priority);
+		this.setStartDateTime(startDateTime);
+		this.setEndDateTime(endDateTime);
+		if (this.getTaskId() == null) {
+			this.generateTaskId();
+		}
+	}
+
+	//** Accessor Methods **/
+
+	public String getContent() {
+		return content;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public String getPriority() {
+		return priority;
+	}
+
+	public LocalDateTime getStartDateTime() {
+		return startDateTime;
+	}
+
+	public LocalDateTime getEndDateTime() {
+		return endDateTime;
+	}
+
+	public String getTaskId() {
+		return taskId;
+	}
+
+	public LocalDateTime getRemindDateTime() {
+		return remindDateTime;
+	}
+
+	public Reminder getReminder() {
+		return reminder;
+	}
+
+	//** Mutator Methods **/
+
+	public void setContent(String content) {
+		this.content = content;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public void setPriority(String priority) {
+		this.priority = priority;
+	}
+
+	public void setStartDateTime(LocalDateTime startDateTime) {
+		this.startDateTime = startDateTime;
+	}
+
+	public void setEndDateTime(LocalDateTime endDateTime) {
+		this.endDateTime = endDateTime;
+	}
+
+	public void setTaskId(String taskId) {
+		this.taskId = taskId;
+	}
+
+	public void setRemindDateTime(LocalDateTime remindDateTime) {
+		this.remindDateTime = remindDateTime;
+
+		if (this.remindDateTime != null) {
+			setReminder();
+		}
+	}
+
+	public void setReminder() {
+		//check that when app exited previously, there is reminder still on
+		if (remindDateTime != null && reminder == null) {
+			//LocalDateTime.MIN is an instruction to clear the reminder
+			if (remindDateTime.equals(LocalDateTime.MIN)) {
+				remindDateTime = null;
+				return;
+			}
+			//continue the reminder clock
+			reminder = new Reminder(remindDateTime, this);
+			reminder.start();
+		}
+	}
+
+	public void clearReminder() {
+		if (reminder != null) {
+			reminder.stop();
+			setRemindDateTime(null);
+			reminder = null;
+		}
+	}
+
+	//** Other Methods **/
+
+	public void generateTaskId() {
+		//to make sure each ID is unique
+		if (id == MAX_ID) {
+			id = MIN_ID;
+		}
+
+		taskId = LocalDateTime.now().toString() + (++id);
+		taskId = taskId.replaceAll(REGEX_LDT, "");
+	}
+
+	public JSONObject convertToJsonObject() {
+		JsonConverter converter = new JsonConverter();
+		JSONObject obj = new JSONObject();
+
+		obj = converter.taskToJsonObj(this);
+
+		return obj;
+	}
+	
+	public boolean hasReminder() {
+		return getReminder() != null;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object == null) {
+			return false;
+		}
+		if (getClass() != object.getClass()) {
+			return false;
+		}
+
+		final TaskData other = (TaskData) object;
+
+		if (this.content == null && other.content != null) {
+			return false;
+		}
+		if (this.content != null && !this.content.equals(other.content)) {
+			return false;
+		}
+		if (this.category == null && other.category != null) {
+			return false;
+		}
+		if (this.category != null && !this.category.equals(other.category)) {
+			return false;
+		}
+		if (this.priority == null && other.priority != null) {
+			return false;
+		}
+		if (this.priority != null && !this.priority.equals(other.priority)) {
+			return false;
+		}
+		if (this.startDateTime == null && other.startDateTime != null) {
+			return false;
+		}
+		if (this.startDateTime != null
+				&& !this.startDateTime.equals(other.startDateTime)) {
+			return false;
+		}
+		if (this.endDateTime == null && other.endDateTime != null) {
+			return false;
+		}
+		if (this.endDateTime != null
+				&& !this.endDateTime.equals(other.endDateTime)) {
+			return false;
+		}
+
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("************** Task Details **************\n");
+		sb.append("Task ID    =   " + this.getTaskId() + "\n");
+		sb.append("Content    =   " + this.getContent() + "\n");
+		sb.append("Category   =   " + this.getCategory() + "\n");
+		sb.append("Priority   =   " + this.getPriority() + "\n");
+		sb.append("Start Date =   " + this.getStartDateTime() + "\n");
+		sb.append("Deadline   =   " + this.getEndDateTime() + "\n");
+		sb.append("Remind Time=   " + this.getRemindDateTime());
+		sb.append("\n******************************************");
+
+		return sb.toString();
+	}
+
+	// End of segment: C:\Users\Kamui\git\main\FlexiPlanner\src\commons\TaskData.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Kamui\git\main\FlexiPlanner\src\parser\Task.java
+	 */
+
+	/**
+	 * Added this constructor class for convenience in unit testing. 
+	 * 
+	 * @param content
+	 * @param category
+	 * @param priority
+	 * @param startDateTime
+	 * @param endDateTime
+	 * 
+	 */
+	public Task(String content, String category, String priority, 
+			LocalDateTime startDateTime, LocalDateTime endDateTime) {
+		this.setContent(content);
+		this.setCategory(category);
+		this.setPriority(priority);
+		this.setStartDateTime(startDateTime);
+		this.setEndDateTime(endDateTime);
+		this.setDone(false);
+	}
+	
+	/** end **/
+	// End of segment: C:\Users\Kamui\git\main\FlexiPlanner\src\parser\Task.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Kamui\git\main\FlexiPlanner\src\parser\Task.java
+	 */
+
+	//Added this override method for convenience in testing.
+	
+	@Override
+	public boolean equals(Object object) {
+		if (object == null) {
+			return false;
+		}
+		if (getClass() != object.getClass()) {
+			return false;
+		}
+		
+		final Task other = (Task) object;
+		
+		if (this.content == null && other.content != null) {
+			return false;
+		}
+		if (this.content != null && !this.content.equals(other.content)) {
+			return false;
+		}
+		if (this.category == null && other.category != null) {
+			return false;
+		}
+		if (this.category != null && !this.category.equals(other.category)) {
+			return false;
+		}
+		if (this.priority == null && other.priority != null) {
+			return false;
+		}
+		if (this.priority != null && !this.priority.equals(other.priority)) {
+			return false;
+		}
+		if (this.startDateTime == null && other.startDateTime != null) {
+			return false;
+		}
+		if (this.startDateTime != null && !this.startDateTime.equals(other.startDateTime)) {
+			return false;
+		}
+		if (this.endDateTime == null && other.endDateTime != null) {
+			return false;
+		}
+		if (this.endDateTime != null && !this.endDateTime.equals(other.endDateTime)) {
+			return false;
+		}
+
+		return true;
+ 	}
+}
+
+	// End of segment: C:\Users\Kamui\git\main\FlexiPlanner\src\parser\Task.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Kamui\git\main\FlexiPlanner\src\reminder\Reminder.java
+	 */
+
+
+/**
+ * This class is to setup, start and stop the reminder.
+ *
+ */
+
+public class Reminder {
+	
+	private final String INFO_TIME_IS_OVER = "The schedule is over!\n";
+	
+	private final String WARNING_INTERRUPTED = "Thread is interrupted!\n";
+	
+	private final String NEXT_LINE = "\n";
+	private final String FROM = "From: ";
+	private final String TO   = "To  : ";
+	private final String ON = "On: ";
+	private final String BY = "By: ";
+	
+	private final int ZERO = 0;
+	private final int FIVE = 5;
+	
+	private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+	
+	private LocalDateTime dateTime;
+	private TaskData task;
+	private String reminderText;
+	
+	public Reminder(LocalDateTime dateTime, TaskData task) {
+		this.dateTime = dateTime;
+		this.task = task;
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT);
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(task.getContent());
+		
+		if (task.getStartDateTime() != null && task.getEndDateTime() != null) {
+			sb.append(NEXT_LINE);
+			sb.append(FROM + task.getStartDateTime().format(formatter));
+			sb.append(NEXT_LINE);
+			sb.append(TO + task.getEndDateTime().format(formatter));
+		}
+		
+		else if (task.getStartDateTime() != null) {
+			sb.append(NEXT_LINE);
+			sb.append(ON + task.getStartDateTime().format(formatter));
+		}
+		
+		else if (task.getEndDateTime() != null) {
+			sb.append(NEXT_LINE);
+			sb.append(BY + task.getEndDateTime().format(formatter));
+		}
+		
+		this.reminderText = sb.toString();
+	}
+	
+	/**
+	 * start the reminder
+	 */
+    public void start() {
+    	long ms = getDifferenceInMilliseconds();
+    	scheduleReminder(ms, reminderText);
+    	
+    	try {
+			TimeUnit.MILLISECONDS.sleep(FIVE);
+		} catch (InterruptedException e) {
+			report(WARNING_INTERRUPTED);
+		}
+    }
+    
+    /**
+	 * stop the reminder
+	 */
+    public void stop() {
+    	scheduler.shutdownNow();
+    }
+
+    private long getDifferenceInMilliseconds() {
+        Calendar then = Calendar.getInstance();
+        then.set(Calendar.YEAR, this.dateTime.getYear());
+        then.set(Calendar.MONTH, this.dateTime.getMonthValue()-1);
+        then.set(Calendar.DAY_OF_MONTH, this.dateTime.getDayOfMonth());
+        then.set(Calendar.HOUR_OF_DAY, this.dateTime.getHour());
+        then.set(Calendar.MINUTE, this.dateTime.getMinute());
+        then.set(Calendar.SECOND, ZERO);
+        
+        Calendar now = Calendar.getInstance();
+        
+        if (now.getTimeInMillis() > then.getTimeInMillis()) {
+            report(INFO_TIME_IS_OVER);
+        }
+
+        return then.getTimeInMillis()-now.getTimeInMillis();
+    }
+    
+    /**
+     * schedule the reminder and execute below when time's up
+     * - remove reminder from task
+     * - display pop-up
+     * - stop the scheduler service
+     */
+    private void scheduleReminder(long ms, String reminderText) {
+        scheduler.schedule(new Runnable() {
+            @Override
+            public void run() {
+            	task.clearReminder();
+                ReminderPopup popup = new ReminderPopup();
+                popup.displayPopupWSound(reminderText);
+                stop();
+            }
+        }, ms, MILLISECONDS);
+    }
+    
+    private void report(final String toReport) {
+    	System.out.print(toReport);
+    }
+}
+
+	// End of segment: C:\Users\Kamui\git\main\FlexiPlanner\src\reminder\Reminder.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Kamui\git\main\FlexiPlanner\src\reminder\ReminderPatternFinder.java
+	 */
+
+
+/**
+ * This class is to find reminder command in user's command to set reminder for the to-do tasks.
+ */
+
+/*
+ * Users are able to enter commands to set reminder as below:
+ * 
+ * Sample commands:
+ * command 1 : collect movie ticket from box office tomorrow [remind me 3hours before]
+ * command 2 : tutorial paper submission tomorrow [set reminder 1h before]
+ * command 3 : production meeting on 10 November [9 nov 8am]
+ * command 4 : shop groceries for kitchen [remind me 10-11-14 0700] (dd-mm-yy) or (dd-mm-yyyy)
+ * command 5 : attend customer meeting next week [remind me 10/11/14 1230am]
+ * command 6 : submit report [remind me on 10/11/14 8:30am]
+ * command 7 : edit 1 [clear reminder]
+ *
+ */
+
+public class ReminderPatternFinder {
+	
+	private final String INFO_NO_COMMAND_FOR_REMINDER = "Command to set reminder is not found!\n";
+	
+	private final String ERROR_INVALID_DATE_TIME = "Invalid date and time!\n";
+	
+	private final String AM = "am";
+	private final String PM = "pm";
+	
+	private final int CLR_PATTERN = -1;
+	private final int NO_PATTERN = 0;
+	private final int R_PATTERN_1 = 1;
+	private final int R_PATTERN_2 = 2;
+	private final int R_PATTERN_3 = 3;
+	private final int YEAR_OF_TODAY = 2000;
+	private final int HOUR_TO_MIN_MULTIPLIER = 60;
+	
+	private final String PATTERN_1 = "(?i).*\\s*\\[{1}(\\s*\\w*\\s+)*(\\d{1,2})\\s*"
+			+ "(m|min|mins|minute|minutes|h|hr|hrs|hour|hours)(\\s+\\w*)*\\]{1}(\\s+.*)*";
+	
+	private final String PATTERN_2 = "(?i).*\\s*\\[{1}(\\s*\\w*\\s+)*(\\d{1,2})\\s*"
+			+ "(jan|january|feb|february|mar|march|apr|april|may|jun|june|jul|july"
+			+ "|aug|august|sep|september|oct|october|nov|november|dec|december|)"
+			+ "\\s+(\\d{1,2})(:)?(\\d{1,2})?\\s*(am|pm|)(\\s+\\w*)*\\]{1}(\\s+.*)*";
+	
+	private final String PATTERN_3 = "(?i).*\\s*\\[{1}(\\s*\\w*\\s+)*(\\d{1,2})(\\-|\\/|\\\\)"
+			+ "(\\d{1,2})(\\-|\\/|\\\\)(\\d{1,2})(\\d{1,2})?\\s*(\\d{1,2})(:)?(\\d{1,2})?\\s*"
+			+ "(am|pm|)(\\s+\\w*)*\\]{1}(\\s+.*)*";
+	
+	private final String CLEAR_PATTERN = "(?i).*\\[{1}(.*(clear).*)\\]{1}.*";
+	
+	private final String[] months = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"};
+	private final List<String> monthList = (List<String>) Arrays.asList(months);
+	
+	private Pattern pattern1;
+	private Pattern pattern2;
+	private Pattern pattern3;
+	@SuppressWarnings("unused")
+	private Pattern clearPattern;
+	
+	private int day;
+	private int month;
+	private int year;
+	private int hour;
+	private int minute;
+	
+	private Matcher matcher;
+	
+	private LocalDateTime reminderDateTime;
+	private Integer reminderMinutes;
+	
+	public ReminderPatternFinder() {
+		pattern1 = Pattern.compile(PATTERN_1);
+		pattern2 = Pattern.compile(PATTERN_2);
+		pattern3 = Pattern.compile(PATTERN_3);
+		clearPattern = Pattern.compile(CLEAR_PATTERN);
+	}
+	
+	public boolean hasReminderPatternInCommand(final String commandStr) {
+		return findReminderPattern(commandStr) != NO_PATTERN;
+	}
+	
+	/**
+	 * This method finds the reminder command pattern from command line.
+	 * 
+	 * @param command - String
+	 * @return Integer or LocalDateTime
+	 */
+	public Object parse(final String commandStr) {
+		int reminderPattern = findReminderPattern(commandStr);
+		
+		if (reminderPattern == NO_PATTERN)
+		{
+			report(INFO_NO_COMMAND_FOR_REMINDER);
+			
+			return null;
+		}
+		
+		if (reminderPattern == CLR_PATTERN) {
+			return CLR_PATTERN;
+		}
+		
+		if (!isValidDateTime(reminderPattern, commandStr)) {
+			report(ERROR_INVALID_DATE_TIME);
+			
+			return null;
+		}
+		
+		if (reminderPattern == R_PATTERN_1) {
+			return reminderMinutes;
+		}
+		else {
+			reminderDateTime = LocalDateTime.of(year, month, day, hour, minute);
+			
+			return reminderDateTime;
+		}
+	}
+	
+	//This method checks if the date and time in the pattern is valid or not.
+	private boolean isValidDateTime(int reminderPattern, final String commandStr) {
+		boolean isValid = false;
+		
+		switch (reminderPattern) {
+		
+		case 1: 
+			matcher = pattern1.matcher(commandStr);
+			matcher.find();
+			
+			//check minutes or hours
+			if (matcher.group(3).substring(0, 1).equals("m")) {
+				reminderMinutes = Integer.valueOf(matcher.group(2));
+				isValid = true;
+			}
+			else {
+				reminderMinutes = Integer.valueOf(matcher.group(2)) * HOUR_TO_MIN_MULTIPLIER;
+				isValid = true;
+			}
+			
+			break;
+			
+		case 2: 
+			matcher = pattern2.matcher(commandStr);
+			matcher.find();
+			
+			day = Integer.valueOf(matcher.group(2));
+			month = monthList.indexOf(matcher.group(3).substring(0, 3).toLowerCase()) + 1;
+			year = LocalDateTime.now().getYear();
+			hour = Integer.valueOf(matcher.group(4));
+			
+			if (matcher.group(6) != null) {
+				minute = Integer.valueOf(matcher.group(6));
+			}
+			else {
+				minute = 0;
+			}
+			
+			try {
+				LocalDateTime.of(year, month, day, hour, minute);
+				isValid = true;
+			} catch (DateTimeException e) {
+				isValid = false;
+				return isValid;
+			}
+			
+			if ((matcher.group(7) != null) && !(matcher.group(7).isEmpty())) {
+				isValid = hour <= 12;
+				if (matcher.group(7).equalsIgnoreCase("pm")) {
+					hour += 12;
+					if (hour >= 24) {
+						hour = 0;
+					}
+				}
+				else if (matcher.group(7).equalsIgnoreCase("am")) {
+					if (hour == 12) {
+						hour = 0;
+					}
+				}
+			}
+
+			break;
+			
+		case 3: 
+			matcher = pattern3.matcher(commandStr);
+			matcher.find();
+			
+			day = Integer.valueOf(matcher.group(2));
+			month = Integer.valueOf(matcher.group(4));
+			
+			if ((matcher.group(7) != null) && !(matcher.group(7).isEmpty())) {
+				year = Integer.valueOf(matcher.group(6)+matcher.group(7));
+			}
+			else {
+				year = Integer.valueOf(matcher.group(6)) + YEAR_OF_TODAY;
+			}
+			
+			hour = Integer.valueOf(matcher.group(8));
+			
+			if ((matcher.group(10) != null) && !(matcher.group(10).isEmpty())) {
+				minute = Integer.valueOf(matcher.group(10));
+			}
+			else {
+				minute = 0;
+			}
+			
+			try {
+				LocalDateTime.of(year, month, day, hour, minute);
+				isValid = true;
+			} catch (DateTimeException e) {
+				isValid = false;
+				return isValid;
+			}
+			
+			if ((matcher.group(11) != null) && !(matcher.group(11).isEmpty())) {
+				isValid = hour <= 12;
+				if (matcher.group(11).equalsIgnoreCase(PM)) {
+					hour += 12;
+					if (hour >= 24) {
+						hour = 0;
+					}
+				}
+				else if (matcher.group(11).equalsIgnoreCase(AM)) {
+					if (hour == 12) {
+						hour = 0;
+					}
+				}
+			}
+			
+			break;
+			
+		default : break;
+		}
+		
+		return isValid;
+	}
+	
+	//This method finds the actual reminder patterns in the command.
+	private int findReminderPattern(final String commandStr) {
+		if (commandStr.matches(PATTERN_1)) {
+			
+			return R_PATTERN_1;
+		}
+		
+		if (commandStr.matches(PATTERN_2)) {
+			
+			return R_PATTERN_2;
+		}
+		
+		if (commandStr.matches(PATTERN_3)) {
+			
+			return R_PATTERN_3;
+		}
+		
+		if (commandStr.matches(CLEAR_PATTERN)) {
+			return CLR_PATTERN;
+		}
+		
+		return NO_PATTERN;
+	}
+	
+	private void report(final String toReport) {
+		System.out.print(toReport);
+	}
+}
+
+	// End of segment: C:\Users\Kamui\git\main\FlexiPlanner\src\reminder\ReminderPatternFinder.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Kamui\git\main\FlexiPlanner\src\reminder\ReminderPopup.java
+	 */
+
+
+/**
+ * This class display the reminder pop-up with an alarm sound.
+ *
+ */
+
+public class ReminderPopup {
+	
+	private final String REMINDER_ICON_PATH = "/resources/reminder-icon.png";
+	private final String SOUND_FILE_PATH = "/resources/reminder.wav";
+	private final String NOTHING = "";
+	private final String HTML_ST = "<html>";
+	private final String HTML_EN = "</html>";
+	private final String HTML_BR = "<br>";
+	private final String REGEX_NEXTLINE = "\\n";
+	
+	private final int FRAME_WIDTH = 350;
+	private final int FRAME_HEIGHT = 100;
+	private final int HGAP = 20;
+	private final int VGAP = 0;
+	private final int COLOR_R = 135;
+	private final int COLOR_G = 206;
+	private final int COLOR_B = 250;
+	private final int IMAGE_WIDTH = 50;
+	private final int IMAGE_HEIGHT = 50;
+	private final int CONTENT_FONT_SIZE = 18;
+	private final int GAP_POPUPS = 110;
+	
+	private float[] hsbvals = {0, 0, 0};
+	
+	private static int[] identity = {1, 2, 3, 4, 5, 6};
+	
+	private int uniqueIdentifier = 0;
+	
+	
+	public ReminderPopup() {
+		allocatePopupLocation();
+	}
+	
+	/**
+	 * This method calls the JFrame to pop up with alarm sound.
+	 * 
+	 * @param content - String
+	 */
+	public void displayPopupWSound(String content) {
+		displayPopup(content);
+		playReminderSound();
+	}
+	
+	private void displayPopup(String content) {
+		JFrame frame = new JFrame();
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.setUndecorated(true);
+		frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+		
+		BorderLayout borderLayout = new BorderLayout(HGAP, VGAP);
+		frame.getContentPane().setLayout(borderLayout);
+		
+		Color.RGBtoHSB(COLOR_R, COLOR_G, COLOR_B, hsbvals);
+		frame.setBackground(Color.getHSBColor(hsbvals[0], hsbvals[1], hsbvals[2]));
+		frame.getContentPane().setBackground(Color.getHSBColor(hsbvals[0], hsbvals[1], hsbvals[2]));
+		
+		JLabel iconLabel = new JLabel();
+		ImageIcon icon = new ImageIcon(getClass().getResource(REMINDER_ICON_PATH));
+		Image image = icon.getImage().getScaledInstance(IMAGE_WIDTH, IMAGE_HEIGHT,  java.awt.Image.SCALE_SMOOTH);
+		icon = new ImageIcon(image);
+		iconLabel.setIcon(icon);
+		iconLabel.setText(NOTHING);
+		
+		JLabel contentLabel;
+		
+		String[] lines = content.split(REGEX_NEXTLINE);
+		
+		if (lines.length == 3) {
+			contentLabel = new JLabel(HTML_ST + lines[0].trim() + 
+									  HTML_BR + lines[1].trim() + 
+									  HTML_BR + lines[2].trim() + 
+									  HTML_EN);
+		}
+		else if (lines.length == 2) {
+			contentLabel = new JLabel(HTML_ST + lines[0].trim() + 
+									  HTML_BR + lines[1].trim() + 
+									  HTML_EN);
+		}
+		else {
+			contentLabel = new JLabel(HTML_ST + lines[0].trim() + HTML_EN);
+		}
+		
+		contentLabel.setFont(new Font(NOTHING, Font.PLAIN, CONTENT_FONT_SIZE));
+		
+		frame.getContentPane().add(iconLabel, BorderLayout.WEST);
+		frame.getContentPane().add(contentLabel, BorderLayout.CENTER);
+		
+		frame.getContentPane().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				FlexiPlannerUI.save();
+				frame.dispose();
+				identity[uniqueIdentifier - 1] = uniqueIdentifier;
+			}
+		});
+		
+		frame.setLocation((int) (GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().getWidth() 
+				- FRAME_WIDTH), 30 + (((uniqueIdentifier - 1) * GAP_POPUPS)));
+		frame.setAlwaysOnTop(true);
+		frame.setVisible(true);
+	}
+	
+	private void playReminderSound() {
+		try {
+			AudioInputStream audioIn = AudioSystem.getAudioInputStream(getClass().getResource(SOUND_FILE_PATH));
+			Clip clip = AudioSystem.getClip();
+			clip.open(audioIn);
+			clip.start();
+		} catch (UnsupportedAudioFileException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (LineUnavailableException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//to pop-up from upper right corner of the screen until the lower right corner in order systematically
+	private void allocatePopupLocation() {
+		for (int i = 0; i < 6; i++) {
+			if (identity[i] != 0) {
+				uniqueIdentifier = identity[i];
+				identity[i] = 0;
+				break;
+			}
+			if (identity[i] == 0 && i == 5) {
+				for (int j = 0; j < 6; j++) {
+					identity[j] = j + 1;
+				}
+				uniqueIdentifier = 1;
+				identity[0] = 0;
+			}
+		}
+	}
+}
+
+	// End of segment: C:\Users\Kamui\git\main\FlexiPlanner\src\reminder\ReminderPopup.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Kamui\git\main\FlexiPlanner\src\storage\FileManager.java
+	 */
+
+
+/**
+ * This class handles file related operations.
+ *
+ */
+
+public class FileManager {
+	
+	private final String FILE_NAME_PATTERN = "^[\\w,\\s-]+.(?i)(txt|json)$";
+	private final String NOTHING = "";
+	private final String SEPERATOR = "//";
+	private final String USER_HOME = "user.home";
+	private final String BACKUP = "-backup";
+	private final String DOT = ".";
+	
+	public boolean createFolder(String folderName) throws IOException {
+		boolean isCreated = false;
+		
+		File folder = new File(folderName);
+		
+		if (folder.exists() && folder.isFile()) {
+			return isCreated;
+		}
+		else if (!folder.exists()) {
+			folder.mkdir();
+			isCreated = true;
+		}
+		else {
+			isCreated = true;
+		}
+		
+		return isCreated;
+	}
+	
+	//** ******************** **/
+	
+	public boolean createFile(String filePath) throws IOException {
+		boolean isCreated = false;
+
+		File file = new File(filePath);
+		
+		if (!file.exists()) {
+			file.createNewFile();
+			isCreated = true;
+		}
+		else {
+			isCreated = false;
+		}
+		
+		return isCreated;
+	}
+	
+	//** ******************** **/
+	
+	public boolean createBackupFile(String folderName, String fileName) throws IOException {
+		boolean isCreated = false;
+		
+		String backupFolderName = folderName + BACKUP;
+		
+		File backupDataDir = new File(System.getProperty(USER_HOME) + SEPERATOR + backupFolderName);
+		createFolder(backupDataDir.getPath());
+		
+		File backupDataFile = new File(System.getProperty(USER_HOME) + SEPERATOR + backupFolderName + SEPERATOR + fileName);
+		isCreated = createFile(backupDataFile.getPath());
+		
+		return isCreated;
+	}
+	
+	//** ******************** **/
+	
+	public void writeInJsonFormat(String filePath, JSONObject jsonObj, boolean isAppendable) throws IOException, FileNotFoundException {
+		write(filePath, new JsonConverter().toPrettyFormat(jsonObj), isAppendable);
+	}
+	
+	//** ******************** **/
+	
+	public void write(String filePath, String content, boolean isAppendable) throws IOException, FileNotFoundException {
+		BufferedWriter bWriter = new BufferedWriter(new FileWriter(filePath, isAppendable));
+		bWriter.write(content);
+		bWriter.flush();
+		bWriter.close();
+	}
+	
+	//** ******************** **/
+	
+	public JSONObject readInJsonFormat(String filePath) throws FileNotFoundException, IOException, ParseException{
+		if (isEmptyFile(filePath)) {
+			return new JSONObject();
+		}
+		
+		return new JsonConverter().getJsonObjFromFile(new BufferedReader(new FileReader(filePath)));
+	}
+	
+	//** ******************** **/
+	
+	public ArrayList<String> read(String filePath) throws IOException {
+		ArrayList<String> listToReturn = new ArrayList<String>();
+		BufferedReader reader = new BufferedReader(new FileReader(filePath));
+		String line;
+		
+		while ((line = reader.readLine()) != null) {
+			listToReturn.add(line);
+		}
+		
+		reader.close();
+		
+		return listToReturn;
+	}
+	
+	//** ******************** **/
+	
+	public boolean isValidFileName(final String fileName) {
+		if (fileName == null) {
+			return false;
+		}
+		
+		String actualFileName = FilenameUtils.getBaseName(fileName) + DOT +
+					  FilenameUtils.getExtension(fileName);
+		
+		Pattern pattern = Pattern.compile(FILE_NAME_PATTERN);
+		Matcher matcher = pattern.matcher(actualFileName);
+		
+		return matcher.matches();
+	}
+	
+	//** ******************** **/
+	
+	public boolean deleteFile(String filePath) throws FileNotFoundException {
+		File fileToDelete = new File(filePath);
+		return fileToDelete.delete();
+	}
+	
+	//** ******************** **/
+	
+	public void clearFile(String filePath) throws FileNotFoundException, IOException {
+		write(filePath, NOTHING, false);
+	}
+	
+	//** ******************** **/
+	
+	public boolean isEmptyFile(String filePath) throws IOException {
+		boolean isEmpty = true;
+		
+		BufferedReader reader = new BufferedReader(new FileReader(filePath));
+		isEmpty = reader.readLine() == null;
+		
+		reader.close();
+		
+		return isEmpty;
+	}
+	
+	//** ******************** **/
+	
+	public boolean hasFolder(String folderName) {
+		File folder = new File(folderName);
+		
+		return folder.exists() && !folder.isFile();
+	}
+	
+	//** ******************** **/
+	
+	public String createFilePath(String folderName, final String fileName) {
+		return folderName + SEPERATOR + fileName;
+	}
+	
+	//** ******************** **/
+	
+	public String createBackupFilePath(String folderName, final String fileName) {
+		return System.getProperty(USER_HOME) + SEPERATOR + folderName + BACKUP + SEPERATOR + fileName;
+	}
+	
+	//** ******************** **/
+	
+	public String extractFileName(String filePath) {
+		String[] s = filePath.split(SEPERATOR);
+		return s[s.length - 1];
+	}
+}
+
+	// End of segment: C:\Users\Kamui\git\main\FlexiPlanner\src\storage\FileManager.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Kamui\git\main\FlexiPlanner\src\storage\FileStorage.java
+	 */
+
+
+/**
+ * This class implements functions of saving and loading
+ * data from respective files.
+ * 
+ * For saving and loading task files, they must only contain task data in JSON format.
+ *
+ */
+
+public class FileStorage implements Storage {
+	
+	private final String ERROR_IO = "IO Error!\n";
+	private final String ERROR_PARSE = "Parse Error!\n";
+	private final String ERROR_INVALID_FILE_NAME = "Invalid file name!\n";
+	private final String ERROR_NULL_LIST = "List cannot be null!\n";
+	private final String ERROR_NOT_SETUP_YET = "File record not found! Setup database first!\n";
+	
+	private final String INFO_FILE_ALD_EXISTS = "File exists!\n";
+	private final String INFO_FILE_CREATED = "Database setup completed for : ";
+	
+	private final String BASE_FOLDER_NAME = "FlexiPlanner Database";
+	private final String NEXT_LINE = "\n";
+	private final String BACKUP = "-backup.";
+	private final String NOTHING = "";
+	
+	private final int MAX_ITERATION = 10000;
+	
+	private String folderName;
+	private List<String> path;
+	
+	private FileManager manager;
+	private JsonConverter converter;
+	
+	private static FileStorage fStorageInstance;
+	
+	/** Singleton Constructor Method **/
+	
+	public static synchronized FileStorage getInstance() {
+		if (fStorageInstance == null) {
+			fStorageInstance = new FileStorage();
+		}
+		
+		return fStorageInstance;
+	}
+	
+	/** Constructor Method **/
+	
+	private FileStorage() {
+		manager = new FileManager();
+		converter = new JsonConverter();
+		path = new ArrayList<String>();
+		createFolder();
+	}
+	
+	@Override
+	public boolean setupDatabase(final String fileName) {
+		boolean isSetup = false;
+		boolean isValid = manager.isValidFileName(fileName);
+		
+		if (!isValid) {
+			report(ERROR_INVALID_FILE_NAME);
+			
+			return isSetup;
+		}
+		
+		isSetup = implementingSetupAndBackup(fileName);
+		
+		return isSetup;
+	}
+	
+	//** ******************** **/
+
+	@Override
+	public boolean saveTasks(final String fileName, ArrayList<TaskData> taskList) {
+		boolean isSaveSuccess = false;
+		
+		String filePath = manager.createFilePath(folderName, fileName);
+		String backupFilePath = getBackupFilePath(fileName);
+		
+		if (isDataBaseNotReadyFor(filePath)) {
+			report(ERROR_NOT_SETUP_YET);
+			
+			return isSaveSuccess;
+		}
+		
+		if (isNullList(taskList)) {
+			report(ERROR_NULL_LIST);
+			
+			return isSaveSuccess;
+		}
+		
+		isSaveSuccess = convertTasksToJsonObjAndSave(filePath, backupFilePath, taskList);
+		
+		return isSaveSuccess;
+	}
+	
+	//** ******************** **/
+
+	@Override
+	public ArrayList<TaskData> loadTasks(final String fileName) {
+		ArrayList<TaskData> tasksToReturn = new ArrayList<TaskData>();
+		
+		String filePath = manager.createFilePath(folderName, fileName);
+		String backupFilePath = getBackupFilePath(fileName);
+		
+		if (isDataBaseNotReadyFor(filePath)) {
+			report(ERROR_NOT_SETUP_YET);
+			
+			return tasksToReturn;
+		}
+		
+		tasksToReturn = loadingFrom(filePath, backupFilePath);
+		
+		return tasksToReturn;
+	}
+ 	
+	//** ******************** **/
+	
+	// End of segment: C:\Users\Kamui\git\main\FlexiPlanner\src\storage\FileStorage.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Kamui\git\main\FlexiPlanner\src\storage\FileStorage.java
+	 */
+
+	
+	/**
+	 * This method setup files and backup files
+	 * 
+	 * @param fileName
+	 * @return successful or not
+	 */
+	private boolean implementingSetupAndBackup(String fileName) {
+		boolean isSetup = false;
+		
+		try {
+			//redirect file into the base folder
+			String filePath = manager.createFilePath(folderName, fileName);
+			String backupFileName = FilenameUtils.getBaseName(fileName) + BACKUP + 
+									FilenameUtils.getExtension(fileName);
+
+			isSetup = manager.createFile(filePath);
+
+			//data automatic backup
+			manager.createBackupFile(folderName, backupFileName);
+
+			if (isSetup) {
+				path.add(filePath);
+				report(INFO_FILE_CREATED + filePath + NEXT_LINE);
+			}
+			else {
+				path.add(filePath);
+				report(INFO_FILE_ALD_EXISTS);
+				isSetup = true;
+			}
+		} catch (IOException e) {
+			report(ERROR_IO);
+			isSetup = false;
+		}
+		
+		return isSetup;
+	}
+	
+	//** ******************** **/
+	
+	private boolean convertTasksToJsonObjAndSave(String filePath, String backupFilePath,
+			ArrayList<TaskData> taskList) {
+
+		try {
+			JSONArray jArr = converter.tasksToJsonArr(taskList);
+			JSONObject jObjToSave = converter.encloseJsonArrInJsonObj(jArr);
+
+			manager.writeInJsonFormat(filePath, jObjToSave, false);
+
+			//data auto backup
+			if (!backupFilePath.equals(NOTHING)) {
+				manager.writeInJsonFormat(backupFilePath, jObjToSave, false);
+			}
+
+			return true;	
+
+		} catch (IOException e) {
+			report(ERROR_IO);
+			
+			return recreateFolderIfFolderNotFound();
+		}
+	}
+	
+	//** ******************** **/
+
+	private boolean isDataBaseNotReadyFor(String filePath) {
+		return path.isEmpty() || !path.contains(filePath);
+	}
+	
+	//** ******************** **/
+	
+	private boolean isNullList(ArrayList<TaskData> taskList) {
+		return taskList == null;
+	}
+	
+	//** ******************** **/
+	
+	private ArrayList<TaskData> loadingFrom(String filePath, String backupFilePath) {
+		ArrayList<TaskData> tasksToReturn = new ArrayList<TaskData>();
+		
+		try {
+			if (manager.isEmptyFile(filePath)) {
+				
+				//check backup file
+				if (isBackupFileAlsoEmpty(backupFilePath)) {
+					
+					return tasksToReturn;
+				}
+				else {
+					filePath = backupFilePath;
+				}
+			}
+			
+			JSONObject jObj = manager.readInJsonFormat(filePath);
+			JSONArray jArr = converter.retrieveJsonArrFromJsonObj(jObj);
+			
+			tasksToReturn = converter.jsonArrToTasks(jArr);
+			
+		} catch (IOException e) {
+			report(ERROR_IO);
+			tasksToReturn.clear();
+			recreateFolderIfFolderNotFound();
+			
+		} catch (ParseException pe) {
+			report(ERROR_PARSE);
+			tasksToReturn.clear();
+			//get tasks from backup file
+			if (isValidBackupPath(backupFilePath)) {
+				
+				return loadBackupTasks(backupFilePath);
+			}
+		}
+		
+		return tasksToReturn;
+	}
+	
+	//** ******************** **/
+	
+	private boolean isBackupFileAlsoEmpty(String backupFilePath) throws IOException {
+		return backupFilePath.equals(NOTHING) || manager.isEmptyFile(backupFilePath);
+	}
+	
+	//** ******************** **/
+	
+	private boolean isValidBackupPath(String backupFilePath) {
+		return !backupFilePath.equals(NOTHING);
+	}
+	
+	//** ******************** **/
+	
+	private boolean savingTo(String filePath, ArrayList<String> list) {
+		boolean isSaveSuccess = false;
+		
+		try {
+			manager.clearFile(filePath);
+			
+			for (String s : list) {
+				manager.write(filePath, s, true);
+				
+				if (list.indexOf(s) != (list.size() - 1)) {
+					manager.write(filePath, "\n", true);
+				}
+			}
+			
+			isSaveSuccess = true;
+			
+		} catch (IOException e) {
+			report(ERROR_IO);
+			isSaveSuccess = recreateFolderIfFolderNotFound();
+		}
+		
+		return isSaveSuccess;
+	}
+	
+	//** ******************** **/
+	
+	private ArrayList<String> loadingFrom(String filePath) {
+		ArrayList<String> list = new ArrayList<String>();
+		
+		try {
+			if (manager.isEmptyFile(filePath)) {
+				return list;
+			}
+			
+			list = manager.read(filePath);
+			
+		} catch (IOException e) {
+			report(ERROR_IO);
+			list.clear();
+			recreateFolderIfFolderNotFound();
+		}
+		
+		return list;
+	}
+	
+	//** ******************** **/
+	
+	private ArrayList<TaskData> loadBackupTasks(String backupFilePath) {
+		ArrayList<TaskData> tasksToReturn = new ArrayList<TaskData>();
+		
+		try {
+			if (manager.isEmptyFile(backupFilePath)) {
+				
+				return tasksToReturn;
+			}
+			
+			JSONObject jObj = manager.readInJsonFormat(backupFilePath);
+			JSONArray jArr = converter.retrieveJsonArrFromJsonObj(jObj);
+			
+			tasksToReturn = converter.jsonArrToTasks(jArr);
+			
+			return tasksToReturn;
+		} catch (IOException e){
+			report(ERROR_IO);
+			tasksToReturn.clear();
+			
+			return tasksToReturn;
+		} catch (ParseException e) {
+			report(ERROR_PARSE);
+			tasksToReturn.clear();
+			
+			return tasksToReturn;
+		}
+	}
+	
+	//** ******************** **/
+	
+	/**
+	 * This method returns the path to the backup file.
+	 * 
+	 * @param fileName
+	 * @return backup file path
+	 */
+	
+	private String getBackupFilePath(String fileName) {
+		String backupFilePath = "";
+		backupFilePath = manager.createBackupFilePath(folderName, 
+				FilenameUtils.getBaseName(fileName) + BACKUP + 
+						FilenameUtils.getExtension(fileName));
+		
+		return backupFilePath;
+	}
+	
+	//** ******************** **/
+	/*
+	 * This method creates the application folder
+	 * namely FlexiPlanner Database for better organization
+	 * of files
+	 */
+	private void createFolder() {
+		boolean isCreated = false;
+		
+		folderName = BASE_FOLDER_NAME;
+		
+		//check if BASE_FOLDER_NAME exists
+		if (manager.hasFolder(folderName)) {
+			return;
+		}
+		
+		//check if BASE_FOLDER1,2,etc exists
+		for (int i = 1; i < MAX_ITERATION; i++) {
+			if (manager.hasFolder(folderName + i)) {
+				folderName = folderName + i; //set folder if found
+				return;
+			}
+		}
+		
+		try {
+			isCreated = manager.createFolder(folderName);
+			
+			if (!isCreated) {
+				//if creating fails, try create folder name followed by integers
+				for (int i = 1; i < MAX_ITERATION; i++) {
+					if (manager.createFolder(folderName + i)) {
+						folderName = folderName + i;
+						break;
+					}
+				}
+			}
+		} catch (IOException e) {
+			report(ERROR_IO);
+		}
+	}
+	
+	//** ******************** **/
+	
+	private boolean recreateFolderIfFolderNotFound() {
+		boolean isCreated = false;
+		
+		if (!manager.hasFolder(folderName)) {
+			createFolder();
+			List<String> clonedPath = new ArrayList<String>(path);
+			path.clear();
+			for (int i = 0; i < clonedPath.size(); i++) {
+				setupDatabase(manager.extractFileName(clonedPath.get(i)));
+			}
+			isCreated = true;
+		}
+		
+		return isCreated;
+	}
+	
+	//** ******************** **/
+	
+	private void report(final String toReport) {
+		System.out.print(toReport);
+	}
+}
+
+	// End of segment: C:\Users\Kamui\git\main\FlexiPlanner\src\storage\FileStorage.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Kamui\git\main\FlexiPlanner\src\storage\JsonConverter.java
+	 */
+
+
+/**
+ * This class handles encoding and decoding operations
+ * among JSONObjects, JSONArrays, tasks and JSONStrings.
+ *
+ */
+
+@SuppressWarnings("unchecked")
+public class JsonConverter {
+	
+	private final String TASK_ID = "taskId";
+	private final String TASK_CONTENT = "content";
+	private final String TASK_CATEGORY = "category";
+	private final String TASK_PRIORITY = "priority";
+	private final String TASK_STARTDATE = "startDateTime";
+	private final String TASK_ENDDATE = "endDateTime";
+	private final String TASK_REMINDDATE = "remindDateTime";
+	
+	private final String TITLE_JSONARRAY = "Tasks";
+	
+	public JSONObject taskToJsonObj(TaskData task) {
+		JSONObject jsonObjToReturn = new JSONObject();
+		
+		String startDateTime = parseToStringIfNotNull(task.getStartDateTime());
+		String endDateTime = parseToStringIfNotNull(task.getEndDateTime());
+		String remindDateTime = parseToStringIfNotNull(task.getRemindDateTime());
+		
+		jsonObjToReturn.put(TASK_ID, task.getTaskId());
+		jsonObjToReturn.put(TASK_CONTENT, task.getContent());
+		jsonObjToReturn.put(TASK_CATEGORY, task.getCategory());
+		jsonObjToReturn.put(TASK_PRIORITY, task.getPriority());
+		jsonObjToReturn.put(TASK_STARTDATE, startDateTime);
+		jsonObjToReturn.put(TASK_ENDDATE, endDateTime);
+		jsonObjToReturn.put(TASK_REMINDDATE, remindDateTime);
+		
+		return jsonObjToReturn;
+	}
+	
+	private String parseToStringIfNotNull(LocalDateTime ldt) {
+		if(ldt != null) {
+			return ldt.toString();
+		}
+		
+		return null;
+	}
+	
+	//** ******************** **/
+
+	public JSONArray tasksToJsonArr(ArrayList<TaskData> tasks) {
+		JSONArray jsonArrToReturn = new JSONArray();
+		
+		for (int i = 0; i < tasks.size(); i++) {
+			jsonArrToReturn.add(tasks.get(i).convertToJsonObject());
+		}
+		
+		return jsonArrToReturn;
+	}
+	
+	//** ******************** **/
+	
+	public TaskData jsonObjToTask(JSONObject obj) {
+		TaskData taskToReturn = new TaskData();
+		
+		taskToReturn.setTaskId((String)obj.get(TASK_ID));
+		taskToReturn.setContent((String)obj.get(TASK_CONTENT));
+		taskToReturn.setCategory((String)obj.get(TASK_CATEGORY));
+		taskToReturn.setPriority((String)obj.get(TASK_PRIORITY));
+		taskToReturn.setStartDateTime(parseToLocalDateTimeIfNotNull((String) obj.get(TASK_STARTDATE)));
+		taskToReturn.setEndDateTime(parseToLocalDateTimeIfNotNull((String) obj.get(TASK_ENDDATE)));
+		taskToReturn.setRemindDateTime(parseToLocalDateTimeIfNotNull((String) obj.get(TASK_REMINDDATE)));
+		
+		return taskToReturn;
+	}
+	
+	private LocalDateTime parseToLocalDateTimeIfNotNull(String str) {
+		if (str != null) {
+			return LocalDateTime.parse(str);
+		}
+		
+		return null;
+	}
+	
+	//** ******************** **/
+	
+	public ArrayList<TaskData> jsonArrToTasks(JSONArray jsonArr) {
+		ArrayList<TaskData> taskListToReturn = new ArrayList<TaskData> ();
+		
+		for (int i = 0; i < jsonArr.size(); i++) {
+			taskListToReturn.add(jsonObjToTask((JSONObject) jsonArr.get(i)));
+		}
+		
+		return taskListToReturn;
+	}
+	
+	//** ******************** **/
+
+	public JSONObject encloseJsonArrInJsonObj(JSONArray jarr) {
+		JSONObject jo = new JSONObject();
+		jo.put(TITLE_JSONARRAY, jarr);
+		
+		return jo;
+	}
+	
+	//** ******************** **/
+	
+	public JSONArray retrieveJsonArrFromJsonObj(JSONObject jsonObj) {
+		JSONArray jsonArrToReturn = (JSONArray) jsonObj.get(TITLE_JSONARRAY);
+		
+		if (jsonArrToReturn == null) {
+			
+			return new JSONArray();
+		}
+		
+		return jsonArrToReturn;
+	}
+	
+	//** ******************** **/
+	
+	public JSONObject getJsonObjFromFile(BufferedReader br) throws IOException, ParseException {
+		JSONParser parser = new JSONParser();
+		JSONObject jsonObj = (JSONObject) parser.parse(br);
+		
+		return jsonObj;
+	}
+	
+	/**
+	 * This method transforms JSONObject display
+	 * into a more readable string format.
+	 * 
+	 * @param Object : JSONObject or JSONArray
+	 * @return formatted string : String
+	 */
+	public String toPrettyFormat(Object obj) {
+		if (obj instanceof JSONObject) {
+			obj = (JSONObject) obj;
+		}
+		
+		Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+		String prettyJson = gson.toJson(obj);
+		
+		return prettyJson;
+	}
+}
+
+	// End of segment: C:\Users\Kamui\git\main\FlexiPlanner\src\storage\JsonConverter.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Kamui\git\main\FlexiPlanner\src\storage\Storage.java
+	 */
+
+
+/**
+ * Interface
+ *
+ */
+
+public interface Storage {
+	
+	/**
+	 * This method create folders and files necessary
+	 * for storing data.
+	 * 
+	 * @param filePath - the path to the file to set up
+	 * @return setup successful or not : boolean
+	 */
+	public boolean setupDatabase(final String filePath);
+	
+	/**
+	 * This method saves a list of tasks in a specified file.
+	 * 
+	 * @param fileName : name of the file to save into
+	 * @param taskList : ArrayList<TaskData>
+	 * 
+	 * @return successful or not : boolean
+	 */
+	public boolean saveTasks(final String fileName, ArrayList<TaskData> taskList);
+	
+	/**
+	 * This method loads task data from a specified file.
+	 * 
+	 * @param fileName : name of the file to load from
+	 * 
+	 * @return taskList : ArrayList<TaskData> 
+	 */
+	public ArrayList<TaskData> loadTasks(final String fileName);
+	
+	/**
+	 * This method saves a list of text data in a specified file.
+	 * 
+	 * @param fileName : name of the text file to save into
+	 * @param list : ArrayList<String>
+	 * 
+	 * @return successful or not : boolean
+	 */
+	boolean saveFile(String fileName, ArrayList<String> list);
+	
+	
+	/**
+	 * This method loads data from a specified file.
+	 * 
+	 * @param fileName : name of the file to load from
+	 * 
+	 * @return list : ArrayList<String> 
+	 */
+	ArrayList<String> loadFile(String fileName);
+}
+
+	// End of segment: C:\Users\Kamui\git\main\FlexiPlanner\src\storage\Storage.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Kamui\git\main\FlexiPlanner\src\ui\FlexiPlannerUI.java
+	 */
+
+	/**
+	 * This method return a current JFrame. Implemented for global shortcuts.
+	 *
+	 * @return JFrame
+	 */
+	public JFrame getJFrame() {
+		return schedulerFrame;
+	}
+
+	public static void save() {
+
+		try {
+			logic.saveData();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	// End of segment: C:\Users\Kamui\git\main\FlexiPlanner\src\ui\FlexiPlannerUI.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Kamui\git\main\FlexiPlanner\src\ui\FlexiPlannerUI.java
+	 */
+
+	/**
+	 * This method execute when a hotKey is pressed.
+	 */
+	@Override
+	public void onHotKey(HotKey hotKey) {
+		switch (hotKey.keyStroke.getKeyCode()) {
+		case KeyEvent.VK_O:
+			schedulerFrame.setVisible(true);
+			schedulerFrame.setExtendedState(JFrame.NORMAL);
+			break;
+		case KeyEvent.VK_M:
+			schedulerFrame.setVisible(false);
+			break;
+		case KeyEvent.VK_E:
+			Tray.stopShortCuts();
+			System.exit(0);
+		default:
+			break;
+		}
+	}
+
+}
+	// End of segment: C:\Users\Kamui\git\main\FlexiPlanner\src\ui\FlexiPlannerUI.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Kamui\git\main\FlexiPlanner\src\ui\Tray.java
+	 */
+
+
+/**
+ * This class create the icon in the system tray.
+ * It also creates global shortcuts to be used with GUI in pair.
+ * Global shortcuts can be used in both Window and MacIntosh.
+ * 
+ * Preconditions 1 : GUI class must implement HotKeyListener
+ * and one override-method onHotKey(), which corresponds to 
+ * the global shortcuts created in this class.
+ * 
+ * Preconditions 2 : GUI main class and Logic class must make sure that the 
+ * exit method from any other platforms must only set the JFrame 
+ * to be ICONIFIED, except this class. Only this class can execute the 
+ * system exit. 
+ * 
+ */
+
+public class Tray {
+	
+	private FlexiPlannerUI instance;
+	private JFrame frame;
+	
+	private final String ERROR_NOT_SUPPORTED = "SystemTray is not supported.\n";
+	
+	private final String TITLE = "FlexiPlanner";
+	private final String PATH_ICON = "/resources/logo.png";
+	private final String MENUITEM_OPEN = "Open";
+	private final String MENUITEM_EXIT = "Exit";
+	
+	/** Global Shortcuts **/
+	private static Provider keyShortCuts = null;
+	
+	private final String SHORTCUT_LAUNCH = "control O";
+	private final String SHORTCUT_CLOSE = "control M";
+	private final String SHORTCUT_EXIT = "control E";
+	
+	public Tray(FlexiPlannerUI instance) {
+		this.instance = instance;
+		this.frame = instance.getJFrame();
+		initializeShortCuts();
+	}
+	
+	/**
+	 * This method placed the application in the system tray.
+	 * Preconditions: Closing application will only make JFrame 
+	 * to be ICOGNIFIED so that it can run in the background.
+	 */
+	public void createSystemTray() {
+		if (!SystemTray.isSupported()) {
+            report(ERROR_NOT_SUPPORTED);
+            return;
+        }
+		
+		Image icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource(PATH_ICON));
+		
+		final SystemTray tray = SystemTray.getSystemTray();
+		final PopupMenu popupMenu = new PopupMenu();
+		final TrayIcon trayIcon = new TrayIcon(icon, TITLE, popupMenu);
+		trayIcon.setImageAutoSize(true);
+		
+		// add "Open" to tray menu
+		MenuItem item = new MenuItem(MENUITEM_OPEN);
+		item.setShortcut(new MenuShortcut(KeyEvent.VK_O, false));
+		item.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				FlexiPlannerUI.save();
+				frame.setVisible(true);
+				frame.setExtendedState(JFrame.NORMAL);
+			}
+		});
+		popupMenu.add(item);
+		popupMenu.addSeparator();
+		
+		// add "Exit" to tray menu
+		item = new MenuItem(MENUITEM_EXIT);
+		item.setShortcut(new MenuShortcut(KeyEvent.VK_E, false));
+		item.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				FlexiPlannerUI.save();
+				stopShortCuts(); // reset shortcuts when exit.
+				System.exit(0);
+			}
+		});
+		popupMenu.add(item);
+		
+		try {
+			tray.add(trayIcon);
+		} catch (AWTException awtException) {
+			awtException.printStackTrace();
+		}
+	} 
+	
+	/**
+	 * This method initializes the global shortcuts.
+	 */
+	private void initializeShortCuts() {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				if (keyShortCuts == null) {
+					keyShortCuts = Provider.getCurrentProvider(false);
+				}
+				keyShortCuts.reset();
+				keyShortCuts.register(KeyStroke.getKeyStroke(SHORTCUT_LAUNCH), instance);
+				keyShortCuts.register(KeyStroke.getKeyStroke(SHORTCUT_CLOSE), instance);
+				keyShortCuts.register(KeyStroke.getKeyStroke(SHORTCUT_EXIT), instance);
+			}
+		}).start();
+	}
+	
+	/**
+	 * This method removes the shortcuts created.
+	 */
+	public static void stopShortCuts() {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				if (keyShortCuts != null) {
+					keyShortCuts.reset();
+					keyShortCuts.stop();
+				}
+			}
+		}).start();
+	}
+	
+	private void report(final String toReport) {
+		System.out.print(toReport);
+	}
+}
+	// End of segment: C:\Users\Kamui\git\main\FlexiPlanner\src\ui\Tray.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Kamui\git\main\FlexiPlanner\unit-tests\reminder\ReminderPatternFinderTest.java
+	 */
+
+
+/**
+ * This test class tests the output after checking whether there is reminder 
+ * in the command typed by the user.
+ *
+ */
+
+public class ReminderPatternFinderTest {
+	
+	ReminderPatternFinder finder = new ReminderPatternFinder();
+	private final ByteArrayOutputStream out = new ByteArrayOutputStream();
+	
+	private final String ERROR_INVALID_DATE_TIME = "Invalid date and time!\n";
+	private final String INFO_NO_COMMAND_FOR_REMINDER = "Command to set reminder is not found!\n";
+	
+	private final String NO_REMINDER = "shopping on tue";
+	
+	private final String INVALID_1 = "shopping on tue [34nov 5pm]";
+	private final String INVALID_2 = "shopping on tue [11-13-14 5pm]";
+	private final String INVALID_3 = "shopping on tue [11-11-14 14pm]";
+	
+	private final String PATTERN1_1 = "shopping on tue [remind me 2hrs before]";
+	private final String PATTERN1_2 = "shopping on tue [30mins]";
+	
+	private final String PATTERN2_1 = "shopping on tue [11nov 5pm]";
+	private final String PATTERN2_2 = "shopping on tue [11 nov 10:30am]";
+	private final String PATTERN2_3 = "shopping on tue [11 nov 1030]";
+	
+	private final String PATTERN3_1 = "shopping on tue [11-11-14 5pm]";
+	private final String PATTERN3_2 = "shopping on tue [11/11/2014 12:30am]";
+	
+	private final String CLR1 = "[clear]";
+	private final String CLR2 = "[clear reminder]";
+	
+	/** test output of no reminder in command - boundary case **/
+	@Test
+	public void tc1() {
+		System.setOut(new PrintStream(out));
+		Object result = finder.parse(NO_REMINDER);
+		assertNull(result);
+		assertEquals(out.toString(), INFO_NO_COMMAND_FOR_REMINDER);
+	}
+	
+	/** test output of invalid reminder in command **/
+	@Test
+	public void tc2() {
+		System.setOut(new PrintStream(out));
+		Object result = finder.parse(INVALID_1);
+		assertNull(result);
+		assertEquals(out.toString(), ERROR_INVALID_DATE_TIME);
+		
+		result = finder.parse(INVALID_2);
+		assertNull(result);
+		
+		result = finder.parse(INVALID_3);
+		assertNull(result);
+	}
+	
+	/** test output of reminder pattern 1 in command **/
+	@Test
+	public void tc3() {
+		Object result = finder.parse(PATTERN1_1);
+		assertTrue(result instanceof Integer);
+		assertEquals(result, 120);
+		
+		result = finder.parse(PATTERN1_2);
+		assertTrue(result instanceof Integer);
+		assertEquals(result, 30);
+	}
+	
+	/** test output of reminder pattern 2 in command **/
+	@Test
+	public void tc4() {
+		Object result = finder.parse(PATTERN2_1);
+		assertTrue(result instanceof LocalDateTime);
+		assertEquals(result, LocalDateTime.of(2014, 11, 11, 17, 0));
+		
+		result = finder.parse(PATTERN2_2);
+		assertTrue(result instanceof LocalDateTime);
+		assertEquals(result, LocalDateTime.of(2014, 11, 11, 10, 30));
+		
+		result = finder.parse(PATTERN2_3);
+		assertTrue(result instanceof LocalDateTime);
+		assertEquals(result, LocalDateTime.of(2014, 11, 11, 10, 30));
+	}
+	
+	/** test output of reminder pattern 3 in command **/
+	@Test
+	public void tc5() {
+		Object result = finder.parse(PATTERN3_1);
+		assertTrue(result instanceof LocalDateTime);
+		assertEquals(result, LocalDateTime.of(2014, 11, 11, 17, 0));
+		
+		result = finder.parse(PATTERN3_2);
+		assertTrue(result instanceof LocalDateTime);
+		assertEquals(result, LocalDateTime.of(2014, 11, 11, 00, 30));
+	}
+	
+	/** test output of clear reminder pattern in command **/
+	@Test
+	public void tc6() {
+		Object result = finder.parse(CLR1);
+		assertTrue(result instanceof Integer);
+		assertEquals(result, -1);
+		
+		result = finder.parse(CLR2);
+		assertTrue(result instanceof Integer);
+		assertEquals(result, -1);
+	}
+	
+	/** test output of checking if there's reminder in command **/
+	@Test
+	public void tc7() {
+		boolean hasReminder;
+		hasReminder = finder.hasReminderPatternInCommand(NO_REMINDER);
+		assertFalse(hasReminder);
+		
+		hasReminder = finder.hasReminderPatternInCommand(PATTERN3_1);
+		assertTrue(hasReminder);
+	}
+}
+
+	// End of segment: C:\Users\Kamui\git\main\FlexiPlanner\unit-tests\reminder\ReminderPatternFinderTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Kamui\git\main\FlexiPlanner\unit-tests\reminder\ReminderTest.java
+	 */
+
+
+/**
+ * This class is to test the reminder setup, start and stop methods.
+ * It also tests the coverage of ReminderPopup class to display in order.
+ *
+ */
+
+public class ReminderTest {
+	
+	private final ByteArrayOutputStream out = new ByteArrayOutputStream();
+	
+	/** test reminder scheduled at a time which is over **/
+	@Test
+	public void tc1() throws InterruptedException {
+		System.setOut(new PrintStream(out));
+		TaskData task = new TaskData("reminder test", "project", "high",
+				LocalDateTime.now(), LocalDateTime.now().plusHours(2));
+		new Reminder(LocalDateTime.now(), task).start();
+		assertEquals(out.toString(), "The schedule is over!\n");
+		TimeUnit.SECONDS.sleep(5);
+	}
+	
+	/** test reminder on a task which has only end time **/
+	@Test
+	public void tc2() throws InterruptedException {
+		TaskData task = new TaskData("reminder test", "project", "high",
+				null, LocalDateTime.now().plusHours(2));
+		new Reminder(LocalDateTime.now(), task).start();
+		TimeUnit.SECONDS.sleep(5);
+	}
+	
+	/** test reminder on a task which has only start time **/
+	@Test
+	public void tc3() throws InterruptedException {
+		TaskData task = new TaskData("reminder test", "project", "high",
+				LocalDateTime.now().plusHours(2), null);
+		new Reminder(LocalDateTime.now(), task).start();
+		TimeUnit.SECONDS.sleep(5);
+	}
+	
+	/** test reminder on a task which has only content to reminder display **/
+	@Test
+	public void tc4() throws InterruptedException {
+		TaskData task = new TaskData("reminder test", "project", "high",
+				null, null);
+		new Reminder(LocalDateTime.now(), task).start();
+		TimeUnit.SECONDS.sleep(5);
+	}
+	
+	/** repeated test to check displaying pop-ups in order on screen **/
+	@Test
+	public void tc5() throws InterruptedException {
+		TaskData task = new TaskData("reminder test", "project", "high",
+				null, null);
+		new Reminder(LocalDateTime.now(), task).start();
+		TimeUnit.SECONDS.sleep(5);
+	}
+	
+	/** repeated test to check displaying pop-ups in order on screen **/
+	@Test
+	public void tc6() throws InterruptedException {
+		TaskData task = new TaskData("reminder test", "project", "high",
+				null, null);
+		new Reminder(LocalDateTime.now(), task).start();
+		TimeUnit.SECONDS.sleep(5);
+	}
+	
+	/** repeated test to check displaying pop-ups in order on screen **/
+	@Test
+	public void tc7() throws InterruptedException {
+		TaskData task = new TaskData("reminder test", "project", "high",
+				null, null);
+		new Reminder(LocalDateTime.now(), task).start();
+		TimeUnit.SECONDS.sleep(5);
+	}
+
+}
+
+	// End of segment: C:\Users\Kamui\git\main\FlexiPlanner\unit-tests\reminder\ReminderTest.java
+
+
+
+
+
+	/**
+	 * origin: C:\Users\Kamui\git\main\FlexiPlanner\unit-tests\storage\FileStorageTest.java
+	 */
+
+
+/**
+ * This unit test class is for testing FileStorage class under storage component. 
+ * This also check the associated classes with FileStorage class:
+ * FileManager() and JsonConverter()
+ *
+ */
+public class FileStorageTest {
+	Storage database = FileStorage.getInstance();
+	FileManager manager = new FileManager();
+	
+	private final ByteArrayOutputStream out = new ByteArrayOutputStream();
+	
+	TaskData t1 = new TaskData("first", "personal", "normal", LocalDateTime.of(2014, 10, 23, 0, 0), LocalDateTime.of(2014, 10, 24, 0, 0));
+	TaskData t2 = new TaskData("second", "work", "high", LocalDateTime.of(2014, 10, 25, 0, 0), LocalDateTime.of(2014, 10, 26, 0, 0));
+	TaskData t3 = new TaskData("third", "work", "high", LocalDateTime.of(2014, 10, 27, 0, 0), LocalDateTime.of(2014, 10, 28, 0, 0));
+	
+	final String FOLDER = "FlexiPlanner Database//";
+	final String NOT_IN_JSON_FORMAT = "test-resources//notinjsonformat.json";
+	final String EMPTY = "test-resources//empty.json";
+	final String THREE_TASKS = "test-resources//threetask.json";
+	final String TESTING_SAVE = "test-resources//testingsave.json";
+	final String SAVE = "test-resources//save.txt";
+	final String ONE_TASK = "test-resources//onetask.json";
+	final String MULTI_SAVE = "test-resources//multisave.json";
+	final String SIMULATE_PE = "test-resources//simulatepe.json";
+	
+	final String ERROR_NO_RECORD = "File record not found! Setup database first!\n";
+	final String ERROR_PARSE_ERROR = "Parse Error!\nParse Error!\n";
+	final String ERROR_NULL_LIST = "List cannot be null!\n";
+	
+	final String PERSONAL = "#personal";
+	final String WORK = "#work";
+	final String TODAY = "#today";
+	
+	@Before
+	public void setUp() throws Exception {
+		database.setupDatabase(NOT_IN_JSON_FORMAT);
+		database.setupDatabase(EMPTY);
+		database.setupDatabase(THREE_TASKS);
+		database.setupDatabase(TESTING_SAVE);
+		database.setupDatabase(SAVE);
+		database.setupDatabase(ONE_TASK);
+		database.setupDatabase(MULTI_SAVE);
+		database.setupDatabase(SIMULATE_PE);
+	}
+	
+	/** Test Invalid File Name **/
+	/** ******************* **/
+	/** ******************* **/
+	/** ******************* **/
+	/** ******************* **/
+	
+	/** test output for invalid file name **/
+	@Test
+	public void testInvalidFileName() {
+		boolean isSetup = false;
+		isSetup = database.setupDatabase("..text");
+		assertFalse(isSetup);
+		isSetup = database.setupDatabase("text.txt.txt");
+		assertFalse(isSetup);
+		isSetup = database.setupDatabase(".txt");
+		assertFalse(isSetup);
+	}
+	
+	/** test output for invalid file extension **/
+	@Test
+	public void testInvalidFileExtension() {
+		boolean isSetup = false;
+		isSetup = database.setupDatabase("text.doc");
+		assertFalse(isSetup);
+		isSetup = database.setupDatabase("text.xls");
+		assertFalse(isSetup);
+		isSetup = database.setupDatabase("text.ppt");
+		assertFalse(isSetup);
+		isSetup = database.setupDatabase("text.something");
+		assertFalse(isSetup);
+		isSetup = database.setupDatabase("text.pdf");
+		assertFalse(isSetup);
+	}
+	
+	/** test output for valid files **/
+	@Test
+	public void testValidFile() throws FileNotFoundException {
+		boolean isSetup = false;
+		isSetup = database.setupDatabase("tosave-tasks.json");
+		assertTrue(isSetup);
+		manager.deleteFile("FlexiPlanner Database//tosave-tasks.json");
+		isSetup = database.setupDatabase("tOsaVeTaSkS.TXT");
+		assertTrue(isSetup);
+		manager.deleteFile("FlexiPlanner Database//tosavetasks.txt");
+	}
+	
+	/** Test Loading Method **/
+	/** ******************* **/
+	/** ******************* **/
+	/** ******************* **/
+	/** ******************* **/
+	
+	/** test output when file path is not provided or it is null **/
+	@Test
+	public void testLoadFromNullFilePath() throws IOException, ParseException {
+		ArrayList<TaskData> tasks = new ArrayList<TaskData>();
+		System.setOut(new PrintStream(out));
+		tasks = database.loadTasks(null);
+		assertTrue(tasks.isEmpty());
+		assertEquals(ERROR_NO_RECORD, out.toString());
+	}
+	
+	/** test output when the task file is not in JSON format **/
+	@Test
+	public void testLoadFileNotInJSONFormat() {
+		System.setOut(new PrintStream(out));
+		database.loadTasks(NOT_IN_JSON_FORMAT);
+		assertEquals(ERROR_PARSE_ERROR, out.toString());
+	}
+	
+	/** test boundary case of loading from an empty task file **/
+	@Test 
+	public void testLoadEmptyFile() {
+		ArrayList<TaskData> tasks = new ArrayList<TaskData>();
+		tasks = database.loadTasks(EMPTY);
+		assertTrue(tasks.isEmpty());
+	}
+	
+	/** test boundary case of loading task file with only one task in it **/
+	@Test 
+	public void testLoadFileWithOneTask() {
+		ArrayList<TaskData> tasks = new ArrayList<TaskData>();
+		tasks = database.loadTasks(ONE_TASK);
+		System.out.println(tasks.size());
+		assertTrue(tasks.size() == 1);
+		assertTrue(tasks.get(0).equals(t1));
+	}
+	
+	/** test loading task file which has more than one tasks **/
+	@Test 
+	public void testLoadFileWithThreeTask() {
+		ArrayList<TaskData> tasks = new ArrayList<TaskData>();
+		tasks = database.loadTasks(THREE_TASKS);
+		assertTrue(tasks.size() == 3);
+		assertTrue(tasks.get(0).equals(t1) && tasks.get(1).equals(t2) && tasks.get(2).equals(t3));
+	}
+	
+	/** test loading back up data retrieval when task file is accidentally cleared **/
+	@Test
+	public void testRetrieveBackupClearedFile() throws FileNotFoundException, IOException {
+		ArrayList<TaskData> tasks = new ArrayList<TaskData>();
+		ArrayList<TaskData> bkupTasks = new ArrayList<TaskData>();
+		tasks = database.loadTasks(MULTI_SAVE);
+		assertTrue(tasks.size() == 5);
+		manager.clearFile(FOLDER + MULTI_SAVE);
+		bkupTasks = database.loadTasks(MULTI_SAVE);
+		assertTrue(bkupTasks.size() == 5);
+		database.saveTasks(MULTI_SAVE, bkupTasks);
+	}
+	
+	/** test loading back up data retrieval when parse exception occurs in parsing JSON format **/
+	@Test
+	public void testRetrieveBackupWhenParseExOccurs() throws FileNotFoundException, IOException {
+		ArrayList<TaskData> tasks = new ArrayList<TaskData>();
+		tasks = database.loadTasks(SIMULATE_PE);
+		assertTrue(tasks.size() == 5);
+	}
+	
+	
+	
+	/** Test Save Method **/
+	/** ******************* **/
+	/** ******************* **/
+	/** ******************* **/
+	/** ******************* **/
+	
+	/** test output when file path is not provided **/
+	@Test
+	public void testSaveInNullFilePath() {
+		System.setOut(new PrintStream(out));
+		assertFalse(database.saveTasks(null, new ArrayList<TaskData>()));
+		assertEquals(ERROR_NO_RECORD, out.toString());
+	}
+	
+	/** test output when the task list to be saved is null **/
+	@Test 
+	public void testSaveNullList() {
+		System.setOut(new PrintStream(out));
+		assertFalse(database.saveTasks(TESTING_SAVE, null));
+		assertEquals(ERROR_NULL_LIST, out.toString());
+	}
+	
+	/** test boundary case of saving an empty task list to the task file **/
+	@Test 
+	public void testSaveEmptyList() throws FileNotFoundException, IOException {
+		ArrayList<TaskData> tasks = new ArrayList<TaskData> ();
+		manager.clearFile(FOLDER + TESTING_SAVE);
+		assertTrue(database.saveTasks(TESTING_SAVE, new ArrayList<TaskData>()));
+		tasks = database.loadTasks(TESTING_SAVE);
+		assertTrue(tasks.isEmpty());
+	}
+	
+	/** test boundary case of saving a task to an empty task file **/
+	@Test 
+	public void testSaveATaskInEmptyFile() throws FileNotFoundException, IOException {
+		ArrayList<TaskData> oneTask = new ArrayList<TaskData>();
+		ArrayList<TaskData> tasks = new ArrayList<TaskData> ();
+		oneTask.add(t1);
+		manager.clearFile(FOLDER + TESTING_SAVE);
+		assertTrue(database.saveTasks(TESTING_SAVE, oneTask));
+		tasks = database.loadTasks(TESTING_SAVE);
+		assertTrue(tasks.size() == 1);
+		assertTrue(tasks.get(0).equals(oneTask.get(0)));
+	}
+	
+	/** test saving more than one task in a task file **/
+	@Test 
+	public void testSaveMoreThanOneTask() {
+		ArrayList<TaskData> threeTasks = new ArrayList<TaskData>();
+		ArrayList<TaskData> tasks = new ArrayList<TaskData> ();
+		threeTasks.add(t1);
+		threeTasks.add(t2);
+		threeTasks.add(t2);
+		assertTrue(database.saveTasks(TESTING_SAVE, threeTasks));
+		tasks = database.loadTasks(TESTING_SAVE);
+		assertTrue(tasks.size() == 3);
+		assertTrue(tasks.get(0).equals(t1) && tasks.get(1).equals(t2) &&
+				   tasks.get(2).equals(t2));
+	}
+	
+	/** Test Save and Load Normal String Texts Method **/
+	/** ******************* **/
+	/** ******************* **/
+	/** ******************* **/
+	/** ******************* **/
+	@Test
+	public void testSaveCategory() {
+		ArrayList<String> c = new ArrayList<String>();
+		ArrayList<String> load = new ArrayList<String>();
+		c.add(PERSONAL);
+		c.add(WORK);
+		c.add(TODAY);
+		assertTrue(database.saveFile(SAVE, c));
+		load = database.loadFile(SAVE);
+		assertTrue(load.size() == 3);
+		assertTrue(load.get(0).equals(PERSONAL) && load.get(1).equals(WORK) && load.get(2).equals(TODAY));
+	}
+}
+
+	// End of segment: C:\Users\Kamui\git\main\FlexiPlanner\unit-tests\storage\FileStorageTest.java
+
+
+
+
+
