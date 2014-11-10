@@ -1046,12 +1046,12 @@ public class FlexiPlannerUI implements HotKeyListener {
 	public Object getSelectYear() {
 		return selectYear.getSelectedItem();
 	}
+	
+	//@author A0117989H
 	/**
 	 * This method return a current JFrame. Implemented for global shortcuts.
 	 *
 	 * @return JFrame
-	 *
-	 * @author Moe Lwin Hein (A0117989H)
 	 */
 	public JFrame getJFrame() {
 		return schedulerFrame;
@@ -1066,10 +1066,9 @@ public class FlexiPlannerUI implements HotKeyListener {
 		}
 	}
 
+	//@author A0117989H
 	/**
 	 * This method execute when a hotKey is pressed.
-	 *
-	 * @author Moe Lwin Hein (A0117989H)
 	 */
 	@Override
 	public void onHotKey(HotKey hotKey) {
