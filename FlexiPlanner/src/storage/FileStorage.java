@@ -396,7 +396,11 @@ public class FileStorage implements Storage {
 	}
 	
 	//** ******************** **/
-	
+	/*
+	 * This method creates the application folder
+	 * namely FlexiPlanner Database for better organization
+	 * of files
+	 */
 	private void createFolder() {
 		boolean isCreated = false;
 		
@@ -406,7 +410,8 @@ public class FileStorage implements Storage {
 		if (manager.hasFolder(folderName)) {
 			return;
 		}
-		//check if the children derived from BASE_FOLDER exists
+		
+		//check if BASE_FOLDER1,2,etc exists
 		for (int i = 1; i < MAX_ITERATION; i++) {
 			if (manager.hasFolder(folderName + i)) {
 				folderName = folderName + i; //set folder if found
@@ -418,7 +423,7 @@ public class FileStorage implements Storage {
 			isCreated = manager.createFolder(folderName);
 			
 			if (!isCreated) {
-				//if creating fails, create using another names
+				//if creating fails, try create folder name followed by integers
 				for (int i = 1; i < MAX_ITERATION; i++) {
 					if (manager.createFolder(folderName + i)) {
 						folderName = folderName + i;

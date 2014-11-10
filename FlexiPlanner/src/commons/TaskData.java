@@ -133,9 +133,9 @@ public class TaskData implements Comparable<TaskData> {
 	}
 
 	public void setReminder() {
-		//check that when app exited, there is reminder still on
+		//check that when app exited previously, there is reminder still on
 		if (remindDateTime != null && reminder == null) {
-			//LocalDateTime.Min is an instruction to clear the reminder
+			//LocalDateTime.MIN is an instruction to clear the reminder
 			if (remindDateTime.equals(LocalDateTime.MIN)) {
 				remindDateTime = null;
 				return;
