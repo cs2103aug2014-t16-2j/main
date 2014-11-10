@@ -11,12 +11,12 @@ import java.util.ArrayList;
 
 import org.json.simple.parser.ParseException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import storage.FileManager;
 import storage.FileStorage;
 import storage.Storage;
-
 import commons.TaskData;
 
 //@author A0117989H
@@ -165,6 +165,13 @@ public class FileStorageTest {
 	}
 	
 	/** test loading back up data retrieval when task file is accidentally cleared **/
+	/** 
+	 * This test case is to be run with backup files setup in the FlexiPlanner Database-backup
+	 * folder in the system user.home directory.
+	 * Setup before run - files from FlexiPlanner Database//test-resources are copied to the backup folder 
+	 * as mentioned as above. Rename all copied files as fileName-backup.extension(same as original extension).
+	 */
+	@Ignore
 	@Test
 	public void testRetrieveBackupClearedFile() throws FileNotFoundException, IOException {
 		ArrayList<TaskData> tasks = new ArrayList<TaskData>();
@@ -178,6 +185,8 @@ public class FileStorageTest {
 	}
 	
 	/** test loading back up data retrieval when parse exception occurs in parsing JSON format **/
+	/** the same condition applied to this test case to run as the above test case **/
+	@Ignore
 	@Test
 	public void testRetrieveBackupWhenParseExOccurs() throws FileNotFoundException, IOException {
 		ArrayList<TaskData> tasks = new ArrayList<TaskData>();
