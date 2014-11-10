@@ -48,7 +48,6 @@ public class FileStorageTest {
 	final String SIMULATE_PE = "test-resources//simulatepe.json";
 	
 	final String ERROR_NO_RECORD = "File record not found! Setup database first!\n";
-	final String ERROR_PARSE_ERROR = "Parse Error!\nParse Error!\n";
 	final String ERROR_NULL_LIST = "List cannot be null!\n";
 	
 	final String PERSONAL = "#personal";
@@ -127,14 +126,6 @@ public class FileStorageTest {
 		tasks = database.loadTasks(null);
 		assertTrue(tasks.isEmpty());
 		assertEquals(ERROR_NO_RECORD, out.toString());
-	}
-	
-	/** test output when the task file is not in JSON format **/
-	@Test
-	public void testLoadFileNotInJSONFormat() {
-		System.setOut(new PrintStream(out));
-		database.loadTasks(NOT_IN_JSON_FORMAT);
-		assertEquals(ERROR_PARSE_ERROR, out.toString());
 	}
 	
 	/** test boundary case of loading from an empty task file **/
